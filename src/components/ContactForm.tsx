@@ -7,6 +7,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { z } from "zod";
+
+// Validación de formulario con Zod
+const contactFormSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .max(100, "El nombre es demasiado largo"),
+  email: z.string()
+    .trim()
+    .email("Email inválido")
+    .max(255, "El email es demasiado largo"),
+  company: z.string()
+    .trim()
+    .max(100, "El nombre de la empresa es demasiado largo")
+    .optional(),
+  phone: z.string()
+    .trim()
+    .max(20, "El teléfono es demasiado largo")
+    .optional(),
+  service_interest: z.string().optional(),
+  message: z.string()
+    .trim()
+    .max(2000, "El mensaje es demasiado largo")
+    .optional()
+});
 
 export const ContactForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,6 +49,21 @@ export const ContactForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validar datos del formulario
+    try {
+      contactFormSchema.parse(formData);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Error de validación",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -46,7 +87,6 @@ export const ContactForm = () => {
         message: ""
       });
     } catch (error) {
-      console.error("Error:", error);
       toast({
         title: "Error",
         description: "No se pudo enviar el formulario. Intenta nuevamente.",

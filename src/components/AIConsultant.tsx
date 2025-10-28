@@ -4,12 +4,30 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Bot, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import DOMPurify from 'dompurify';
+import { z } from 'zod';
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
+
+// Validación de inputs
+const messageSchema = z.object({
+  content: z.string()
+    .trim()
+    .min(1, "El mensaje no puede estar vacío")
+    .max(2000, "El mensaje es demasiado largo (máx 2000 caracteres)")
+    .refine(
+      (val) => !/<script|javascript:|onerror=|onclick=/i.test(val),
+      "El mensaje contiene contenido no permitido"
+    )
+});
+
+// Rate limiting: máximo 5 mensajes por minuto
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW = 60000; // 1 minuto
+const REQUEST_TIMEOUT = 30000; // 30 segundos
 
 export const AIConsultant = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -20,6 +38,7 @@ export const AIConsultant = () => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [requestCount, setRequestCount] = useState<number[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -31,17 +50,100 @@ export const AIConsultant = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Limpiar rate limit timestamps antiguos
+  const cleanRateLimitTracking = () => {
+    const now = Date.now();
+    setRequestCount(prev => prev.filter(timestamp => now - timestamp < RATE_LIMIT_WINDOW));
+  };
+
+  // Verificar rate limit
+  const isRateLimited = () => {
+    cleanRateLimitTracking();
+    return requestCount.length >= RATE_LIMIT_MAX;
+  };
+
+  // Sanitizar output de IA
+  const sanitizeContent = (content: string): string => {
+    return DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
+      ALLOWED_ATTR: []
+    });
+  };
+
+  // Fetch con timeout y retry logic
+  const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number, retries = 2): Promise<Response> => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      // Si es 429 o 502/503, reintentar después de un delay
+      if ((response.status === 429 || response.status >= 502) && retries > 0) {
+        const delay = (3 - retries) * 2000; // 2s, 4s
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithTimeout(url, options, timeout, retries - 1);
+      }
+      
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('La solicitud tardó demasiado tiempo');
+      }
+      
+      if (retries > 0) {
+        const delay = (3 - retries) * 2000;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithTimeout(url, options, timeout, retries - 1);
+      }
+      
+      throw error;
+    }
+  };
+
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
+    // Rate limiting
+    if (isRateLimited()) {
+      toast({
+        title: "Demasiadas solicitudes",
+        description: "Por favor espera un momento antes de enviar otro mensaje.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const userMessage = input.trim();
+
+    // Validación de input
+    try {
+      messageSchema.parse({ content: userMessage });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Mensaje inválido",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setInput("");
     setMessages(prev => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
+    setRequestCount(prev => [...prev, Date.now()]);
 
     try {
-      const response = await fetch(
+      const response = await fetchWithTimeout(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/b3ta-ai-consultant`,
         {
           method: "POST",
@@ -52,11 +154,22 @@ export const AIConsultant = () => {
           body: JSON.stringify({
             messages: [...messages, { role: "user", content: userMessage }],
           }),
-        }
+        },
+        REQUEST_TIMEOUT
       );
 
-      if (!response.ok || !response.body) {
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("Servicio temporalmente saturado. Intenta en unos minutos.");
+        }
+        if (response.status === 402) {
+          throw new Error("Servicio temporalmente no disponible.");
+        }
         throw new Error("Error al conectar con el consultor");
+      }
+
+      if (!response.body) {
+        throw new Error("No se recibió respuesta del servidor");
       }
 
       const reader = response.body.getReader();
@@ -83,7 +196,9 @@ export const AIConsultant = () => {
             const parsed = JSON.parse(data);
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
-              assistantMessage += content;
+              // Sanitizar cada chunk antes de agregarlo
+              const sanitizedContent = sanitizeContent(content);
+              assistantMessage += sanitizedContent;
               setMessages(prev => {
                 const newMessages = [...prev];
                 newMessages[newMessages.length - 1] = {
@@ -93,18 +208,22 @@ export const AIConsultant = () => {
                 return newMessages;
               });
             }
-          } catch (e) {
-            console.error("Parse error:", e);
+          } catch (parseError) {
+            // Ignorar errores de parsing de chunks incompletos
+            continue;
           }
         }
       }
     } catch (error) {
-      console.error("Error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      
       toast({
         title: "Error",
-        description: "No se pudo conectar con el consultor. Intenta nuevamente.",
+        description: errorMessage,
         variant: "destructive",
       });
+      
+      // Remover el mensaje del usuario si falló completamente
       setMessages(prev => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
@@ -163,6 +282,7 @@ export const AIConsultant = () => {
                 placeholder="Escribe tu consulta..."
                 disabled={isLoading}
                 className="flex-1"
+                maxLength={2000}
               />
               <Button type="submit" disabled={isLoading || !input.trim()} size="icon">
                 <Send className="h-4 w-4" />

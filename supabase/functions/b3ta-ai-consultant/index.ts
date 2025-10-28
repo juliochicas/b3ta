@@ -1,18 +1,67 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// CORS seguro - configurar dominios permitidos
+const ALLOWED_ORIGINS = [
+  'https://sap.b3ta.us',
+  'https://b3ta.us',
+  'http://localhost:8080', // Solo para desarrollo
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowed = origin && ALLOWED_ORIGINS.includes(origin);
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+  };
 };
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { messages } = await req.json();
+    
+    // Validación de input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(
+        JSON.stringify({ error: "Formato de mensajes inválido" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // Límite de mensajes en historial
+    if (messages.length > 50) {
+      return new Response(
+        JSON.stringify({ error: "Demasiados mensajes en el historial" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // Validar cada mensaje
+    for (const msg of messages) {
+      if (!msg.role || !msg.content || typeof msg.content !== 'string') {
+        return new Response(
+          JSON.stringify({ error: "Formato de mensaje inválido" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      // Límite de caracteres por mensaje
+      if (msg.content.length > 2000) {
+        return new Response(
+          JSON.stringify({ error: "Mensaje demasiado largo" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -56,7 +105,6 @@ Mantén respuestas concisas (máx 4 líneas) salvo que el cliente pida detalle t
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI Gateway error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -80,7 +128,8 @@ Mantén respuestas concisas (máx 4 líneas) salvo que el cliente pida detalle t
     });
     
   } catch (error) {
-    console.error("Error in b3ta-ai-consultant:", error);
+    const origin = req.headers.get('origin');
+    const corsHeaders = getCorsHeaders(origin);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Error interno" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
