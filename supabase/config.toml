@@ -1,0 +1,7 @@
+project_id = "ncmsevbojzotkkfgoabp"
+
+[functions.b3ta-ai-consultant]
+verify_jwt = false
+
+[functions.save-lead]
+verify_jwt = false

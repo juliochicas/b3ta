@@ -1,0 +1,164 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Mail, Phone, MapPin } from "lucide-react";
+
+export const ContactForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    company: "",
+    phone: "",
+    service_interest: "",
+    message: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.functions.invoke('save-lead', {
+        body: { ...formData, source: 'contact-form' }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "¡Gracias por contactarnos!",
+        description: "Nos comunicaremos contigo en menos de 24 horas.",
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        phone: "",
+        service_interest: "",
+        message: ""
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo enviar el formulario. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <section id="contact" className="py-24 bg-muted/30">
+      <div className="container mx-auto px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Agenda tu Consultoría
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Primera sesión sin costo. Análisis de necesidades y roadmap personalizado.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="md:col-span-2 p-8 bg-card border-border">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="Nombre completo *"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                  <Input
+                    type="email"
+                    placeholder="Email corporativo *"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="Empresa"
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  />
+                  <Input
+                    type="tel"
+                    placeholder="Teléfono"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+
+                <Select 
+                  value={formData.service_interest} 
+                  onValueChange={(value) => setFormData({ ...formData, service_interest: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="¿En qué servicio estás interesado?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sap">SAP Consulting</SelectItem>
+                    <SelectItem value="ecommerce">E-commerce</SelectItem>
+                    <SelectItem value="automation">Automatización</SelectItem>
+                    <SelectItem value="ia">IA Corporativa</SelectItem>
+                    <SelectItem value="multiple">Varios servicios</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Textarea
+                  placeholder="Cuéntanos sobre tu proyecto o necesidad..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  rows={4}
+                />
+
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full bg-primary hover:bg-primary/90"
+                  size="lg"
+                >
+                  {isSubmitting ? "Enviando..." : "Solicitar Consultoría Gratuita"}
+                </Button>
+              </form>
+            </Card>
+
+            <div className="space-y-6">
+              <Card className="p-6 bg-card border-border">
+                <Mail className="h-6 w-6 text-primary mb-3" />
+                <h3 className="font-semibold mb-2">Email</h3>
+                <p className="text-sm text-muted-foreground">contacto@b3ta.us</p>
+              </Card>
+
+              <Card className="p-6 bg-card border-border">
+                <Phone className="h-6 w-6 text-primary mb-3" />
+                <h3 className="font-semibold mb-2">WhatsApp</h3>
+                <p className="text-sm text-muted-foreground">+1 (786) 555-B3TA</p>
+              </Card>
+
+              <Card className="p-6 bg-card border-border">
+                <MapPin className="h-6 w-6 text-primary mb-3" />
+                <h3 className="font-semibold mb-2">Cobertura</h3>
+                <p className="text-sm text-muted-foreground">LATAM + USA + España</p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
