@@ -74,8 +74,8 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>contacto@b3ta.us</li>
-                <li>+1 (786) 555-B3TA</li>
+                <li>hi@b3ta.us</li>
+                <li>+14355348065</li>
                 <li>Miami, FL</li>
               </ul>
             </div>

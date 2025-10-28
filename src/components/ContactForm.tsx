@@ -141,13 +141,13 @@ export const ContactForm = () => {
               <Card className="p-6 bg-card border-border">
                 <Mail className="h-6 w-6 text-primary mb-3" />
                 <h3 className="font-semibold mb-2">Email</h3>
-                <p className="text-sm text-muted-foreground">contacto@b3ta.us</p>
+                <p className="text-sm text-muted-foreground">hi@b3ta.us</p>
               </Card>
 
               <Card className="p-6 bg-card border-border">
                 <Phone className="h-6 w-6 text-primary mb-3" />
                 <h3 className="font-semibold mb-2">WhatsApp</h3>
-                <p className="text-sm text-muted-foreground">+1 (786) 555-B3TA</p>
+                <p className="text-sm text-muted-foreground">+14355348065</p>
               </Card>
 
               <Card className="p-6 bg-card border-border">
