@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Send, DollarSign, Calendar, FileText } from "lucide-react";
+import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { QuotationDetailModal } from "./QuotationDetailModal";
@@ -37,11 +37,14 @@ export const QuotationsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedQuotation, setSelectedQuotation] = useState<Quotation | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 10;
   const { toast } = useToast();
 
   useEffect(() => {
     loadQuotations();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -59,12 +62,21 @@ export const QuotationsList = () => {
 
   const loadQuotations = async () => {
     try {
+      const from = (currentPage - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { count } = await supabase
+        .from('quotations')
+        .select('*', { count: 'exact', head: true });
+
       const { data, error } = await supabase
         .from('quotations')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
+      setTotalCount(count || 0);
       setQuotations(data || []);
       setFilteredQuotations(data || []);
     } catch (error) {
@@ -175,6 +187,34 @@ export const QuotationsList = () => {
             ))
           )}
         </div>
+
+        {totalCount > pageSize && (
+          <div className="flex items-center justify-between mt-6 pt-6 border-t">
+            <p className="text-sm text-muted-foreground">
+              Mostrando {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, totalCount)} de {totalCount} cotizaciones
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Anterior
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => p + 1)}
+                disabled={currentPage * pageSize >= totalCount}
+              >
+                Siguiente
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {selectedQuotation && (
