@@ -16,7 +16,7 @@ export const Hero = () => {
       
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-10">
-          <div className="inline-block px-5 py-2.5 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30">
+          <div className="inline-block mt-4 md:mt-6 px-5 py-2.5 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30">
             <span className="text-sm font-semibold text-white">🚀 Soluciones Tech para LATAM</span>
           </div>
           
@@ -53,7 +53,7 @@ export const Hero = () => {
           </div>
 
           <div className="pt-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-4xl mx-auto">
+            <div className="inline-grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mx-auto">
               {[
                 { label: "Proyectos", value: "250+" },
                 { label: "Países", value: "12" },
