@@ -77,13 +77,13 @@ export const FAQ = () => {
             ))}
           </Accordion>
 
-          <div className="mt-16 text-center">
-            <div className="inline-block p-8 bg-muted/50 rounded-2xl">
-              <MessageCircle className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground mb-3">
+          <div className="mt-16 flex justify-center">
+            <div className="flex flex-col items-center p-8 bg-muted/50 rounded-2xl max-w-lg">
+              <MessageCircle className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-2xl font-bold text-foreground mb-3 text-center">
                 ¿Tienes otra pregunta?
               </h3>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground mb-6 text-center">
                 Nuestro consultor IA responde al instante 24/7
               </p>
               <Button 
