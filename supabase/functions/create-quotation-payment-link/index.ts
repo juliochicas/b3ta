@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
+import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -38,7 +38,7 @@ serve(async (req) => {
     if (!quotation) throw new Error("Quotation not found");
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2024-11-20.acacia",
+      apiVersion: "2025-08-27.basil",
     });
 
     // Check if customer exists
@@ -99,8 +99,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error creating payment link:", error);
+    const message = error instanceof Error ? error.message : String(error);
     return new Response(
-      JSON.stringify({ error: error.message }), 
+      JSON.stringify({ error: message }), 
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
