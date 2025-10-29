@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { Shield, Award, Zap, Users } from "lucide-react";
-import trustBadges from "@/assets/trust-badges.png";
 
 const badges = [
   {
@@ -51,14 +50,6 @@ export const TrustBadges = () => {
               <p className="text-sm text-muted-foreground">{badge.subtitle}</p>
             </Card>
           ))}
-        </div>
-
-        <div className="max-w-4xl mx-auto mb-12">
-          <img 
-            src={trustBadges} 
-            alt="Certificaciones y Partners"
-            className="w-full rounded-2xl shadow-lg"
-          />
         </div>
 
         <div className="max-w-6xl mx-auto">
