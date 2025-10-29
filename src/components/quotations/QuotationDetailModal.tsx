@@ -11,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import b3taLogo from "@/assets/b3ta-logo.png";
 
 interface Quotation {
   id: string;
@@ -172,28 +171,28 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       const contentWidth = pageWidth - margin * 2;
       let yPos = 20;
 
-      // Encabezado con logo
-      doc.setFillColor(99, 102, 241);
+      // Encabezado con fondo blanco
+      doc.setFillColor(255, 255, 255);
       doc.rect(0, 0, pageWidth, 45, 'F');
       
-      // Agregar logo
-      try {
-        doc.addImage(b3taLogo, 'PNG', margin, 10, 30, 11);
-      } catch (error) {
-        console.error('Error adding logo:', error);
-      }
+      // Nombre de la empresa
+      doc.setTextColor(99, 102, 241);
+      doc.setFontSize(20);
+      doc.setFont(undefined, 'bold');
+      doc.text('B3TA Consulting', margin, 15);
       
       // Texto del encabezado
-      doc.setTextColor(255, 255, 255);
+      doc.setTextColor(0, 0, 0);
       doc.setFontSize(24);
-      doc.text(`Cotización ${quotation.quotation_number}`, margin + 35, 20);
+      doc.text(`Cotización ${quotation.quotation_number}`, margin, 28);
       doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
       doc.text(
         `Válida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), 'PPP', { locale: es }) : 'No especificado'}`,
-        margin + 35,
-        30
+        margin,
+        36
       );
-      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, margin + 35, 36);
+      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, margin, 41);
       
       yPos = 55;
 
