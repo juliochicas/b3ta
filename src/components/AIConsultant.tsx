@@ -231,8 +231,8 @@ export const AIConsultant = () => {
   };
 
   return (
-    <section id="ai-consultant" className="py-24 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      <div className="container mx-auto px-4">
+    <section id="ai-consultant" className="py-28 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
+      <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-block p-3 bg-primary/10 rounded-2xl mb-4">
@@ -246,7 +246,7 @@ export const AIConsultant = () => {
             </p>
           </div>
 
-          <Card className="p-6 shadow-xl border-border bg-card">
+          <Card className="p-8 shadow-xl border-border bg-card">
             <div className="h-[500px] overflow-y-auto mb-4 space-y-4 pr-2">
               {messages.map((msg, idx) => (
                 <div
@@ -275,7 +275,7 @@ export const AIConsultant = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={sendMessage} className="flex gap-2">
+            <form onSubmit={sendMessage} className="flex gap-3">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

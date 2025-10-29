@@ -98,10 +98,10 @@ export const ContactForm = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section id="contact" className="py-28 bg-muted/30">
+      <div className="container mx-auto px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Agenda tu Consultoría
             </h2>
@@ -178,20 +178,20 @@ export const ContactForm = () => {
             </Card>
 
             <div className="space-y-6">
-              <Card className="p-6 bg-card border-border">
-                <Mail className="h-6 w-6 text-primary mb-3" />
+              <Card className="p-7 bg-card border-border">
+                <Mail className="h-6 w-6 text-primary mb-4" />
                 <h3 className="font-semibold mb-2">Email</h3>
                 <p className="text-sm text-muted-foreground">hi@b3ta.us</p>
               </Card>
 
-              <Card className="p-6 bg-card border-border">
-                <Phone className="h-6 w-6 text-primary mb-3" />
+              <Card className="p-7 bg-card border-border">
+                <Phone className="h-6 w-6 text-primary mb-4" />
                 <h3 className="font-semibold mb-2">WhatsApp</h3>
                 <p className="text-sm text-muted-foreground">+14355348065</p>
               </Card>
 
-              <Card className="p-6 bg-card border-border">
-                <MapPin className="h-6 w-6 text-primary mb-3" />
+              <Card className="p-7 bg-card border-border">
+                <MapPin className="h-6 w-6 text-primary mb-4" />
                 <h3 className="font-semibold mb-2">Cobertura</h3>
                 <p className="text-sm text-muted-foreground">LATAM + USA + España</p>
               </Card>
