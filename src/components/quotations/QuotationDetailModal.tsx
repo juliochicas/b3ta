@@ -382,14 +382,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         doc.setFontSize(8);
         doc.setTextColor(80, 80, 80);
         doc.setFont(undefined, 'bold');
-        doc.text('B3ta - Soluciones Digitales', margin, pageHeight - 23);
+        doc.text('B3TA Consulting', margin, pageHeight - 23);
         
         doc.setFont(undefined, 'normal');
         doc.setFontSize(7);
         doc.setTextColor(100, 100, 100);
-        doc.text('Email: contacto@b3ta.com | Tel: +502 1234-5678', margin, pageHeight - 18);
-        doc.text('Dirección: Ciudad de Guatemala, Guatemala', margin, pageHeight - 14);
-        doc.text('www.b3ta.com', margin, pageHeight - 10);
+        doc.text('consulting@b3ta.us | b3ta.us | +1 435 534 8065', margin, pageHeight - 18);
+        doc.text('Consultoría en infraestructura, automatización y soluciones digitales', margin, pageHeight - 14);
         
         // Número de página y agradecimiento
         doc.setTextColor(150, 150, 150);
