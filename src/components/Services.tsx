@@ -30,9 +30,9 @@ const services = [
 
 export const Services = () => {
   return (
-    <section className="py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+    <section className="py-28 bg-muted/30">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Servicios Enterprise
           </h2>
@@ -41,18 +41,18 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {services.map((service) => (
             <Card 
               key={service.title}
-              className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card group cursor-pointer"
+              className="p-8 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card group cursor-pointer"
             >
-              <div className="mb-4 w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <service.icon className="h-7 w-7 text-primary" />
+              <div className="mb-6 w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <service.icon className="h-8 w-8 text-primary" />
               </div>
               
-              <h3 className="text-xl font-bold text-foreground mb-2">{service.title}</h3>
-              <p className="text-muted-foreground mb-4 text-sm">{service.description}</p>
+              <h3 className="text-xl font-bold text-foreground mb-3">{service.title}</h3>
+              <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{service.description}</p>
               
               <ul className="space-y-2">
                 {service.features.map((feature) => (
