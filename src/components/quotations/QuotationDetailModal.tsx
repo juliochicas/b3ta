@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import b3taLogo from "@/assets/b3ta-logo.png";
 
 interface Quotation {
   id: string;
@@ -166,25 +167,35 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
 
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 20;
       const contentWidth = pageWidth - margin * 2;
       let yPos = 20;
 
-      // Encabezado
+      // Encabezado con logo
       doc.setFillColor(99, 102, 241);
-      doc.rect(0, 0, pageWidth, 40, 'F');
+      doc.rect(0, 0, pageWidth, 45, 'F');
+      
+      // Agregar logo
+      try {
+        doc.addImage(b3taLogo, 'PNG', margin, 10, 30, 11);
+      } catch (error) {
+        console.error('Error adding logo:', error);
+      }
+      
+      // Texto del encabezado
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(24);
-      doc.text(`Cotización ${quotation.quotation_number}`, margin, yPos);
-      yPos += 10;
+      doc.text(`Cotización ${quotation.quotation_number}`, margin + 35, 20);
       doc.setFontSize(10);
       doc.text(
         `Válida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), 'PPP', { locale: es }) : 'No especificado'}`,
-        margin,
-        yPos
+        margin + 35,
+        30
       );
-      yPos += 5;
-      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, margin, yPos);
+      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, margin + 35, 36);
+      
+      yPos = 55;
 
       // Reset de color
       doc.setTextColor(0, 0, 0);
@@ -358,14 +369,32 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         }
       }
 
-      // Footer
+      // Footer con información de la empresa
       const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
+        
+        // Línea separadora
+        doc.setDrawColor(200, 200, 200);
+        doc.line(margin, pageHeight - 30, pageWidth - margin, pageHeight - 30);
+        
+        // Información de la empresa
         doc.setFontSize(8);
+        doc.setTextColor(80, 80, 80);
+        doc.setFont(undefined, 'bold');
+        doc.text('B3ta - Soluciones Digitales', margin, pageHeight - 23);
+        
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Email: contacto@b3ta.com | Tel: +502 1234-5678', margin, pageHeight - 18);
+        doc.text('Dirección: Ciudad de Guatemala, Guatemala', margin, pageHeight - 14);
+        doc.text('www.b3ta.com', margin, pageHeight - 10);
+        
+        // Número de página y agradecimiento
         doc.setTextColor(150, 150, 150);
-        doc.text('Gracias por su preferencia', pageWidth / 2, 285, { align: 'center' });
-        doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, 285, { align: 'right' });
+        doc.text('Gracias por su preferencia', pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
       }
 
       doc.save(`Cotizacion-${quotation.quotation_number}.pdf`);
