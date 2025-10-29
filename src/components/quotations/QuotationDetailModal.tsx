@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { InvoiceDetailModal } from "./InvoiceDetailModal";
 
 interface Quotation {
   id: string;
@@ -55,10 +56,14 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
   const [isEditingTracking, setIsEditingTracking] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState(quotation.tracking_number || "");
+  const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
+  const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
+  const [showInvoice, setShowInvoice] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     loadItems();
+    loadRelatedInvoice();
   }, [quotation.id]);
 
   const loadItems = async () => {
@@ -78,6 +83,21 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadRelatedInvoice = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('quotation_id', quotation.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      setRelatedInvoice(data);
+    } catch (error) {
+      console.error("Error loading invoice:", error);
     }
   };
 
@@ -155,6 +175,34 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         description: "No se pudo enviar el email",
         variant: "destructive",
       });
+    }
+  };
+
+  const createInvoice = async () => {
+    setIsCreatingInvoice(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-invoice-from-payment', {
+        body: { quotation_id: quotation.id }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Factura creada",
+        description: `La factura ${data.invoice_number} ha sido generada exitosamente`,
+      });
+      
+      loadRelatedInvoice();
+      onUpdate();
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo crear la factura",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingInvoice(false);
     }
   };
 
@@ -608,18 +656,50 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
               </Button>
             </div>
             
-            <Button 
-              variant="secondary" 
-              className="w-full"
-              onClick={downloadPDF}
-              disabled={isDownloadingPDF}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              {isDownloadingPDF ? 'Generando PDF...' : 'Descargar PDF'}
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                variant="secondary" 
+                className="flex-1"
+                onClick={downloadPDF}
+                disabled={isDownloadingPDF}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {isDownloadingPDF ? 'Generando PDF...' : 'Descargar PDF'}
+              </Button>
+
+              {relatedInvoice ? (
+                <Button 
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  onClick={() => setShowInvoice(true)}
+                >
+                  <Receipt className="mr-2 h-4 w-4" />
+                  Ver Factura
+                </Button>
+              ) : (
+                <Button 
+                  className="flex-1"
+                  onClick={createInvoice}
+                  disabled={isCreatingInvoice}
+                >
+                  <Receipt className="mr-2 h-4 w-4" />
+                  {isCreatingInvoice ? 'Generando...' : 'Generar Factura'}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </DialogContent>
+
+      {showInvoice && relatedInvoice && (
+        <InvoiceDetailModal
+          invoice={relatedInvoice}
+          onClose={() => setShowInvoice(false)}
+          onUpdate={() => {
+            loadRelatedInvoice();
+            onUpdate();
+          }}
+        />
+      )}
     </Dialog>
   );
 };

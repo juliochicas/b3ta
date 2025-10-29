@@ -14,6 +14,130 @@ export type Database = {
   }
   public: {
     Tables: {
+      invoice_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          invoice_id: string
+          item_name: string
+          quantity: number
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_id: string
+          item_name: string
+          quantity?: number
+          total: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_id?: string
+          item_name?: string
+          quantity?: number
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          created_at: string
+          currency: string
+          customer_company: string | null
+          customer_email: string
+          customer_name: string
+          due_date: string | null
+          id: string
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          payment_date: string | null
+          payment_status: string
+          quotation_id: string | null
+          sent_at: string | null
+          stripe_charge_id: string | null
+          stripe_payment_intent: string | null
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          terms_conditions: string | null
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          customer_company?: string | null
+          customer_email: string
+          customer_name: string
+          due_date?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_status?: string
+          quotation_id?: string | null
+          sent_at?: string | null
+          stripe_charge_id?: string | null
+          stripe_payment_intent?: string | null
+          subtotal: number
+          tax_amount?: number
+          tax_rate?: number
+          terms_conditions?: string | null
+          total: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          customer_company?: string | null
+          customer_email?: string
+          customer_name?: string
+          due_date?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_status?: string
+          quotation_id?: string | null
+          sent_at?: string | null
+          stripe_charge_id?: string | null
+          stripe_payment_intent?: string | null
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          terms_conditions?: string | null
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_activities: {
         Row: {
           activity_type: string
@@ -361,6 +485,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_invoice_number: { Args: never; Returns: string }
       generate_quotation_number: { Args: never; Returns: string }
       has_role: {
         Args: {
