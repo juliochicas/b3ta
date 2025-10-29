@@ -16,10 +16,8 @@ export const Hero = () => {
       
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-10">
-          <div className="flex justify-center mb-6">
-            <div className="inline-block px-5 py-2.5 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30">
-              <span className="text-sm font-semibold text-white">🚀 Soluciones Tech para LATAM</span>
-            </div>
+          <div className="inline-block px-5 py-2.5 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30">
+            <span className="text-sm font-semibold text-white">🚀 Soluciones Tech para LATAM</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
@@ -34,7 +32,7 @@ export const Hero = () => {
             Transformamos empresas con tecnología de clase mundial. Implementación, optimización y escalamiento para organizaciones que buscan resultados reales.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8 w-full">
+          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8">
             <Button 
               onClick={scrollToContact}
               size="lg" 
@@ -54,8 +52,8 @@ export const Hero = () => {
             </Button>
           </div>
 
-          <div className="pt-16 max-w-5xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          <div className="pt-16">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-4xl mx-auto">
               {[
                 { label: "Proyectos", value: "250+" },
                 { label: "Países", value: "12" },
