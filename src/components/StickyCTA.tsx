@@ -35,7 +35,7 @@ export const StickyCTA = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-300">
+    <div className="fixed bottom-0 left-0 right-0 z-40 animate-in slide-in-from-bottom duration-300">
       <div className="bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-2xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
