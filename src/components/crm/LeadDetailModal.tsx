@@ -1,5 +1,15 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Mail, Phone, Building2, MessageSquare, Calendar, 
-  Star, Sparkles, Save, Activity 
+  Star, Sparkles, Save, Activity, Trash2 
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -51,6 +61,8 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
   const [activities, setActivities] = useState<LeadActivity[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -140,6 +152,35 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const deleteLead = async () => {
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('leads_b3ta')
+        .delete()
+        .eq('id', lead.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Lead eliminado",
+        description: "El lead se eliminó correctamente",
+      });
+
+      onUpdate();
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el lead",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
     }
   };
 
@@ -292,6 +333,15 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
               )}
             </div>
 
+            <Button
+              onClick={() => setShowDeleteDialog(true)}
+              variant="destructive"
+              className="w-full"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Eliminar Lead
+            </Button>
+
             {activities.length > 0 && (
               <Card className="p-6">
                 <h3 className="font-semibold mb-4 flex items-center gap-2">
@@ -315,6 +365,28 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
           </div>
         </div>
       </DialogContent>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el lead de{" "}
+              <strong>{lead.name}</strong> y toda su información asociada.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteLead}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
