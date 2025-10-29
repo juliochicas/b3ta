@@ -179,7 +179,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.setTextColor(99, 102, 241);
       doc.setFontSize(20);
       doc.setFont(undefined, 'bold');
-      doc.text('B3TA Consulting', margin, 15);
+      doc.text('B3TA', margin, 15);
       
       // Texto del encabezado
       doc.setTextColor(0, 0, 0);
@@ -381,7 +381,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         doc.setFontSize(8);
         doc.setTextColor(80, 80, 80);
         doc.setFont(undefined, 'bold');
-        doc.text('B3TA Consulting', margin, pageHeight - 23);
+        doc.text('B3TA', margin, pageHeight - 23);
         
         doc.setFont(undefined, 'normal');
         doc.setFontSize(7);
