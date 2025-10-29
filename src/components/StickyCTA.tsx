@@ -48,7 +48,7 @@ export const StickyCTA = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Button 
                 onClick={scrollToContact}
                 size="lg"

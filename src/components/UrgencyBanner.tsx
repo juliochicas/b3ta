@@ -33,7 +33,7 @@ export const UrgencyBanner = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-r from-destructive/10 via-primary/10 to-secondary/10">
+    <section className="py-24 bg-gradient-to-r from-destructive/10 via-primary/10 to-secondary/10">
       <div className="container mx-auto px-4 sm:px-6">
         <Card className="max-w-5xl mx-auto p-8 md:p-12 bg-gradient-to-br from-primary via-primary to-secondary text-white border-0 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />

@@ -70,13 +70,13 @@ export const VideoSection = () => {
             </div>
           </Card>
 
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
+          <div className="grid md:grid-cols-3 gap-8 mt-12">
             {[
               { time: "0:00-0:45", title: "Quiénes Somos", desc: "Nuestra historia y expertise" },
               { time: "0:45-2:00", title: "Casos de Éxito", desc: "Clientes reales, resultados reales" },
               { time: "2:00-3:24", title: "Tu Próximo Paso", desc: "Cómo empezar hoy mismo" }
             ].map((chapter, idx) => (
-              <Card key={idx} className="p-6 bg-card border-border hover:shadow-lg transition-shadow">
+              <Card key={idx} className="p-8 bg-card border-border hover:shadow-lg transition-shadow">
                 <div className="text-sm font-bold text-primary mb-2">{chapter.time}</div>
                 <h4 className="font-semibold text-foreground mb-1">{chapter.title}</h4>
                 <p className="text-sm text-muted-foreground">{chapter.desc}</p>

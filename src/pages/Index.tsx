@@ -27,7 +27,7 @@ const Index = () => {
             <span className="text-xs text-muted-foreground">.us</span>
           </div>
           
-          <nav className="hidden md:flex items-center gap-10">
+          <nav className="hidden md:flex items-center gap-12">
             <a href="#services" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3">
               Servicios
             </a>

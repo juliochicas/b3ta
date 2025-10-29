@@ -31,19 +31,19 @@ const clients = [
 
 export const TrustBadges = () => {
   return (
-    <section className="py-20 bg-background border-y border-border">
+    <section className="py-24 bg-background border-y border-border">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-8">
             Empresas que confían en B3TA
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto mb-20">
           {badges.map((badge, idx) => (
             <Card 
               key={idx}
-              className="p-6 text-center hover:shadow-lg transition-all duration-300 border-border bg-card group cursor-pointer"
+              className="p-8 text-center hover:shadow-lg transition-all duration-300 border-border bg-card group cursor-pointer"
             >
               <badge.icon className="h-10 w-10 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
               <h4 className="font-bold text-foreground">{badge.title}</h4>
@@ -53,11 +53,11 @@ export const TrustBadges = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {clients.map((client, idx) => (
               <div 
                 key={idx}
-                className="p-6 bg-muted/50 rounded-xl text-center hover:bg-muted transition-colors"
+                className="p-8 bg-muted/50 rounded-xl text-center hover:bg-muted transition-colors"
               >
                 <p className="font-semibold text-foreground">{client}</p>
                 <p className="text-xs text-muted-foreground mt-1">Cliente desde 2023</p>

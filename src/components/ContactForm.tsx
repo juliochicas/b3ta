@@ -110,10 +110,10 @@ export const ContactForm = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
-            <Card className="md:col-span-2 p-6 sm:p-8 bg-card border-border">
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="md:col-span-2 p-8 bg-card border-border">
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-6">
                   <Input
                     placeholder="Nombre completo *"
                     value={formData.name}
@@ -129,7 +129,7 @@ export const ContactForm = () => {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-6">
                   <Input
                     placeholder="Empresa"
                     value={formData.company}
@@ -177,20 +177,20 @@ export const ContactForm = () => {
               </form>
             </Card>
 
-            <div className="space-y-6">
-              <Card className="p-7 bg-card border-border">
+            <div className="space-y-8">
+              <Card className="p-8 bg-card border-border">
                 <Mail className="h-6 w-6 text-primary mb-4" />
                 <h3 className="font-semibold mb-2">Email</h3>
                 <p className="text-sm text-muted-foreground">hi@b3ta.us</p>
               </Card>
 
-              <Card className="p-7 bg-card border-border">
+              <Card className="p-8 bg-card border-border">
                 <Phone className="h-6 w-6 text-primary mb-4" />
                 <h3 className="font-semibold mb-2">WhatsApp</h3>
                 <p className="text-sm text-muted-foreground">+14355348065</p>
               </Card>
 
-              <Card className="p-7 bg-card border-border">
+              <Card className="p-8 bg-card border-border">
                 <MapPin className="h-6 w-6 text-primary mb-4" />
                 <h3 className="font-semibold mb-2">Cobertura</h3>
                 <p className="text-sm text-muted-foreground">LATAM + USA + España</p>

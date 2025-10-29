@@ -246,8 +246,8 @@ export const AIConsultant = () => {
             </p>
           </div>
 
-          <Card className="p-6 sm:p-8 shadow-xl border-border bg-card">
-            <div className="h-[420px] sm:h-[500px] overflow-y-auto mb-4 space-y-4 pr-2">
+          <Card className="p-8 shadow-xl border-border bg-card">
+            <div className="h-[500px] overflow-y-auto mb-6 space-y-4 pr-2">
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
@@ -275,7 +275,7 @@ export const AIConsultant = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={sendMessage} className="flex gap-3">
+            <form onSubmit={sendMessage} className="flex gap-4">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
