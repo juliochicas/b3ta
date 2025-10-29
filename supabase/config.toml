@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.ai-lead-scorer]
 verify_jwt = true
+
+[functions.create-quotation-payment-link]
+verify_jwt = true
+
+[functions.send-quotation-email]
+verify_jwt = true
