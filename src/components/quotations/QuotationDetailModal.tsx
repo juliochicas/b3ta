@@ -130,32 +130,36 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const downloadPDF = async () => {
     setIsDownloadingPDF(true);
     try {
-      // Importar jsPDF dinámicamente
+      // Generación 100% en el navegador con jsPDF (sin llamar funciones backend)
       const { jsPDF } = await import('jspdf');
-      
+
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 20;
-      const contentWidth = pageWidth - (margin * 2);
+      const contentWidth = pageWidth - margin * 2;
       let yPos = 20;
 
-      // Header con color
-      doc.setFillColor(99, 102, 241); // Color primario
+      // Encabezado
+      doc.setFillColor(99, 102, 241);
       doc.rect(0, 0, pageWidth, 40, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(24);
       doc.text(`Cotización ${quotation.quotation_number}`, margin, yPos);
       yPos += 10;
       doc.setFontSize(10);
-      doc.text(`Válida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), "PPP", { locale: es }) : 'No especificado'}`, margin, yPos);
+      doc.text(
+        `Válida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), 'PPP', { locale: es }) : 'No especificado'}`,
+        margin,
+        yPos
+      );
       yPos += 5;
-      doc.text(`Fecha: ${format(new Date(quotation.created_at), "PPP", { locale: es })}`, margin, yPos);
-      
-      // Reset color
+      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, margin, yPos);
+
+      // Reset de color
       doc.setTextColor(0, 0, 0);
       yPos += 20;
 
-      // Cliente
+      // Datos del cliente
       doc.setFontSize(12);
       doc.setFont(undefined, 'bold');
       doc.text('CLIENTE', margin, yPos);
@@ -171,13 +175,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.text(quotation.customer_email, margin, yPos);
       yPos += 15;
 
-      // Items
+      // Título de items
       doc.setFontSize(12);
       doc.setFont(undefined, 'bold');
       doc.text('DETALLE DE PRODUCTOS/SERVICIOS', margin, yPos);
       yPos += 7;
 
-      // Table header
+      // Header de tabla
       doc.setFillColor(248, 249, 250);
       doc.rect(margin, yPos - 5, contentWidth, 8, 'F');
       doc.setFontSize(9);
@@ -187,7 +191,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.text('Total', margin + contentWidth * 0.9, yPos);
       yPos += 8;
 
-      // Items
+      // Filas
       doc.setFont(undefined, 'normal');
       doc.setFontSize(9);
       items.forEach((item) => {
@@ -195,13 +199,12 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           doc.addPage();
           yPos = 20;
         }
-        
         doc.text(item.item_name.substring(0, 40), margin + 2, yPos);
-        doc.text(item.quantity.toString(), margin + contentWidth * 0.6, yPos);
+        doc.text(String(item.quantity), margin + contentWidth * 0.6, yPos);
         doc.text(`$${item.unit_price.toFixed(2)}`, margin + contentWidth * 0.75, yPos);
         doc.text(`$${item.total.toFixed(2)}`, margin + contentWidth * 0.9, yPos);
         yPos += 6;
-        
+
         if (item.description) {
           doc.setFontSize(8);
           doc.setTextColor(100, 100, 100);
@@ -220,29 +223,44 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         yPos += 2;
       });
 
-      // Totals
+      // Totales
       yPos += 10;
       doc.setFillColor(248, 249, 250);
       doc.rect(margin + contentWidth * 0.5, yPos - 5, contentWidth * 0.5, 30, 'F');
-      
+
       doc.setFontSize(10);
       doc.text('Subtotal:', margin + contentWidth * 0.55, yPos);
-      doc.text(`${quotation.currency} $${quotation.subtotal.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+      doc.text(
+        `${quotation.currency} $${quotation.subtotal.toFixed(2)}`,
+        margin + contentWidth * 0.92,
+        yPos,
+        { align: 'right' }
+      );
       yPos += 6;
-      
+
       doc.setTextColor(100, 100, 100);
       doc.text(`IVA (${quotation.tax_rate}%):`, margin + contentWidth * 0.55, yPos);
-      doc.text(`${quotation.currency} $${quotation.tax_amount.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+      doc.text(
+        `${quotation.currency} $${quotation.tax_amount.toFixed(2)}`,
+        margin + contentWidth * 0.92,
+        yPos,
+        { align: 'right' }
+      );
       yPos += 8;
-      
+
       doc.setDrawColor(99, 102, 241);
       doc.line(margin + contentWidth * 0.55, yPos - 2, margin + contentWidth * 0.95, yPos - 2);
-      
+
       doc.setFontSize(14);
       doc.setFont(undefined, 'bold');
       doc.setTextColor(99, 102, 241);
       doc.text('Total:', margin + contentWidth * 0.55, yPos);
-      doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+      doc.text(
+        `${quotation.currency} $${quotation.total.toFixed(2)}`,
+        margin + contentWidth * 0.92,
+        yPos,
+        { align: 'right' }
+      );
 
       // Notas y términos
       if (quotation.notes || quotation.terms_conditions) {
@@ -250,7 +268,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(10);
         doc.setFont(undefined, 'normal');
-        
+
         if (quotation.notes) {
           if (yPos > 250) {
             doc.addPage();
@@ -272,7 +290,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           });
           yPos += 5;
         }
-        
+
         if (quotation.terms_conditions) {
           if (yPos > 250) {
             doc.addPage();
@@ -294,6 +312,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
             doc.text(line, margin, yPos);
             yPos += 4;
           });
+          doc.setTextColor(0, 0, 0);
         }
       }
 
@@ -310,15 +329,16 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.save(`Cotizacion-${quotation.quotation_number}.pdf`);
 
       toast({
-        title: "PDF descargado",
-        description: "La cotización se ha descargado exitosamente",
+        title: 'PDF descargado',
+        description: 'La cotización se ha descargado exitosamente',
       });
     } catch (error) {
-      console.error("Error downloading PDF:", error);
+      console.error('Error downloading PDF:', error);
       toast({
-        title: "Error",
-        description: "No se pudo descargar el PDF",
-        variant: "destructive",
+        title: 'Error',
+        description:
+          'No se pudo descargar el PDF. Asegúrate de no tener bloqueadores y vuelve a intentar.',
+        variant: 'destructive',
       });
     } finally {
       setIsDownloadingPDF(false);
