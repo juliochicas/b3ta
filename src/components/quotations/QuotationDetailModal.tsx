@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText, Download } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -23,6 +25,7 @@ interface Quotation {
   total: number;
   currency: string;
   valid_until: string | null;
+  tracking_number: string | null;
   notes: string | null;
   terms_conditions: string | null;
   stripe_payment_link: string | null;
@@ -50,6 +53,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingPaymentLink, setIsCreatingPaymentLink] = useState(false);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+  const [isEditingTracking, setIsEditingTracking] = useState(false);
+  const [trackingNumber, setTrackingNumber] = useState(quotation.tracking_number || "");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -100,6 +105,32 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       });
     } finally {
       setIsCreatingPaymentLink(false);
+    }
+  };
+
+  const updateTrackingNumber = async () => {
+    try {
+      const { error } = await supabase
+        .from('quotations')
+        .update({ tracking_number: trackingNumber || null })
+        .eq('id', quotation.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Tracking actualizado",
+        description: "El número de tracking se ha actualizado exitosamente",
+      });
+      
+      setIsEditingTracking(false);
+      onUpdate();
+    } catch (error) {
+      console.error("Error updating tracking:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el tracking",
+        variant: "destructive",
+      });
     }
   };
 
@@ -173,7 +204,18 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         yPos += 5;
       }
       doc.text(quotation.customer_email, margin, yPos);
-      yPos += 15;
+      yPos += 5;
+      
+      // Tracking number if available
+      if (quotation.tracking_number) {
+        doc.setFont(undefined, 'bold');
+        doc.text('Tracking: ', margin, yPos);
+        doc.setFont(undefined, 'normal');
+        doc.text(quotation.tracking_number, margin + 20, yPos);
+        yPos += 5;
+      }
+      
+      yPos += 10;
 
       // Título de items
       doc.setFontSize(12);
@@ -392,6 +434,53 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                   </span>
                 </div>
               )}
+              
+              {/* Tracking Number */}
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-muted-foreground">Número de Tracking:</Label>
+                  {!isEditingTracking ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">
+                        {quotation.tracking_number || "No asignado"}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditingTracking(true)}
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={trackingNumber}
+                        onChange={(e) => setTrackingNumber(e.target.value)}
+                        placeholder="TRK-12345"
+                        className="h-8 w-40"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={updateTrackingNumber}
+                      >
+                        <Save className="h-3 w-3 text-green-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setTrackingNumber(quotation.tracking_number || "");
+                          setIsEditingTracking(false);
+                        }}
+                      >
+                        <X className="h-3 w-3 text-destructive" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </Card>
 

@@ -76,6 +76,7 @@ serve(async (req) => {
             <p style="margin: 0;"><strong>${quotation.customer_name}</strong></p>
             ${quotation.customer_company ? `<p style="margin: 4px 0 0 0;">${quotation.customer_company}</p>` : ''}
             <p style="margin: 4px 0 0 0;">${quotation.customer_email}</p>
+            ${quotation.tracking_number ? `<p style="margin: 8px 0 0 0; color: #666;"><strong>Tracking:</strong> ${quotation.tracking_number}</p>` : ''}
           </div>
 
           <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">

@@ -23,6 +23,7 @@ interface Quotation {
   total: number;
   currency: string;
   valid_until: string | null;
+  tracking_number: string | null;
   notes: string | null;
   terms_conditions: string | null;
   stripe_payment_link: string | null;

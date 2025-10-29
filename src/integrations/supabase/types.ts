@@ -275,6 +275,7 @@ export type Database = {
           tax_rate: number | null
           terms_conditions: string | null
           total: number
+          tracking_number: string | null
           updated_at: string
           valid_until: string | null
         }
@@ -297,6 +298,7 @@ export type Database = {
           tax_rate?: number | null
           terms_conditions?: string | null
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           valid_until?: string | null
         }
@@ -319,6 +321,7 @@ export type Database = {
           tax_rate?: number | null
           terms_conditions?: string | null
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           valid_until?: string | null
         }

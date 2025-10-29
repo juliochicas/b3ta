@@ -39,6 +39,7 @@ export const CreateQuotationModal = ({ onClose, onSuccess }: Props) => {
     customer_company: "",
     tax_rate: "16",
     valid_days: "30",
+    tracking_number: "",
     notes: "",
     terms_conditions: `TÉRMINOS Y CONDICIONES
 
@@ -156,6 +157,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           total,
           currency: 'USD',
           valid_until: validUntil.toISOString().split('T')[0],
+          tracking_number: formData.tracking_number || null,
           notes: formData.notes || null,
           terms_conditions: formData.terms_conditions,
         }])
@@ -246,6 +248,15 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                   type="number"
                   value={formData.valid_days}
                   onChange={(e) => setFormData({ ...formData, valid_days: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="tracking_number">Número de Tracking</Label>
+                <Input
+                  id="tracking_number"
+                  value={formData.tracking_number}
+                  onChange={(e) => setFormData({ ...formData, tracking_number: e.target.value })}
+                  placeholder="Ej: TRK-12345"
                 />
               </div>
             </div>
