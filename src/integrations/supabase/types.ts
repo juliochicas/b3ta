@@ -141,6 +141,42 @@ export type Database = {
         }
         Relationships: []
       }
+      products_services: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          type: string
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          type: string
+          unit_price: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          type?: string
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -168,6 +204,134 @@ export type Database = {
         }
         Relationships: []
       }
+      quotation_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          item_name: string
+          product_service_id: string | null
+          quantity: number
+          quotation_id: string
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          item_name: string
+          product_service_id?: string | null
+          quantity?: number
+          quotation_id: string
+          total: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          item_name?: string
+          product_service_id?: string | null
+          quantity?: number
+          quotation_id?: string
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotation_items_product_service_id_fkey"
+            columns: ["product_service_id"]
+            isOneToOne: false
+            referencedRelation: "products_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotation_items_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          customer_company: string | null
+          customer_email: string
+          customer_name: string
+          id: string
+          lead_id: string | null
+          notes: string | null
+          quotation_number: string
+          sent_at: string | null
+          status: string
+          stripe_payment_link: string | null
+          subtotal: number
+          tax_amount: number | null
+          tax_rate: number | null
+          terms_conditions: string | null
+          total: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_company?: string | null
+          customer_email: string
+          customer_name: string
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          quotation_number: string
+          sent_at?: string | null
+          status?: string
+          stripe_payment_link?: string | null
+          subtotal?: number
+          tax_amount?: number | null
+          tax_rate?: number | null
+          terms_conditions?: string | null
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_company?: string | null
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          quotation_number?: string
+          sent_at?: string | null
+          status?: string
+          stripe_payment_link?: string | null
+          subtotal?: number
+          tax_amount?: number | null
+          tax_rate?: number | null
+          terms_conditions?: string | null
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_b3ta"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -194,6 +358,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_quotation_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
