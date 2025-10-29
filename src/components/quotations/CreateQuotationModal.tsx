@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Search } from "lucide-react";
@@ -37,6 +38,7 @@ export const CreateQuotationModal = ({ onClose, onSuccess }: Props) => {
     customer_name: "",
     customer_email: "",
     customer_company: "",
+    currency: "USD",
     tax_rate: "16",
     valid_days: "30",
     tracking_number: "",
@@ -155,7 +157,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           tax_rate: parseFloat(formData.tax_rate),
           tax_amount: taxAmount,
           total,
-          currency: 'USD',
+          currency: formData.currency,
           valid_until: validUntil.toISOString().split('T')[0],
           tracking_number: formData.tracking_number || null,
           notes: formData.notes || null,
@@ -240,6 +242,26 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                   value={formData.customer_company}
                   onChange={(e) => setFormData({ ...formData, customer_company: e.target.value })}
                 />
+              </div>
+              <div>
+                <Label htmlFor="currency">Moneda *</Label>
+                <Select value={formData.currency} onValueChange={(value) => setFormData({ ...formData, currency: value })}>
+                  <SelectTrigger id="currency">
+                    <SelectValue placeholder="Seleccionar moneda" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
+                    <SelectItem value="GTQ">GTQ - Quetzal Guatemalteco</SelectItem>
+                    <SelectItem value="MXN">MXN - Peso Mexicano</SelectItem>
+                    <SelectItem value="EUR">EUR - Euro</SelectItem>
+                    <SelectItem value="GBP">GBP - Libra Esterlina</SelectItem>
+                    <SelectItem value="CAD">CAD - Dólar Canadiense</SelectItem>
+                    <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
+                    <SelectItem value="CLP">CLP - Peso Chileno</SelectItem>
+                    <SelectItem value="COP">COP - Peso Colombiano</SelectItem>
+                    <SelectItem value="PEN">PEN - Sol Peruano</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="valid_days">Validez (días)</Label>
@@ -381,7 +403,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                 <div className="flex justify-end space-y-2 flex-col items-end">
                   <div className="flex justify-between w-64">
                     <span>Subtotal:</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">{formData.currency} ${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between w-64 items-center gap-2">
                     <span>IVA:</span>
@@ -393,11 +415,11 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                       className="w-20 text-right"
                     />
                     <span>%</span>
-                    <span className="font-semibold">${taxAmount.toFixed(2)}</span>
+                    <span className="font-semibold">{formData.currency} ${taxAmount.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between w-64 text-lg font-bold">
                     <span>Total:</span>
-                    <span className="text-primary">${total.toFixed(2)}</span>
+                    <span className="text-primary">{formData.currency} ${total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
