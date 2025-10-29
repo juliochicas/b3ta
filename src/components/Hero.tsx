@@ -15,9 +15,11 @@ export const Hero = () => {
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiLz48L2c+PC9zdmc+')] opacity-20" />
       
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center space-y-10">
-          <div className="inline-block px-4 py-2 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30 mb-6">
-            <span className="text-sm font-semibold text-white">🚀 Soluciones Tech para LATAM</span>
+        <div className="max-w-5xl mx-auto text-center space-y-10">
+          <div className="flex justify-center mb-6">
+            <div className="inline-block px-5 py-2.5 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30">
+              <span className="text-sm font-semibold text-white">🚀 Soluciones Tech para LATAM</span>
+            </div>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
@@ -52,18 +54,20 @@ export const Hero = () => {
             </Button>
           </div>
 
-          <div className="pt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
-            {[
-              { label: "Proyectos", value: "250+" },
-              { label: "Países", value: "12" },
-              { label: "Clientes", value: "180+" },
-              { label: "Uptime", value: "99.9%" }
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-sm text-white/70">{stat.label}</div>
-              </div>
-            ))}
+          <div className="pt-16 max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+              {[
+                { label: "Proyectos", value: "250+" },
+                { label: "Países", value: "12" },
+                { label: "Clientes", value: "180+" },
+                { label: "Uptime", value: "99.9%" }
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">{stat.value}</div>
+                  <div className="text-sm text-white/70">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
