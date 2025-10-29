@@ -78,12 +78,20 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const createStripePaymentLink = async () => {
     setIsCreatingPaymentLink(true);
     try {
-      // Aquí integraremos Stripe para crear el payment link
-      toast({
-        title: "En desarrollo",
-        description: "La integración con Stripe estará disponible pronto",
+      const { data, error } = await supabase.functions.invoke('create-quotation-payment-link', {
+        body: { quotation_id: quotation.id }
       });
+
+      if (error) throw error;
+
+      toast({
+        title: "Link de pago creado",
+        description: "El link de pago ha sido generado exitosamente",
+      });
+      
+      onUpdate();
     } catch (error) {
+      console.error("Error creating payment link:", error);
       toast({
         title: "Error",
         description: "No se pudo crear el link de pago",
@@ -91,6 +99,30 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       });
     } finally {
       setIsCreatingPaymentLink(false);
+    }
+  };
+
+  const sendQuotationEmail = async () => {
+    try {
+      const { error } = await supabase.functions.invoke('send-quotation-email', {
+        body: { quotation_id: quotation.id }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email enviado",
+        description: `La cotización ha sido enviada a ${quotation.customer_email}`,
+      });
+      
+      onUpdate();
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo enviar el email",
+        variant: "destructive",
+      });
     }
   };
 
@@ -229,9 +261,14 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
               </Button>
             )}
             
-            <Button variant="outline" className="flex-1">
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={sendQuotationEmail}
+              disabled={quotation.status === 'sent'}
+            >
               <Send className="mr-2 h-4 w-4" />
-              Enviar al Cliente
+              {quotation.status === 'sent' ? 'Email Enviado' : 'Enviar al Cliente'}
             </Button>
           </div>
         </div>
