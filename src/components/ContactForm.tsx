@@ -26,7 +26,17 @@ const contactFormSchema = z.object({
   phone: z.string()
     .trim()
     .max(20, "El teléfono es demasiado largo")
-    .optional(),
+    .optional()
+    .refine(
+      (val) => {
+        if (!val || val.trim() === "") return true; // Campo opcional
+        // Remover caracteres no numéricos para validar
+        const digits = val.replace(/\D/g, "");
+        // Aceptar entre 10 y 15 dígitos (formato mexicano o internacional)
+        return digits.length >= 10 && digits.length <= 15;
+      },
+      { message: "Número de teléfono inválido. Debe contener entre 10 y 15 dígitos." }
+    ),
   service_interest: z.string().optional(),
   message: z.string()
     .trim()

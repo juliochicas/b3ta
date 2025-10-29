@@ -84,6 +84,17 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    // Validar formato de teléfono si se proporciona
+    if (leadData.phone && leadData.phone.trim() !== '') {
+      const phoneDigits = leadData.phone.replace(/\D/g, '');
+      if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Número de teléfono inválido. Debe contener entre 10 y 15 dígitos." }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
 
     const { data, error } = await supabase
       .from('leads_b3ta')
