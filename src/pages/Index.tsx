@@ -37,6 +37,9 @@ const Index = () => {
             <a href="#contact" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3">
               Contacto
             </a>
+            <a href="/crm" className="text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors py-2 px-4 rounded-lg">
+              CRM
+            </a>
           </nav>
         </div>
       </header>
