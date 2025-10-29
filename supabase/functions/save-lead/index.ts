@@ -8,6 +8,26 @@ const ALLOWED_ORIGINS = [
   'http://localhost:8080', // Solo para desarrollo
 ];
 
+// Rate limiting
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(ip: string, limit = 10, windowMs = 60000): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  
+  if (record.count >= limit) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
 const getCorsHeaders = (origin: string | null) => {
   const isAllowed = origin && ALLOWED_ORIGINS.includes(origin);
   return {
@@ -24,6 +44,15 @@ serve(async (req) => {
 
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Rate limiting check
+  const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
+  if (!checkRateLimit(clientIp, 10, 60000)) {
+    return new Response(
+      JSON.stringify({ success: false, error: "Demasiadas solicitudes, intenta más tarde" }),
+      { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 
   try {
