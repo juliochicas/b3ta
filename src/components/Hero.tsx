@@ -32,11 +32,11 @@ export const Hero = () => {
             Transformamos empresas con tecnología de clase mundial. Implementación, optimización y escalamiento para organizaciones que buscan resultados reales.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8">
+          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8 w-full">
             <Button 
               onClick={scrollToContact}
               size="lg" 
-              className="bg-secondary hover:bg-secondary/90 text-white shadow-[0_0_30px_rgba(0,200,255,0.4)] hover:shadow-[0_0_50px_rgba(0,200,255,0.6)] transition-all duration-300 text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px]"
+              className="bg-secondary hover:bg-secondary/90 text-white shadow-[0_0_30px_rgba(0,200,255,0.4)] hover:shadow-[0_0_50px_rgba(0,200,255,0.6)] transition-all duration-300 text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px] w-full sm:w-auto"
             >
               Agenda Consultoría Gratuita
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -46,7 +46,7 @@ export const Hero = () => {
               onClick={scrollToAI}
               size="lg" 
               variant="outline" 
-              className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px]"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px] w-full sm:w-auto"
             >
               Consulta con IA →
             </Button>
