@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { X, Check, TrendingUp } from "lucide-react";
-import beforeAfter from "@/assets/before-after.png";
+import beforeAfter from "@/assets/before-after.jpg";
 
 const comparisons = [
   {

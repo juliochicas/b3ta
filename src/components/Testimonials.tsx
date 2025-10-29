@@ -1,6 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Star, Quote } from "lucide-react";
-import testimonialHero from "@/assets/testimonial-hero.png";
+import testimonial1 from "@/assets/testimonial-1.jpg";
+import testimonial2 from "@/assets/testimonial-2.jpg";
+import testimonial3 from "@/assets/testimonial-3.jpg";
 
 const testimonials = [
   {
@@ -10,7 +12,7 @@ const testimonials = [
     content: "B3TA migró nuestro SAP a S/4HANA en 4 meses. El ROI fue del 340% en el primer año. Nuestros procesos son 60% más rápidos.",
     rating: 5,
     metric: "+340% ROI",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos"
+    image: testimonial1
   },
   {
     name: "María González",
@@ -19,7 +21,7 @@ const testimonials = [
     content: "Implementaron automatización con n8n que nos ahorra 120 horas/mes. El equipo es excepcional, entienden las necesidades del negocio.",
     rating: 5,
     metric: "120h/mes ahorradas",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria"
+    image: testimonial2
   },
   {
     name: "Roberto Silva",
@@ -28,7 +30,7 @@ const testimonials = [
     content: "Nuestro e-commerce Shopify Plus generó $8M adicionales en 6 meses. La optimización de conversión fue clave. Recomendados 100%.",
     rating: 5,
     metric: "+$8M en 6 meses",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Roberto"
+    image: testimonial3
   },
   {
     name: "Ana Torres",
@@ -37,7 +39,7 @@ const testimonials = [
     content: "El copilot de IA que desarrollaron redujo el tiempo de atención al paciente en 45%. Tecnología de primer nivel.",
     rating: 5,
     metric: "-45% tiempo atención",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana"
+    image: testimonial1
   }
 ];
 
@@ -69,7 +71,7 @@ export const Testimonials = () => {
                 <img 
                   src={testimonial.image} 
                   alt={testimonial.name}
-                  className="w-16 h-16 rounded-full bg-primary/10"
+                  className="w-16 h-16 rounded-full object-cover"
                 />
                 <div>
                   <h4 className="font-bold text-foreground">{testimonial.name}</h4>
@@ -97,7 +99,7 @@ export const Testimonials = () => {
 
         <div className="relative rounded-3xl overflow-hidden max-w-4xl mx-auto">
           <img 
-            src={testimonialHero} 
+            src={testimonial2} 
             alt="Clientes satisfechos"
             className="w-full h-80 object-cover"
           />

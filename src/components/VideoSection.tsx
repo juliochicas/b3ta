@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Play } from "lucide-react";
-import videoThumbnail from "@/assets/video-thumbnail.png";
+import videoThumbnail from "@/assets/video-thumbnail.jpg";
 import { useState } from "react";
 
 export const VideoSection = () => {
