@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -49,6 +49,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [items, setItems] = useState<QuotationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingPaymentLink, setIsCreatingPaymentLink] = useState(false);
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -123,6 +124,42 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         description: "No se pudo enviar el email",
         variant: "destructive",
       });
+    }
+  };
+
+  const downloadPDF = async () => {
+    setIsDownloadingPDF(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-quotation-pdf', {
+        body: { quotation_id: quotation.id }
+      });
+
+      if (error) throw error;
+
+      // Create blob from response
+      const blob = new Blob([data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Cotizacion-${quotation.quotation_number}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "PDF descargado",
+        description: "La cotización se ha descargado exitosamente",
+      });
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo descargar el PDF",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloadingPDF(false);
     }
   };
 
@@ -241,34 +278,46 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           )}
 
           {/* Acciones */}
-          <div className="flex gap-3">
-            {quotation.stripe_payment_link ? (
-              <Button
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              {quotation.stripe_payment_link ? (
+                <Button
+                  className="flex-1"
+                  onClick={() => window.open(quotation.stripe_payment_link!, '_blank')}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Ver Link de Pago
+                </Button>
+              ) : (
+                <Button
+                  className="flex-1"
+                  onClick={createStripePaymentLink}
+                  disabled={isCreatingPaymentLink}
+                >
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  {isCreatingPaymentLink ? 'Creando...' : 'Crear Link de Pago'}
+                </Button>
+              )}
+              
+              <Button 
+                variant="outline" 
                 className="flex-1"
-                onClick={() => window.open(quotation.stripe_payment_link!, '_blank')}
+                onClick={sendQuotationEmail}
+                disabled={quotation.status === 'sent'}
               >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Ver Link de Pago
+                <Send className="mr-2 h-4 w-4" />
+                {quotation.status === 'sent' ? 'Email Enviado' : 'Enviar al Cliente'}
               </Button>
-            ) : (
-              <Button
-                className="flex-1"
-                onClick={createStripePaymentLink}
-                disabled={isCreatingPaymentLink}
-              >
-                <DollarSign className="mr-2 h-4 w-4" />
-                {isCreatingPaymentLink ? 'Creando...' : 'Crear Link de Pago'}
-              </Button>
-            )}
+            </div>
             
             <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={sendQuotationEmail}
-              disabled={quotation.status === 'sent'}
+              variant="secondary" 
+              className="w-full"
+              onClick={downloadPDF}
+              disabled={isDownloadingPDF}
             >
-              <Send className="mr-2 h-4 w-4" />
-              {quotation.status === 'sent' ? 'Email Enviado' : 'Enviar al Cliente'}
+              <Download className="mr-2 h-4 w-4" />
+              {isDownloadingPDF ? 'Generando PDF...' : 'Descargar PDF'}
             </Button>
           </div>
         </div>
