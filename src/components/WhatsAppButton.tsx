@@ -6,8 +6,7 @@ export const WhatsAppButton = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBottomBannerVisible, setIsBottomBannerVisible] = useState(false);
   const phoneNumber = "14355348065";
-  const message = "Hola! Me interesa una consultoría con B3TA";
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  const message = "Hola, me interesa una consultoria con B3TA";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,11 +21,16 @@ export const WhatsAppButton = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <a
-      href={whatsappUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+      href="#"
+      onClick={handleClick}
       className={`fixed left-6 z-40 group transition-all duration-500 ${
         isScrolled && !isBottomBannerVisible 
           ? 'bottom-6 opacity-100' 
