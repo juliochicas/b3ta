@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Filter, Sparkles } from "lucide-react";
+import { Search, Filter, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { LeadCard } from "./LeadCard";
 import { LeadDetailModal } from "./LeadDetailModal";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +25,8 @@ interface Lead {
   notes: string | null;
 }
 
+const LEADS_PER_PAGE = 20;
+
 export const LeadsList = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
@@ -32,6 +34,8 @@ export const LeadsList = () => {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalLeads, setTotalLeads] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -52,35 +56,46 @@ export const LeadsList = () => {
   }, []);
 
   useEffect(() => {
-    // Filtrar leads
-    let filtered = leads;
+    // Reset a la primera página cuando cambian los filtros
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus]);
 
-    if (searchTerm) {
-      filtered = filtered.filter(lead =>
-        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.company?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (filterStatus !== "all") {
-      filtered = filtered.filter(lead => lead.status === filterStatus);
-    }
-
-    setFilteredLeads(filtered);
-  }, [searchTerm, filterStatus, leads]);
+  useEffect(() => {
+    loadLeads();
+  }, [currentPage, searchTerm, filterStatus]);
 
   const loadLeads = async () => {
     try {
-      const { data, error } = await supabase
+      setIsLoading(true);
+      
+      // Construir query base
+      let query = supabase
         .from('leads_b3ta')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
+
+      // Aplicar filtro de búsqueda
+      if (searchTerm) {
+        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%`);
+      }
+
+      // Aplicar filtro de estado
+      if (filterStatus !== "all") {
+        query = query.eq('status', filterStatus);
+      }
+
+      // Aplicar paginación
+      const from = (currentPage - 1) * LEADS_PER_PAGE;
+      const to = from + LEADS_PER_PAGE - 1;
+      query = query.range(from, to);
+
+      const { data, error, count } = await query;
 
       if (error) throw error;
 
       setLeads(data || []);
       setFilteredLeads(data || []);
+      setTotalLeads(count || 0);
     } catch (error) {
       console.error('Error loading leads:', error);
       toast({
@@ -169,7 +184,7 @@ export const LeadsList = () => {
         </div>
 
         <div className="text-sm text-muted-foreground mb-4">
-          Mostrando {filteredLeads.length} de {leads.length} leads
+          Mostrando {filteredLeads.length > 0 ? ((currentPage - 1) * LEADS_PER_PAGE) + 1 : 0} - {Math.min(currentPage * LEADS_PER_PAGE, totalLeads)} de {totalLeads} leads
         </div>
 
         <div className="space-y-4">
@@ -187,6 +202,32 @@ export const LeadsList = () => {
             ))
           )}
         </div>
+
+        {totalLeads > LEADS_PER_PAGE && (
+          <div className="flex items-center justify-between mt-6 pt-6 border-t border-border">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Anterior
+            </Button>
+
+            <div className="text-sm text-muted-foreground">
+              Página {currentPage} de {Math.ceil(totalLeads / LEADS_PER_PAGE)}
+            </div>
+
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalLeads / LEADS_PER_PAGE), prev + 1))}
+              disabled={currentPage >= Math.ceil(totalLeads / LEADS_PER_PAGE)}
+            >
+              Siguiente
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </Card>
 
       {selectedLead && (
