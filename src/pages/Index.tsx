@@ -12,6 +12,7 @@ import { UrgencyBanner } from "@/components/UrgencyBanner";
 import { AIConsultant } from "@/components/AIConsultant";
 import { ContactForm } from "@/components/ContactForm";
 import { StickyCTA } from "@/components/StickyCTA";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 const Index = () => {
   return (
@@ -58,6 +59,7 @@ const Index = () => {
         <AIConsultant />
         <ContactForm />
         <StickyCTA />
+        <WhatsAppButton />
       </main>
 
       {/* Footer */}
@@ -94,8 +96,22 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>hi@b3ta.us</li>
-                <li>+14355348065</li>
+                <li>
+                  <a 
+                    href="mailto:hi@b3ta.us" 
+                    className="hover:text-primary-foreground transition-colors"
+                  >
+                    hi@b3ta.us
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="tel:+14355348065" 
+                    className="hover:text-primary-foreground transition-colors"
+                  >
+                    +1 (435) 534-8065
+                  </a>
+                </li>
                 <li>Miami, FL</li>
               </ul>
             </div>
