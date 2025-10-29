@@ -52,7 +52,7 @@ export const Hero = () => {
             </Button>
           </div>
 
-          <div className="pt-16">
+          <div className="pt-16 pb-20">
             <div className="inline-grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mx-auto">
               {[
                 { label: "Proyectos", value: "250+" },
