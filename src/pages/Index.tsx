@@ -1,7 +1,17 @@
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
+import { Benefits } from "@/components/Benefits";
+import { ProcessSteps } from "@/components/ProcessSteps";
+import { BeforeAfter } from "@/components/BeforeAfter";
+import { Testimonials } from "@/components/Testimonials";
+import { VideoSection } from "@/components/VideoSection";
+import { Pricing } from "@/components/Pricing";
+import { FAQ } from "@/components/FAQ";
+import { TrustBadges } from "@/components/TrustBadges";
+import { UrgencyBanner } from "@/components/UrgencyBanner";
 import { AIConsultant } from "@/components/AIConsultant";
 import { ContactForm } from "@/components/ContactForm";
+import { StickyCTA } from "@/components/StickyCTA";
 
 const Index = () => {
   return (
@@ -33,11 +43,21 @@ const Index = () => {
       {/* Main Content */}
       <main className="pt-16">
         <Hero />
+        <TrustBadges />
+        <Benefits />
         <div id="services">
           <Services />
         </div>
+        <ProcessSteps />
+        <BeforeAfter />
+        <VideoSection />
+        <Testimonials />
+        <UrgencyBanner />
+        <Pricing />
+        <FAQ />
         <AIConsultant />
         <ContactForm />
+        <StickyCTA />
       </main>
 
       {/* Footer */}
