@@ -14,6 +14,3 @@ verify_jwt = true
 
 [functions.send-quotation-email]
 verify_jwt = true
-
-[functions.generate-quotation-pdf]
-verify_jwt = true

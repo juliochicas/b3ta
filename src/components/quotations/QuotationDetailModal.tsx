@@ -130,22 +130,184 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const downloadPDF = async () => {
     setIsDownloadingPDF(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-quotation-pdf', {
-        body: { quotation_id: quotation.id }
+      // Importar jsPDF dinámicamente
+      const { jsPDF } = await import('jspdf');
+      
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 20;
+      const contentWidth = pageWidth - (margin * 2);
+      let yPos = 20;
+
+      // Header con color
+      doc.setFillColor(99, 102, 241); // Color primario
+      doc.rect(0, 0, pageWidth, 40, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.text(`Cotización ${quotation.quotation_number}`, margin, yPos);
+      yPos += 10;
+      doc.setFontSize(10);
+      doc.text(`Válida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), "PPP", { locale: es }) : 'No especificado'}`, margin, yPos);
+      yPos += 5;
+      doc.text(`Fecha: ${format(new Date(quotation.created_at), "PPP", { locale: es })}`, margin, yPos);
+      
+      // Reset color
+      doc.setTextColor(0, 0, 0);
+      yPos += 20;
+
+      // Cliente
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text('CLIENTE', margin, yPos);
+      yPos += 7;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text(quotation.customer_name, margin, yPos);
+      yPos += 5;
+      if (quotation.customer_company) {
+        doc.text(quotation.customer_company, margin, yPos);
+        yPos += 5;
+      }
+      doc.text(quotation.customer_email, margin, yPos);
+      yPos += 15;
+
+      // Items
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text('DETALLE DE PRODUCTOS/SERVICIOS', margin, yPos);
+      yPos += 7;
+
+      // Table header
+      doc.setFillColor(248, 249, 250);
+      doc.rect(margin, yPos - 5, contentWidth, 8, 'F');
+      doc.setFontSize(9);
+      doc.text('Producto/Servicio', margin + 2, yPos);
+      doc.text('Cant.', margin + contentWidth * 0.6, yPos);
+      doc.text('P. Unit.', margin + contentWidth * 0.75, yPos);
+      doc.text('Total', margin + contentWidth * 0.9, yPos);
+      yPos += 8;
+
+      // Items
+      doc.setFont(undefined, 'normal');
+      doc.setFontSize(9);
+      items.forEach((item) => {
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        doc.text(item.item_name.substring(0, 40), margin + 2, yPos);
+        doc.text(item.quantity.toString(), margin + contentWidth * 0.6, yPos);
+        doc.text(`$${item.unit_price.toFixed(2)}`, margin + contentWidth * 0.75, yPos);
+        doc.text(`$${item.total.toFixed(2)}`, margin + contentWidth * 0.9, yPos);
+        yPos += 6;
+        
+        if (item.description) {
+          doc.setFontSize(8);
+          doc.setTextColor(100, 100, 100);
+          const descLines = doc.splitTextToSize(item.description, contentWidth * 0.55);
+          descLines.forEach((line: string) => {
+            if (yPos > 270) {
+              doc.addPage();
+              yPos = 20;
+            }
+            doc.text(line, margin + 4, yPos);
+            yPos += 4;
+          });
+          doc.setFontSize(9);
+          doc.setTextColor(0, 0, 0);
+        }
+        yPos += 2;
       });
 
-      if (error) throw error;
+      // Totals
+      yPos += 10;
+      doc.setFillColor(248, 249, 250);
+      doc.rect(margin + contentWidth * 0.5, yPos - 5, contentWidth * 0.5, 30, 'F');
+      
+      doc.setFontSize(10);
+      doc.text('Subtotal:', margin + contentWidth * 0.55, yPos);
+      doc.text(`${quotation.currency} $${quotation.subtotal.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+      yPos += 6;
+      
+      doc.setTextColor(100, 100, 100);
+      doc.text(`IVA (${quotation.tax_rate}%):`, margin + contentWidth * 0.55, yPos);
+      doc.text(`${quotation.currency} $${quotation.tax_amount.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+      yPos += 8;
+      
+      doc.setDrawColor(99, 102, 241);
+      doc.line(margin + contentWidth * 0.55, yPos - 2, margin + contentWidth * 0.95, yPos - 2);
+      
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.setTextColor(99, 102, 241);
+      doc.text('Total:', margin + contentWidth * 0.55, yPos);
+      doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
 
-      // Create blob from response
-      const blob = new Blob([data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Cotizacion-${quotation.quotation_number}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Notas y términos
+      if (quotation.notes || quotation.terms_conditions) {
+        yPos += 15;
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        
+        if (quotation.notes) {
+          if (yPos > 250) {
+            doc.addPage();
+            yPos = 20;
+          }
+          doc.setFont(undefined, 'bold');
+          doc.text('NOTAS:', margin, yPos);
+          yPos += 6;
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(9);
+          const notesLines = doc.splitTextToSize(quotation.notes, contentWidth);
+          notesLines.forEach((line: string) => {
+            if (yPos > 270) {
+              doc.addPage();
+              yPos = 20;
+            }
+            doc.text(line, margin, yPos);
+            yPos += 5;
+          });
+          yPos += 5;
+        }
+        
+        if (quotation.terms_conditions) {
+          if (yPos > 250) {
+            doc.addPage();
+            yPos = 20;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, 'bold');
+          doc.text('TÉRMINOS Y CONDICIONES:', margin, yPos);
+          yPos += 6;
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(100, 100, 100);
+          const termsLines = doc.splitTextToSize(quotation.terms_conditions, contentWidth);
+          termsLines.forEach((line: string) => {
+            if (yPos > 270) {
+              doc.addPage();
+              yPos = 20;
+            }
+            doc.text(line, margin, yPos);
+            yPos += 4;
+          });
+        }
+      }
+
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text('Gracias por su preferencia', pageWidth / 2, 285, { align: 'center' });
+        doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, 285, { align: 'right' });
+      }
+
+      doc.save(`Cotizacion-${quotation.quotation_number}.pdf`);
 
       toast({
         title: "PDF descargado",
