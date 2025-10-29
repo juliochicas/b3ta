@@ -14,7 +14,7 @@ export const Hero = () => {
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-glow to-primary">
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiLz48L2c+PC9zdmc+')] opacity-20" />
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-10">
           <div className="inline-block px-4 py-2 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30 mb-6">
             <span className="text-sm font-semibold text-white">🚀 Soluciones Tech para LATAM</span>
@@ -36,7 +36,7 @@ export const Hero = () => {
             <Button 
               onClick={scrollToContact}
               size="lg" 
-              className="bg-secondary hover:bg-secondary/90 text-white shadow-[0_0_30px_rgba(0,200,255,0.4)] hover:shadow-[0_0_50px_rgba(0,200,255,0.6)] transition-all duration-300 text-lg px-10 py-7 min-h-[56px]"
+              className="bg-secondary hover:bg-secondary/90 text-white shadow-[0_0_30px_rgba(0,200,255,0.4)] hover:shadow-[0_0_50px_rgba(0,200,255,0.6)] transition-all duration-300 text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px]"
             >
               Agenda Consultoría Gratuita
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -46,7 +46,7 @@ export const Hero = () => {
               onClick={scrollToAI}
               size="lg" 
               variant="outline" 
-              className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm text-lg px-10 py-7 min-h-[56px]"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px]"
             >
               Consulta con IA →
             </Button>

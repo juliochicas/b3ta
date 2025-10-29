@@ -232,8 +232,8 @@ export const AIConsultant = () => {
 
   return (
     <section id="ai-consultant" className="py-28 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-block p-3 bg-primary/10 rounded-2xl mb-4">
               <Bot className="h-10 w-10 text-primary" />
@@ -246,8 +246,8 @@ export const AIConsultant = () => {
             </p>
           </div>
 
-          <Card className="p-8 shadow-xl border-border bg-card">
-            <div className="h-[500px] overflow-y-auto mb-4 space-y-4 pr-2">
+          <Card className="p-6 sm:p-8 shadow-xl border-border bg-card">
+            <div className="h-[420px] sm:h-[500px] overflow-y-auto mb-4 space-y-4 pr-2">
               {messages.map((msg, idx) => (
                 <div
                   key={idx}

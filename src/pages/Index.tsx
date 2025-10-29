@@ -8,7 +8,7 @@ const Index = () => {
     <div className="min-h-screen">
       {/* Header */}
       <header className="fixed top-0 w-full bg-background/80 backdrop-blur-lg z-50 border-b border-border">
-        <div className="container mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 bg-clip-text text-transparent">
               B3TA
@@ -42,7 +42,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-16">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-xl font-bold mb-4">B3TA</h3>

@@ -31,7 +31,7 @@ const services = [
 export const Services = () => {
   return (
     <section className="py-28 bg-muted/30">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Servicios Enterprise
@@ -41,11 +41,11 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
           {services.map((service) => (
             <Card 
               key={service.title}
-              className="p-8 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card group cursor-pointer"
+              className="p-6 sm:p-8 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card group cursor-pointer"
             >
               <div className="mb-6 w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <service.icon className="h-8 w-8 text-primary" />

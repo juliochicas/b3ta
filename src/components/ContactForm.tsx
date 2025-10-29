@@ -99,8 +99,8 @@ export const ContactForm = () => {
 
   return (
     <section id="contact" className="py-28 bg-muted/30">
-      <div className="container mx-auto px-6">
-        <div className="max-w-5xl mx-auto">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Agenda tu Consultoría
@@ -110,8 +110,8 @@ export const ContactForm = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="md:col-span-2 p-8 bg-card border-border">
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+            <Card className="md:col-span-2 p-6 sm:p-8 bg-card border-border">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <Input
