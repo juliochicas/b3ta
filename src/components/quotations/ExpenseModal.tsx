@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,17 @@ import { useToast } from "@/hooks/use-toast";
 interface Expense {
   id: string;
   description: string;
-  category: string;
+  category_id: string;
   amount: number;
   expense_date: string;
   notes: string | null;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  description: string | null;
+  is_active: boolean;
 }
 
 interface Props {
@@ -24,29 +31,36 @@ interface Props {
   onSuccess: () => void;
 }
 
-const EXPENSE_CATEGORIES = [
-  { value: "materials", label: "Materiales" },
-  { value: "labor", label: "Mano de Obra" },
-  { value: "equipment", label: "Equipo/Herramientas" },
-  { value: "transport", label: "Transporte" },
-  { value: "subcontractor", label: "Subcontratistas" },
-  { value: "permits", label: "Permisos/Licencias" },
-  { value: "software", label: "Software/Servicios" },
-  { value: "marketing", label: "Marketing/Publicidad" },
-  { value: "administrative", label: "Gastos Administrativos" },
-  { value: "other", label: "Otros" },
-];
-
 export const ExpenseModal = ({ quotationId, expense, onClose, onSuccess }: Props) => {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     description: expense?.description || "",
-    category: expense?.category || "",
+    category_id: expense?.category_id || "",
     amount: expense?.amount?.toString() || "",
     expense_date: expense?.expense_date || new Date().toISOString().split('T')[0],
     notes: expense?.notes || "",
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('expense_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +70,7 @@ export const ExpenseModal = ({ quotationId, expense, onClose, onSuccess }: Props
       const data = {
         quotation_id: quotationId,
         description: formData.description,
-        category: formData.category,
+        category_id: formData.category_id,
         amount: parseFloat(formData.amount),
         expense_date: formData.expense_date,
         notes: formData.notes || null,
@@ -122,17 +136,17 @@ export const ExpenseModal = ({ quotationId, expense, onClose, onSuccess }: Props
           <div>
             <Label htmlFor="category">Categoría *</Label>
             <Select 
-              value={formData.category} 
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
+              value={formData.category_id} 
+              onValueChange={(value) => setFormData({ ...formData, category_id: value })}
               required
             >
               <SelectTrigger id="category">
                 <SelectValue placeholder="Seleccionar categoría" />
               </SelectTrigger>
               <SelectContent>
-                {EXPENSE_CATEGORIES.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
                   </SelectItem>
                 ))}
               </SelectContent>

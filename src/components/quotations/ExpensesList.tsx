@@ -12,7 +12,10 @@ import { ExpenseModal } from "./ExpenseModal";
 interface Expense {
   id: string;
   description: string;
-  category: string;
+  category_id: string;
+  expense_categories: {
+    name: string;
+  } | null;
   amount: number;
   expense_date: string;
   notes: string | null;
@@ -23,19 +26,6 @@ interface Props {
   currency: string;
   totalRevenue: number;
 }
-
-const CATEGORY_LABELS: Record<string, string> = {
-  materials: "Materiales",
-  labor: "Mano de Obra",
-  equipment: "Equipo/Herramientas",
-  transport: "Transporte",
-  subcontractor: "Subcontratistas",
-  permits: "Permisos/Licencias",
-  software: "Software/Servicios",
-  marketing: "Marketing/Publicidad",
-  administrative: "Gastos Administrativos",
-  other: "Otros",
-};
 
 export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -52,7 +42,12 @@ export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => 
     try {
       const { data, error } = await supabase
         .from('quotation_expenses')
-        .select('*')
+        .select(`
+          *,
+          expense_categories (
+            name
+          )
+        `)
         .eq('quotation_id', quotationId)
         .order('expense_date', { ascending: false });
 
@@ -123,7 +118,7 @@ export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => 
         ...expenses.map(exp => [
           format(new Date(exp.expense_date), 'dd/MM/yyyy'),
           exp.description,
-          CATEGORY_LABELS[exp.category] || exp.category,
+          exp.expense_categories?.name || 'Sin categoría',
           parseFloat(exp.amount.toString()).toFixed(2),
           exp.notes || ''
         ])
@@ -249,7 +244,7 @@ export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => 
                   <div className="flex items-center gap-2 mb-2">
                     <h4 className="font-medium">{expense.description}</h4>
                     <Badge variant="secondary">
-                      {CATEGORY_LABELS[expense.category] || expense.category}
+                      {expense.expense_categories?.name || 'Sin categoría'}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">

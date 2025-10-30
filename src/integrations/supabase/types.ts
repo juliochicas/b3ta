@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      expense_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           created_at: string
@@ -331,7 +358,7 @@ export type Database = {
       quotation_expenses: {
         Row: {
           amount: number
-          category: string
+          category_id: string | null
           created_at: string
           description: string
           expense_date: string
@@ -342,7 +369,7 @@ export type Database = {
         }
         Insert: {
           amount: number
-          category: string
+          category_id?: string | null
           created_at?: string
           description: string
           expense_date?: string
@@ -353,7 +380,7 @@ export type Database = {
         }
         Update: {
           amount?: number
-          category?: string
+          category_id?: string | null
           created_at?: string
           description?: string
           expense_date?: string
@@ -363,6 +390,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "quotation_expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "quotation_expenses_quotation_id_fkey"
             columns: ["quotation_id"]

@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, FileText, Package, ArrowLeft } from "lucide-react";
+import { Plus, FileText, Package, ArrowLeft, FolderOpen } from "lucide-react";
 import { ProductsServicesList } from "@/components/quotations/ProductsServicesList";
 import { QuotationsList } from "@/components/quotations/QuotationsList";
 import { CreateQuotationModal } from "@/components/quotations/CreateQuotationModal";
 import { ProductServiceModal } from "@/components/quotations/ProductServiceModal";
+import { CategoriesManagement } from "@/components/quotations/CategoriesManagement";
 
 export default function Quotations() {
   const [activeTab, setActiveTab] = useState("quotations");
@@ -56,19 +57,26 @@ export default function Quotations() {
                 <Package className="h-4 w-4" />
                 Productos y Servicios
               </TabsTrigger>
+              <TabsTrigger value="categories" className="flex items-center gap-2">
+                <FolderOpen className="h-4 w-4" />
+                Categorías de Gastos
+              </TabsTrigger>
             </TabsList>
 
             <Button
               onClick={() => {
                 if (activeTab === "quotations") {
                   setShowCreateQuotation(true);
-                } else {
+                } else if (activeTab === "products") {
                   setShowCreateProduct(true);
                 }
               }}
+              disabled={activeTab === "categories"}
             >
               <Plus className="mr-2 h-4 w-4" />
-              {activeTab === "quotations" ? "Nueva Cotización" : "Nuevo Producto/Servicio"}
+              {activeTab === "quotations" ? "Nueva Cotización" : 
+               activeTab === "products" ? "Nuevo Producto/Servicio" : 
+               ""}
             </Button>
           </div>
 
@@ -78,6 +86,10 @@ export default function Quotations() {
 
           <TabsContent value="products" className="space-y-4">
             <ProductsServicesList />
+          </TabsContent>
+
+          <TabsContent value="categories" className="space-y-4">
+            <CategoriesManagement />
           </TabsContent>
         </Tabs>
       </div>

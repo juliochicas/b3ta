@@ -214,10 +214,15 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const downloadPDF = async () => {
     setIsDownloadingPDF(true);
     try {
-      // Cargar gastos
+      // Cargar gastos con categorías
       const { data: expensesData } = await supabase
         .from('quotation_expenses')
-        .select('*')
+        .select(`
+          *,
+          expense_categories (
+            name
+          )
+        `)
         .eq('quotation_id', quotation.id)
         .order('expense_date', { ascending: false });
       
