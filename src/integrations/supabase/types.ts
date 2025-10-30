@@ -153,6 +153,143 @@ export type Database = {
         }
         Relationships: []
       }
+      email_attachments: {
+        Row: {
+          content_type: string | null
+          created_at: string
+          email_id: string
+          filename: string
+          id: string
+          size_bytes: number | null
+          storage_path: string
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string
+          email_id: string
+          filename: string
+          id?: string
+          size_bytes?: number | null
+          storage_path: string
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string
+          email_id?: string
+          filename?: string
+          id?: string
+          size_bytes?: number | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_attachments_email_id_fkey"
+            columns: ["email_id"]
+            isOneToOne: false
+            referencedRelation: "emails"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      emails: {
+        Row: {
+          bcc_email: string[] | null
+          body_html: string | null
+          body_text: string | null
+          cc_email: string[] | null
+          created_at: string
+          customer_id: string | null
+          email_references: string[] | null
+          folder: string
+          from_email: string
+          has_attachments: boolean | null
+          id: string
+          in_reply_to: string | null
+          is_draft: boolean | null
+          is_read: boolean | null
+          is_sent: boolean | null
+          is_starred: boolean | null
+          lead_id: string | null
+          message_id: string | null
+          received_at: string | null
+          sent_at: string | null
+          subject: string
+          thread_id: string | null
+          to_email: string[]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          bcc_email?: string[] | null
+          body_html?: string | null
+          body_text?: string | null
+          cc_email?: string[] | null
+          created_at?: string
+          customer_id?: string | null
+          email_references?: string[] | null
+          folder?: string
+          from_email: string
+          has_attachments?: boolean | null
+          id?: string
+          in_reply_to?: string | null
+          is_draft?: boolean | null
+          is_read?: boolean | null
+          is_sent?: boolean | null
+          is_starred?: boolean | null
+          lead_id?: string | null
+          message_id?: string | null
+          received_at?: string | null
+          sent_at?: string | null
+          subject: string
+          thread_id?: string | null
+          to_email: string[]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          bcc_email?: string[] | null
+          body_html?: string | null
+          body_text?: string | null
+          cc_email?: string[] | null
+          created_at?: string
+          customer_id?: string | null
+          email_references?: string[] | null
+          folder?: string
+          from_email?: string
+          has_attachments?: boolean | null
+          id?: string
+          in_reply_to?: string | null
+          is_draft?: boolean | null
+          is_read?: boolean | null
+          is_sent?: boolean | null
+          is_starred?: boolean | null
+          lead_id?: string | null
+          message_id?: string | null
+          received_at?: string | null
+          sent_at?: string | null
+          subject?: string
+          thread_id?: string | null
+          to_email?: string[]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emails_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emails_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_b3ta"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_categories: {
         Row: {
           created_at: string
