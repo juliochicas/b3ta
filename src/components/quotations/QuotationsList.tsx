@@ -27,6 +27,7 @@ interface Quotation {
   valid_until: string | null;
   tracking_number: string | null;
   notes: string | null;
+  tags: string[] | null;
   terms_conditions: string | null;
   stripe_payment_link: string | null;
   created_at: string;

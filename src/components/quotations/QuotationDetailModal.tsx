@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +33,7 @@ interface Quotation {
   valid_until: string | null;
   tracking_number: string | null;
   notes: string | null;
+  tags: string[] | null;
   terms_conditions: string | null;
   stripe_payment_link: string | null;
   created_at: string;
@@ -61,6 +63,10 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
   const [isEditingTracking, setIsEditingTracking] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState(quotation.tracking_number || "");
+  const [isEditingTags, setIsEditingTags] = useState(false);
+  const [tags, setTags] = useState((quotation.tags || []).join(", "));
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [notes, setNotes] = useState(quotation.notes || "");
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -154,6 +160,62 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       toast({
         title: "Error",
         description: "No se pudo actualizar el tracking",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateTags = async () => {
+    try {
+      const tagsArray = tags
+        ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+        : [];
+
+      const { error } = await supabase
+        .from('quotations')
+        .update({ tags: tagsArray })
+        .eq('id', quotation.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Tags actualizados",
+        description: "Los tags se han actualizado exitosamente",
+      });
+      
+      setIsEditingTags(false);
+      onUpdate();
+    } catch (error) {
+      console.error("Error updating tags:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron actualizar los tags",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateNotes = async () => {
+    try {
+      const { error } = await supabase
+        .from('quotations')
+        .update({ notes: notes || null })
+        .eq('id', quotation.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Comentarios actualizados",
+        description: "Los comentarios se han actualizado exitosamente",
+      });
+      
+      setIsEditingNotes(false);
+      onUpdate();
+    } catch (error) {
+      console.error("Error updating notes:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron actualizar los comentarios",
         variant: "destructive",
       });
     }
@@ -677,6 +739,122 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Tags */}
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-start justify-between">
+                  <Label className="text-sm text-muted-foreground">Tags:</Label>
+                  {!isEditingTags ? (
+                    <div className="flex items-center gap-2 flex-wrap max-w-md justify-end">
+                      {quotation.tags && quotation.tags.length > 0 ? (
+                        <>
+                          {quotation.tags.map((tag, index) => (
+                            <Badge key={index} variant="secondary">{tag}</Badge>
+                          ))}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsEditingTags(true)}
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-sm text-muted-foreground">Sin tags</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsEditingTags(true)}
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 flex-1 justify-end">
+                      <Input
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                        placeholder="Tag1, Tag2, Tag3"
+                        className="h-8 max-w-md"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={updateTags}
+                      >
+                        <Save className="h-3 w-3 text-green-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setTags((quotation.tags || []).join(", "));
+                          setIsEditingTags(false);
+                        }}
+                      >
+                        <X className="h-3 w-3 text-destructive" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                {isEditingTags && (
+                  <p className="text-xs text-muted-foreground mt-2 text-right">
+                    Separa los tags con comas
+                  </p>
+                )}
+              </div>
+
+              {/* Comentarios/Notas */}
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-start justify-between mb-2">
+                  <Label className="text-sm text-muted-foreground">Comentarios:</Label>
+                  {!isEditingNotes && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsEditingNotes(true)}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+                {!isEditingNotes ? (
+                  <p className="text-sm whitespace-pre-wrap">
+                    {quotation.notes || "Sin comentarios"}
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    <Textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Agrega comentarios sobre esta cotización..."
+                      rows={4}
+                      className="text-sm"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setNotes(quotation.notes || "");
+                          setIsEditingNotes(false);
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={updateNotes}
+                      >
+                        Guardar
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Card>

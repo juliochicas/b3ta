@@ -45,6 +45,7 @@ export const CreateQuotationModal = ({ onClose, onSuccess }: Props) => {
     valid_days: "30",
     tracking_number: "",
     notes: "",
+    tags: "",
     terms_conditions: `TÉRMINOS Y CONDICIONES
 
 1. Esta cotización es válida por el período especificado.
@@ -154,6 +155,10 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       validUntil.setDate(validUntil.getDate() + parseInt(formData.valid_days));
 
       // Crear cotización
+      const tagsArray = formData.tags
+        ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+        : [];
+
       const { data: quotation, error: quotationError } = await supabase
         .from('quotations')
         .insert([{
@@ -171,6 +176,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           valid_until: validUntil.toISOString().split('T')[0],
           tracking_number: formData.tracking_number || null,
           notes: formData.notes || null,
+          tags: tagsArray,
           terms_conditions: formData.terms_conditions,
         }])
         .select()
@@ -469,6 +475,18 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           {/* Notas y términos */}
           <Card className="p-6">
             <div className="space-y-4">
+              <div>
+                <Label htmlFor="tags">Tags (separados por comas)</Label>
+                <Input
+                  id="tags"
+                  value={formData.tags}
+                  onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                  placeholder="Ej: Urgente, Cliente Premium, Proyecto A"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Escribe tags separados por comas para organizar esta cotización
+                </p>
+              </div>
               <div>
                 <Label htmlFor="notes">Notas</Label>
                 <Textarea
