@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, MessageCircle, MapPin } from "lucide-react";
 import { z } from "zod";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 // Validación de formulario con Zod
 const contactFormSchema = z.object({
@@ -24,18 +26,14 @@ const contactFormSchema = z.object({
     .max(100, "El nombre de la empresa es demasiado largo")
     .optional(),
   phone: z.string()
-    .trim()
-    .max(20, "El teléfono es demasiado largo")
     .optional()
     .refine(
       (val) => {
-        if (!val || val.trim() === "") return true; // Campo opcional
-        // Remover caracteres no numéricos para validar
-        const digits = val.replace(/\D/g, "");
-        // Aceptar entre 10 y 15 dígitos (formato mexicano o internacional)
-        return digits.length >= 10 && digits.length <= 15;
+        if (!val || val.trim() === "") return true;
+        // Validar formato internacional E.164
+        return /^\+[1-9]\d{1,14}$/.test(val);
       },
-      { message: "Número de teléfono inválido. Debe contener entre 10 y 15 dígitos." }
+      { message: "Número de teléfono inválido" }
     ),
   service_interest: z.string().optional(),
   message: z.string()
@@ -145,11 +143,13 @@ export const ContactForm = () => {
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   />
-                  <Input
-                    type="tel"
-                    placeholder="Teléfono"
+                  <PhoneInput
+                    international
+                    defaultCountry="MX"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(value) => setFormData({ ...formData, phone: value || "" })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Teléfono"
                   />
                 </div>
 
