@@ -23,40 +23,77 @@ interface Props {
     company?: string;
     phone?: string;
   };
+  reportToEdit?: {
+    id: string;
+    report_number: string;
+    customer_name: string;
+    customer_email: string;
+    customer_company: string | null;
+    customer_phone: string | null;
+    consultant_name: string;
+    consultant_signature: string | null;
+    sections_config: any;
+    current_situation: string | null;
+    findings: string | null;
+    recommendations: string | null;
+    conclusions: string | null;
+    lead_id: string | null;
+  };
 }
 
-export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Props) => {
+export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, reportToEdit }: Props) => {
   const [saving, setSaving] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
   const { toast } = useToast();
+  const isEditMode = !!reportToEdit;
 
   const [formData, setFormData] = useState({
-    selectedLeadId: leadId || "",
-    customerName: leadData?.name || "",
-    customerEmail: leadData?.email || "",
-    customerCompany: leadData?.company || "",
-    customerPhone: leadData?.phone || "",
-    consultantName: "",
-    currentSituation: "",
-    findings: "",
-    recommendations: "",
-    conclusions: "",
+    selectedLeadId: reportToEdit?.lead_id || leadId || "",
+    customerName: reportToEdit?.customer_name || leadData?.name || "",
+    customerEmail: reportToEdit?.customer_email || leadData?.email || "",
+    customerCompany: reportToEdit?.customer_company || leadData?.company || "",
+    customerPhone: reportToEdit?.customer_phone || leadData?.phone || "",
+    consultantName: reportToEdit?.consultant_name || "",
+    currentSituation: reportToEdit?.current_situation || "",
+    findings: reportToEdit?.findings || "",
+    recommendations: reportToEdit?.recommendations || "",
+    conclusions: reportToEdit?.conclusions || "",
   });
 
-  const [sectionsConfig, setSectionsConfig] = useState({
-    current_situation: true,
-    findings: true,
-    multimedia: true,
-    recommendations: true,
-    conclusions: true,
-  });
+  const [sectionsConfig, setSectionsConfig] = useState(
+    reportToEdit?.sections_config || {
+      current_situation: true,
+      findings: true,
+      multimedia: true,
+      recommendations: true,
+      conclusions: true,
+    }
+  );
 
   const [mediaFiles, setMediaFiles] = useState<Array<{ type: 'photo' | 'video', file?: File, url?: string, caption: string }>>([]);
-  const [signature, setSignature] = useState<string>("");
+  const [signature, setSignature] = useState<string>(reportToEdit?.consultant_signature || "");
 
   useEffect(() => {
-    if (!leadId) loadLeads();
-  }, [leadId]);
+    if (!leadId && !isEditMode) loadLeads();
+    if (isEditMode) loadExistingMedia();
+  }, [leadId, isEditMode]);
+
+  const loadExistingMedia = async () => {
+    if (!reportToEdit) return;
+    
+    const { data, error } = await supabase
+      .from('report_media')
+      .select('*')
+      .eq('report_id', reportToEdit.id);
+
+    if (!error && data) {
+      setMediaFiles(data.map(m => ({
+        type: m.type as 'photo' | 'video',
+        url: m.url,
+        caption: m.caption || '',
+      })));
+    }
+  };
 
   const loadLeads = async () => {
     const { data } = await supabase
@@ -127,57 +164,96 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
       }
       console.log('✅ Rol del usuario:', userRoles.role);
 
-      // Generar número de informe
-      console.log('📝 Generando número de informe...');
-      const { data: reportNumber, error: numberError } = await supabase.rpc('generate_report_number');
-      if (numberError) {
-        console.error('❌ Error generando número:', numberError);
-        throw new Error(`Error generando número de informe: ${numberError.message}`);
-      }
-      console.log('✅ Número generado:', reportNumber);
+      let report: any;
 
-      // Generar slug
-      console.log('🔗 Generando slug público...');
-      const { data: reportSlug, error: slugError } = await supabase.rpc('generate_report_slug');
-      if (slugError) {
-        console.error('❌ Error generando slug:', slugError);
-        throw new Error(`Error generando slug: ${slugError.message}`);
-      }
-      console.log('✅ Slug generado:', reportSlug);
+      if (isEditMode && reportToEdit) {
+        // MODO EDICIÓN: Actualizar informe existente
+        console.log('✏️ Actualizando informe existente...');
+        const { data: updatedReport, error: updateError } = await supabase
+          .from('consultation_reports')
+          .update({
+            lead_id: formData.selectedLeadId || null,
+            customer_name: formData.customerName,
+            customer_email: formData.customerEmail,
+            customer_company: formData.customerCompany || null,
+            customer_phone: formData.customerPhone || null,
+            sections_config: sectionsConfig,
+            current_situation: formData.currentSituation || null,
+            findings: formData.findings || null,
+            recommendations: formData.recommendations || null,
+            conclusions: formData.conclusions || null,
+            consultant_name: formData.consultantName,
+            consultant_signature: signature,
+          })
+          .eq('id', reportToEdit.id)
+          .select()
+          .single();
 
-      // Insertar informe
-      console.log('💾 Guardando informe en base de datos...');
-      const { data: report, error: reportError } = await supabase
-        .from('consultation_reports')
-        .insert({
-          report_number: reportNumber,
-          public_slug: reportSlug,
-          lead_id: formData.selectedLeadId || null,
-          created_by: user.id,
-          customer_name: formData.customerName,
-          customer_email: formData.customerEmail,
-          customer_company: formData.customerCompany || null,
-          customer_phone: formData.customerPhone || null,
-          sections_config: sectionsConfig,
-          current_situation: formData.currentSituation || null,
-          findings: formData.findings || null,
-          recommendations: formData.recommendations || null,
-          conclusions: formData.conclusions || null,
-          consultant_name: formData.consultantName,
-          consultant_signature: signature,
-          status: 'draft',
-        })
-        .select()
-        .single();
-
-      if (reportError) {
-        console.error('❌ Error insertando informe:', reportError);
-        if (reportError.code === 'PGRST301') {
-          throw new Error('No tienes permisos para crear informes. Verifica que tu usuario tenga rol de Admin o Sales.');
+        if (updateError) {
+          console.error('❌ Error actualizando informe:', updateError);
+          throw new Error(`Error actualizando informe: ${updateError.message}`);
         }
-        throw new Error(`Error guardando informe: ${reportError.message}`);
+        report = updatedReport;
+        console.log('✅ Informe actualizado:', report.id);
+
+        // Eliminar media anterior para reemplazar con nueva
+        await supabase
+          .from('report_media')
+          .delete()
+          .eq('report_id', report.id);
+
+      } else {
+        // MODO CREACIÓN: Crear nuevo informe
+        console.log('📝 Generando número de informe...');
+        const { data: reportNumber, error: numberError } = await supabase.rpc('generate_report_number');
+        if (numberError) {
+          console.error('❌ Error generando número:', numberError);
+          throw new Error(`Error generando número de informe: ${numberError.message}`);
+        }
+        console.log('✅ Número generado:', reportNumber);
+
+        console.log('🔗 Generando slug público...');
+        const { data: reportSlug, error: slugError } = await supabase.rpc('generate_report_slug');
+        if (slugError) {
+          console.error('❌ Error generando slug:', slugError);
+          throw new Error(`Error generando slug: ${slugError.message}`);
+        }
+        console.log('✅ Slug generado:', reportSlug);
+
+        console.log('💾 Guardando informe en base de datos...');
+        const { data: newReport, error: reportError } = await supabase
+          .from('consultation_reports')
+          .insert({
+            report_number: reportNumber,
+            public_slug: reportSlug,
+            lead_id: formData.selectedLeadId || null,
+            created_by: user.id,
+            customer_name: formData.customerName,
+            customer_email: formData.customerEmail,
+            customer_company: formData.customerCompany || null,
+            customer_phone: formData.customerPhone || null,
+            sections_config: sectionsConfig,
+            current_situation: formData.currentSituation || null,
+            findings: formData.findings || null,
+            recommendations: formData.recommendations || null,
+            conclusions: formData.conclusions || null,
+            consultant_name: formData.consultantName,
+            consultant_signature: signature,
+            status: 'draft',
+          })
+          .select()
+          .single();
+
+        if (reportError) {
+          console.error('❌ Error insertando informe:', reportError);
+          if (reportError.code === 'PGRST301') {
+            throw new Error('No tienes permisos para crear informes. Verifica que tu usuario tenga rol de Admin o Sales.');
+          }
+          throw new Error(`Error guardando informe: ${reportError.message}`);
+        }
+        report = newReport;
+        console.log('✅ Informe creado:', report.id);
       }
-      console.log('✅ Informe guardado:', report.id);
 
       // Upload media files (continue even if one fails, but log errors)
       const mediaUploadPromises = mediaFiles.map(async (media) => {
@@ -224,10 +300,10 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
 
       await Promise.allSettled(mediaUploadPromises);
 
-      console.log('✅ ¡Informe creado exitosamente!');
+      console.log(`✅ ¡Informe ${isEditMode ? 'actualizado' : 'creado'} exitosamente!`);
       toast({
         title: "Éxito",
-        description: "Informe creado correctamente",
+        description: `Informe ${isEditMode ? 'actualizado' : 'creado'} correctamente`,
       });
       onSuccess();
     } catch (error: any) {
@@ -246,9 +322,14 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Nuevo Informe de Consultoría</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? 'Editar Informe de Consultoría' : 'Nuevo Informe de Consultoría'}
+          </DialogTitle>
           <DialogDescription>
-            Crea un nuevo informe completo con análisis, hallazgos y recomendaciones para tu cliente.
+            {isEditMode 
+              ? 'Modifica el informe existente con análisis, hallazgos y recomendaciones actualizadas.'
+              : 'Crea un nuevo informe completo con análisis, hallazgos y recomendaciones para tu cliente.'
+            }
           </DialogDescription>
         </DialogHeader>
 
@@ -451,7 +532,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
             </Button>
             <Button type="submit" disabled={saving}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Crear Informe
+              {isEditMode ? 'Guardar Cambios' : 'Crear Informe'}
             </Button>
           </div>
         </form>

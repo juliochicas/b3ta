@@ -6,9 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { FileText, Download, Mail, Image as ImageIcon, Video, ExternalLink, Copy, ExternalLinkIcon, Trash2 } from "lucide-react";
+import { FileText, Download, Mail, Image as ImageIcon, Video, ExternalLink, Copy, ExternalLinkIcon, Trash2, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
+import { CreateReportModal } from "./CreateReportModal";
 import jsPDF from 'jspdf';
 
 interface Report {
@@ -27,6 +28,7 @@ interface Report {
   recommendations: string | null;
   conclusions: string | null;
   created_at: string;
+  lead_id: string | null;
   public_slug: string | null;
 }
 
@@ -48,6 +50,7 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -339,6 +342,10 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
                   </Button>
                 </>
               )}
+              <Button size="sm" variant="outline" onClick={() => setShowEditModal(true)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Editar
+              </Button>
               <Button size="sm" onClick={downloadPDF} disabled={loading}>
                 <Download className="mr-2 h-4 w-4" />
                 Descargar PDF
@@ -512,6 +519,18 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
         title="¿Eliminar informe?"
         description="Esta acción no se puede deshacer. Se eliminará el informe y todos sus archivos multimedia asociados."
       />
+
+      {showEditModal && (
+        <CreateReportModal
+          reportToEdit={report}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            setShowEditModal(false);
+            onUpdate();
+            onClose();
+          }}
+        />
+      )}
     </Dialog>
   );
 };
