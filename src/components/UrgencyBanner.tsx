@@ -8,7 +8,8 @@ export const UrgencyBanner = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
-    minutes: 0
+    minutes: 0,
+    seconds: 0
   });
 
   useEffect(() => {
@@ -21,8 +22,9 @@ export const UrgencyBanner = () => {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        setTimeLeft({ days, hours, minutes });
+        setTimeLeft({ days, hours, minutes, seconds });
       }
     };
 
@@ -66,13 +68,18 @@ export const UrgencyBanner = () => {
               </div>
               <div className="text-5xl font-bold">:</div>
               <div className="text-center">
-                <div className="text-5xl font-bold mb-1">{timeLeft.hours}</div>
+                <div className="text-5xl font-bold mb-1">{String(timeLeft.hours).padStart(2, '0')}</div>
                 <div className="text-sm opacity-75">Horas</div>
               </div>
               <div className="text-5xl font-bold">:</div>
               <div className="text-center">
-                <div className="text-5xl font-bold mb-1">{timeLeft.minutes}</div>
+                <div className="text-5xl font-bold mb-1">{String(timeLeft.minutes).padStart(2, '0')}</div>
                 <div className="text-sm opacity-75">Minutos</div>
+              </div>
+              <div className="text-5xl font-bold">:</div>
+              <div className="text-center">
+                <div className="text-5xl font-bold mb-1">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                <div className="text-sm opacity-75">Segundos</div>
               </div>
             </div>
 
