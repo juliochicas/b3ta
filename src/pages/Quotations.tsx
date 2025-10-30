@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, FileText, Package, ArrowLeft, FolderOpen } from "lucide-react";
+import { Plus, FileText, Package, ArrowLeft, FolderOpen, BarChart3 } from "lucide-react";
 import { ProductsServicesList } from "@/components/quotations/ProductsServicesList";
 import { QuotationsList } from "@/components/quotations/QuotationsList";
 import { CreateQuotationModal } from "@/components/quotations/CreateQuotationModal";
 import { ProductServiceModal } from "@/components/quotations/ProductServiceModal";
 import { CategoriesManagement } from "@/components/quotations/CategoriesManagement";
+import { FinancialReport } from "@/components/quotations/FinancialReport";
 
 export default function Quotations() {
   const [activeTab, setActiveTab] = useState("quotations");
@@ -61,6 +62,10 @@ export default function Quotations() {
                 <FolderOpen className="h-4 w-4" />
                 Categorías de Gastos
               </TabsTrigger>
+              <TabsTrigger value="reports" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Reportes Financieros
+              </TabsTrigger>
             </TabsList>
 
             <Button
@@ -71,7 +76,7 @@ export default function Quotations() {
                   setShowCreateProduct(true);
                 }
               }}
-              disabled={activeTab === "categories"}
+              disabled={activeTab === "categories" || activeTab === "reports"}
             >
               <Plus className="mr-2 h-4 w-4" />
               {activeTab === "quotations" ? "Nueva Cotización" : 
@@ -90,6 +95,10 @@ export default function Quotations() {
 
           <TabsContent value="categories" className="space-y-4">
             <CategoriesManagement />
+          </TabsContent>
+
+          <TabsContent value="reports" className="space-y-4">
+            <FinancialReport />
           </TabsContent>
         </Tabs>
       </div>

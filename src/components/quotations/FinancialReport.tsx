@@ -1,0 +1,370 @@
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { FileSpreadsheet, Download, TrendingUp, DollarSign, TrendingDown, Percent } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
+interface ReportData {
+  quotation_id: string;
+  quotation_number: string;
+  customer_name: string;
+  created_at: string;
+  total_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  profit_margin: number;
+  currency: string;
+}
+
+export const FinancialReport = () => {
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [reportData, setReportData] = useState<ReportData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const generateReport = async () => {
+    if (!startDate || !endDate) {
+      toast({
+        title: "Fechas requeridas",
+        description: "Por favor selecciona un periodo de tiempo",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Obtener cotizaciones del periodo
+      const { data: quotations, error: quotationsError } = await supabase
+        .from('quotations')
+        .select('*')
+        .gte('created_at', startDate)
+        .lte('created_at', endDate + 'T23:59:59')
+        .order('created_at', { ascending: false });
+
+      if (quotationsError) throw quotationsError;
+
+      // Para cada cotización, obtener sus gastos
+      const reportPromises = (quotations || []).map(async (quotation) => {
+        const { data: expenses } = await supabase
+          .from('quotation_expenses')
+          .select('amount')
+          .eq('quotation_id', quotation.id);
+
+        const totalExpenses = (expenses || []).reduce(
+          (sum, exp) => sum + parseFloat(exp.amount.toString()),
+          0
+        );
+
+        const netProfit = quotation.total - totalExpenses;
+        const profitMargin = quotation.total > 0 ? (netProfit / quotation.total) * 100 : 0;
+
+        return {
+          quotation_id: quotation.id,
+          quotation_number: quotation.quotation_number,
+          customer_name: quotation.customer_name,
+          created_at: quotation.created_at,
+          total_revenue: quotation.total,
+          total_expenses: totalExpenses,
+          net_profit: netProfit,
+          profit_margin: profitMargin,
+          currency: quotation.currency,
+        };
+      });
+
+      const report = await Promise.all(reportPromises);
+      setReportData(report);
+
+      toast({
+        title: "Reporte generado",
+        description: `Se encontraron ${report.length} cotizaciones en el periodo`,
+      });
+    } catch (error) {
+      console.error("Error generating report:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo generar el reporte",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const exportToExcel = async () => {
+    try {
+      const XLSX = await import('xlsx');
+
+      // Resumen general
+      const totalRevenue = reportData.reduce((sum, item) => sum + item.total_revenue, 0);
+      const totalExpenses = reportData.reduce((sum, item) => sum + item.total_expenses, 0);
+      const totalNetProfit = totalRevenue - totalExpenses;
+      const averageMargin = reportData.length > 0
+        ? reportData.reduce((sum, item) => sum + item.profit_margin, 0) / reportData.length
+        : 0;
+
+      const summaryData = [
+        ['REPORTE FINANCIERO'],
+        ['Periodo:', `${format(new Date(startDate), 'dd/MM/yyyy')} - ${format(new Date(endDate), 'dd/MM/yyyy')}`],
+        [],
+        ['RESUMEN GENERAL'],
+        ['Total Ingresos', totalRevenue.toFixed(2)],
+        ['Total Gastos', totalExpenses.toFixed(2)],
+        ['Utilidad Neta Total', totalNetProfit.toFixed(2)],
+        ['Margen Promedio (%)', averageMargin.toFixed(1)],
+        ['Cotizaciones Procesadas', reportData.length],
+        [],
+      ];
+
+      // Detalle por cotización
+      const detailData = [
+        ['DETALLE POR COTIZACIÓN'],
+        [],
+        ['Fecha', 'Cotización', 'Cliente', 'Ingresos', 'Gastos', 'Utilidad Neta', 'Margen %', 'Moneda'],
+        ...reportData.map(item => [
+          format(new Date(item.created_at), 'dd/MM/yyyy'),
+          item.quotation_number,
+          item.customer_name,
+          item.total_revenue.toFixed(2),
+          item.total_expenses.toFixed(2),
+          item.net_profit.toFixed(2),
+          item.profit_margin.toFixed(1),
+          item.currency,
+        ])
+      ];
+
+      const allData = [...summaryData, ...detailData];
+
+      const ws = XLSX.utils.aoa_to_sheet(allData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Reporte Financiero');
+
+      const colWidths = [
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 30 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 12 },
+        { wch: 10 },
+      ];
+      ws['!cols'] = colWidths;
+
+      XLSX.writeFile(wb, `Reporte-Financiero-${startDate}-${endDate}.xlsx`);
+
+      toast({
+        title: "Excel exportado",
+        description: "El reporte financiero se ha exportado exitosamente",
+      });
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo exportar a Excel",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Calcular totales
+  const totalRevenue = reportData.reduce((sum, item) => sum + item.total_revenue, 0);
+  const totalExpenses = reportData.reduce((sum, item) => sum + item.total_expenses, 0);
+  const totalNetProfit = totalRevenue - totalExpenses;
+  const averageMargin = reportData.length > 0
+    ? reportData.reduce((sum, item) => sum + item.profit_margin, 0) / reportData.length
+    : 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Filtros de fecha */}
+      <Card className="p-6">
+        <h3 className="font-semibold text-lg mb-4">Periodo de Análisis</h3>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div>
+            <Label htmlFor="start_date">Fecha Inicio</Label>
+            <Input
+              id="start_date"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="end_date">Fecha Fin</Label>
+            <Input
+              id="end_date"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+          <div className="flex items-end gap-2">
+            <Button
+              onClick={generateReport}
+              disabled={isLoading}
+              className="flex-1"
+            >
+              {isLoading ? "Generando..." : "Generar Reporte"}
+            </Button>
+            {reportData.length > 0 && (
+              <Button
+                onClick={exportToExcel}
+                variant="outline"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+      </Card>
+
+      {/* Resumen general */}
+      {reportData.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
+              <div className="flex items-center gap-3 mb-2">
+                <DollarSign className="h-8 w-8 text-blue-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Ingresos Totales</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    ${totalRevenue.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {reportData.length} cotizaciones
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900">
+              <div className="flex items-center gap-3 mb-2">
+                <TrendingDown className="h-8 w-8 text-red-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Gastos Totales</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    ${totalExpenses.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Todos los gastos registrados
+              </p>
+            </Card>
+
+            <Card className={`p-6 bg-gradient-to-br ${totalNetProfit >= 0 ? 'from-green-50 to-green-100 dark:from-green-950 dark:to-green-900' : 'from-red-50 to-red-100 dark:from-red-950 dark:to-red-900'}`}>
+              <div className="flex items-center gap-3 mb-2">
+                <TrendingUp className={`h-8 w-8 ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`} />
+                <div>
+                  <p className="text-sm text-muted-foreground">Utilidad Neta</p>
+                  <p className={`text-2xl font-bold ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ${totalNetProfit.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Ingresos - Gastos
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
+              <div className="flex items-center gap-3 mb-2">
+                <Percent className="h-8 w-8 text-purple-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Margen Promedio</p>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {averageMargin.toFixed(1)}%
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Promedio de utilidad
+              </p>
+            </Card>
+          </div>
+
+          {/* Tabla detallada */}
+          <Card className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-lg">Detalle por Cotización</h3>
+              <Button onClick={exportToExcel} variant="outline" size="sm">
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                Exportar a Excel
+              </Button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-3 font-medium">Fecha</th>
+                    <th className="text-left p-3 font-medium">Cotización</th>
+                    <th className="text-left p-3 font-medium">Cliente</th>
+                    <th className="text-right p-3 font-medium">Ingresos</th>
+                    <th className="text-right p-3 font-medium">Gastos</th>
+                    <th className="text-right p-3 font-medium">Utilidad Neta</th>
+                    <th className="text-right p-3 font-medium">Margen %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportData.map((item) => (
+                    <tr key={item.quotation_id} className="border-b hover:bg-muted/50">
+                      <td className="p-3 text-sm">
+                        {format(new Date(item.created_at), 'dd MMM yyyy', { locale: es })}
+                      </td>
+                      <td className="p-3 text-sm font-medium">{item.quotation_number}</td>
+                      <td className="p-3 text-sm">{item.customer_name}</td>
+                      <td className="p-3 text-sm text-right font-medium text-blue-600">
+                        {item.currency} ${item.total_revenue.toFixed(2)}
+                      </td>
+                      <td className="p-3 text-sm text-right text-red-600">
+                        {item.currency} ${item.total_expenses.toFixed(2)}
+                      </td>
+                      <td className={`p-3 text-sm text-right font-bold ${item.net_profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {item.currency} ${item.net_profit.toFixed(2)}
+                      </td>
+                      <td className={`p-3 text-sm text-right font-medium ${item.profit_margin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {item.profit_margin.toFixed(1)}%
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t-2 font-bold">
+                    <td colSpan={3} className="p-3 text-right">TOTALES:</td>
+                    <td className="p-3 text-right text-blue-600">
+                      ${totalRevenue.toFixed(2)}
+                    </td>
+                    <td className="p-3 text-right text-red-600">
+                      ${totalExpenses.toFixed(2)}
+                    </td>
+                    <td className={`p-3 text-right ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      ${totalNetProfit.toFixed(2)}
+                    </td>
+                    <td className="p-3 text-right text-purple-600">
+                      {averageMargin.toFixed(1)}%
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </Card>
+        </>
+      )}
+
+      {reportData.length === 0 && startDate && endDate && !isLoading && (
+        <Card className="p-12 text-center">
+          <p className="text-muted-foreground">
+            No se encontraron cotizaciones en el periodo seleccionado
+          </p>
+        </Card>
+      )}
+    </div>
+  );
+};
