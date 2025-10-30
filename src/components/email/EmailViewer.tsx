@@ -35,13 +35,15 @@ interface EmailViewerProps {
 
 export const EmailViewer = ({ email, onBack, onReply }: EmailViewerProps) => {
   const [threadEmails, setThreadEmails] = useState<Email[]>([]);
-  const [showThread, setShowThread] = useState(false);
+  const [showThread, setShowThread] = useState(true); // Activado por defecto
 
   useEffect(() => {
     if (email?.thread_id) {
       loadThreadEmails(email.thread_id);
+      setShowThread(true); // Mostrar conversación automáticamente
     } else {
       setThreadEmails([]);
+      setShowThread(false);
     }
   }, [email?.id]);
 
@@ -109,50 +111,100 @@ export const EmailViewer = ({ email, onBack, onReply }: EmailViewerProps) => {
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto">
           {showThread && hasThread ? (
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold mb-4">
-                Conversación: {email.subject}
-              </h2>
-              {threadEmails.map((threadEmail) => (
-                <Card key={threadEmail.id} className={threadEmail.id === email.id ? "border-primary" : ""}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium">{threadEmail.from_email}</span>
-                          {threadEmail.id === email.id && (
-                            <Badge>Actual</Badge>
-                          )}
-                          {!threadEmail.is_read && (
-                            <Badge variant="secondary" className="text-xs">
-                              Nuevo
-                            </Badge>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold">
+                  Conversación: {email.subject}
+                </h2>
+                <Badge variant="outline">{threadEmails.length} mensajes</Badge>
+              </div>
+              
+              {threadEmails.map((threadEmail, index) => {
+                const isLast = index === threadEmails.length - 1;
+                const isUnread = !threadEmail.is_read;
+                const isSent = threadEmail.folder === "sent";
+                
+                return (
+                  <div key={threadEmail.id} className="relative">
+                    <Card 
+                      className={`
+                        ${threadEmail.id === email.id ? "border-primary shadow-md" : ""}
+                        ${isUnread ? "bg-accent/10 border-accent" : ""}
+                        ${isLast ? "ring-2 ring-primary/20" : ""}
+                      `}
+                    >
+                      <CardHeader className="pb-3 bg-muted/30">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="flex items-center gap-2">
+                                {isSent ? (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Enviado por ti
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="default" className="text-xs">
+                                    Recibido
+                                  </Badge>
+                                )}
+                                {isUnread && (
+                                  <Badge className="text-xs bg-blue-500">
+                                    NUEVO
+                                  </Badge>
+                                )}
+                                {isLast && (
+                                  <Badge variant="outline" className="text-xs">
+                                    Último mensaje
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="font-semibold text-base">{threadEmail.from_email}</span>
+                            </div>
+                            <div className="text-sm text-muted-foreground mt-1">
+                              <span className="font-medium">Para:</span> {threadEmail.to_email.join(", ")}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-medium">
+                              {format(
+                                new Date(threadEmail.sent_at || threadEmail.received_at || threadEmail.created_at),
+                                "dd MMM yyyy",
+                                { locale: es }
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {format(
+                                new Date(threadEmail.sent_at || threadEmail.received_at || threadEmail.created_at),
+                                "HH:mm",
+                                { locale: es }
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <Separator />
+                      <CardContent className="pt-4">
+                        <div className="prose max-w-none text-sm">
+                          {threadEmail.body_html ? (
+                            <div dangerouslySetInnerHTML={{ __html: threadEmail.body_html }} />
+                          ) : (
+                            <p className="whitespace-pre-wrap">{threadEmail.body_text}</p>
                           )}
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          Para: {threadEmail.to_email.join(", ")}
-                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    {/* Línea conectora visual entre mensajes */}
+                    {index < threadEmails.length - 1 && (
+                      <div className="flex justify-center py-2">
+                        <div className="w-px h-4 bg-border"></div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {format(
-                          new Date(threadEmail.sent_at || threadEmail.received_at || threadEmail.created_at),
-                          "PPP 'a las' p",
-                          { locale: es }
-                        )}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="prose max-w-none text-sm">
-                      {threadEmail.body_html ? (
-                        <div dangerouslySetInnerHTML={{ __html: threadEmail.body_html }} />
-                      ) : (
-                        <p className="whitespace-pre-wrap">{threadEmail.body_text}</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <>
