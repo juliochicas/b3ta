@@ -20,6 +20,7 @@ import {
   Search,
   RefreshCw,
   HelpCircle,
+  AlertOctagon,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -96,6 +97,7 @@ const Email = () => {
     { id: "inbox", label: "Bandeja de entrada", icon: Inbox },
     { id: "sent", label: "Enviados", icon: Send },
     { id: "starred", label: "Destacados", icon: Star },
+    { id: "spam", label: "Spam", icon: AlertOctagon },
     { id: "trash", label: "Papelera", icon: Trash2 },
   ];
 
@@ -220,6 +222,7 @@ const Email = () => {
               email={selectedEmail}
               onBack={() => setSelectedEmail(null)}
               onReply={handleReply}
+              onEmailChange={() => window.location.reload()}
             />
           </div>
         </div>

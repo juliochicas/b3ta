@@ -6,7 +6,18 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowLeft, Reply, ReplyAll, Forward, Trash2, Star, MessageSquare } from "lucide-react";
+import { ArrowLeft, Reply, ReplyAll, Forward, Trash2, Star, MessageSquare, AlertOctagon, Trash } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Email {
   id: string;
@@ -31,11 +42,14 @@ interface EmailViewerProps {
   email: Email | null;
   onBack: () => void;
   onReply: (email: Email) => void;
+  onEmailChange?: () => void;
 }
 
-export const EmailViewer = ({ email, onBack, onReply }: EmailViewerProps) => {
+export const EmailViewer = ({ email, onBack, onReply, onEmailChange }: EmailViewerProps) => {
   const [threadEmails, setThreadEmails] = useState<Email[]>([]);
   const [showThread, setShowThread] = useState(true); // Activado por defecto
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (email?.thread_id) {
@@ -56,6 +70,70 @@ export const EmailViewer = ({ email, onBack, onReply }: EmailViewerProps) => {
 
     if (!error && data) {
       setThreadEmails(data);
+    }
+  };
+
+  const handleMoveToTrash = async () => {
+    if (!email) return;
+    
+    try {
+      const { error } = await supabase
+        .from("emails")
+        .update({ folder: "trash" })
+        .eq("id", email.id);
+
+      if (error) throw error;
+
+      toast.success("Correo movido a papelera");
+      onEmailChange?.();
+      onBack();
+    } catch (error: any) {
+      console.error("Error moving to trash:", error);
+      toast.error("Error al mover a papelera");
+    }
+  };
+
+  const handleMarkAsSpam = async () => {
+    if (!email) return;
+    
+    try {
+      const { error } = await supabase
+        .from("emails")
+        .update({ folder: "spam" })
+        .eq("id", email.id);
+
+      if (error) throw error;
+
+      toast.success("Correo marcado como spam");
+      onEmailChange?.();
+      onBack();
+    } catch (error: any) {
+      console.error("Error marking as spam:", error);
+      toast.error("Error al marcar como spam");
+    }
+  };
+
+  const handlePermanentDelete = async () => {
+    if (!email) return;
+    
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("emails")
+        .delete()
+        .eq("id", email.id);
+
+      if (error) throw error;
+
+      toast.success("Correo eliminado permanentemente");
+      onEmailChange?.();
+      setShowDeleteDialog(false);
+      onBack();
+    } catch (error: any) {
+      console.error("Error deleting permanently:", error);
+      toast.error("Error al eliminar. Es posible que no tengas permisos.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -103,9 +181,37 @@ export const EmailViewer = ({ email, onBack, onReply }: EmailViewerProps) => {
         <Button variant="ghost" size="sm">
           <Star className={`h-4 w-4 ${email.is_starred ? "fill-yellow-500 text-yellow-500" : ""}`} />
         </Button>
-        <Button variant="ghost" size="sm">
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        {email.folder !== "spam" && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handleMarkAsSpam}
+            title="Marcar como spam"
+          >
+            <AlertOctagon className="h-4 w-4" />
+          </Button>
+        )}
+        {email.folder !== "trash" && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handleMoveToTrash}
+            title="Mover a papelera"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
+        {email.folder === "trash" && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => setShowDeleteDialog(true)}
+            title="Eliminar permanentemente"
+            className="text-destructive hover:text-destructive"
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-6">
@@ -258,6 +364,29 @@ export const EmailViewer = ({ email, onBack, onReply }: EmailViewerProps) => {
           )}
         </div>
       </div>
+
+      {/* Dialog de confirmación de eliminación permanente */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar permanentemente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El correo será eliminado permanentemente de la base de datos.
+              Solo los administradores pueden realizar esta acción.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handlePermanentDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Eliminando..." : "Eliminar Permanentemente"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
