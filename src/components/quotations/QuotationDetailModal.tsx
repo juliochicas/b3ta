@@ -6,12 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { InvoiceDetailModal } from "./InvoiceDetailModal";
+import { ExpensesList } from "./ExpensesList";
 
 interface Quotation {
   id: string;
@@ -212,6 +214,17 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const downloadPDF = async () => {
     setIsDownloadingPDF(true);
     try {
+      // Cargar gastos
+      const { data: expensesData } = await supabase
+        .from('quotation_expenses')
+        .select('*')
+        .eq('quotation_id', quotation.id)
+        .order('expense_date', { ascending: false });
+      
+      const expenses = expensesData || [];
+      const totalExpenses = expenses.reduce((sum, exp) => sum + parseFloat(exp.amount.toString()), 0);
+      const netProfit = quotation.total - totalExpenses;
+
       // Generación 100% en el navegador con jsPDF (sin llamar funciones backend)
       const { jsPDF } = await import('jspdf');
 
@@ -445,6 +458,81 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         }
       }
 
+      // Sección de Gastos (si existen)
+      if (expenses.length > 0) {
+        yPos += 15;
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = 20;
+        }
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(0, 0, 0);
+        doc.text('ANÁLISIS FINANCIERO', margin, yPos);
+        yPos += 10;
+
+        // Resumen financiero
+        doc.setFillColor(248, 249, 250);
+        doc.rect(margin, yPos - 5, contentWidth, 30, 'F');
+        
+        doc.setFontSize(10);
+        doc.text('Ingresos Totales:', margin + 2, yPos);
+        doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, margin + contentWidth * 0.7, yPos, { align: 'right' });
+        yPos += 7;
+
+        doc.setTextColor(220, 38, 38);
+        doc.text('Gastos Totales:', margin + 2, yPos);
+        doc.text(`${quotation.currency} $${totalExpenses.toFixed(2)}`, margin + contentWidth * 0.7, yPos, { align: 'right' });
+        yPos += 7;
+
+        doc.setDrawColor(99, 102, 241);
+        doc.line(margin + 2, yPos - 2, margin + contentWidth * 0.7, yPos - 2);
+        yPos += 2;
+
+        doc.setTextColor(netProfit >= 0 ? 34 : 220, netProfit >= 0 ? 197 : 38, netProfit >= 0 ? 94 : 38);
+        doc.setFont(undefined, 'bold');
+        doc.setFontSize(12);
+        doc.text('Utilidad Neta:', margin + 2, yPos);
+        doc.text(`${quotation.currency} $${netProfit.toFixed(2)}`, margin + contentWidth * 0.7, yPos, { align: 'right' });
+        yPos += 7;
+
+        const profitMargin = quotation.total > 0 ? (netProfit / quotation.total) * 100 : 0;
+        doc.setFontSize(9);
+        doc.setTextColor(99, 102, 241);
+        doc.text(`Margen: ${profitMargin.toFixed(1)}%`, margin + 2, yPos);
+        yPos += 10;
+
+        // Lista de gastos
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.text('DETALLE DE GASTOS:', margin, yPos);
+        yPos += 7;
+
+        doc.setFontSize(8);
+        doc.setFillColor(248, 249, 250);
+        doc.rect(margin, yPos - 5, contentWidth, 6, 'F');
+        doc.text('Fecha', margin + 2, yPos);
+        doc.text('Descripción', margin + contentWidth * 0.2, yPos);
+        doc.text('Monto', margin + contentWidth * 0.85, yPos);
+        yPos += 6;
+
+        doc.setFont(undefined, 'normal');
+        expenses.forEach((expense) => {
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+
+          doc.text(format(new Date(expense.expense_date), 'dd/MM/yyyy'), margin + 2, yPos);
+          const descText = expense.description.substring(0, 50);
+          doc.text(descText, margin + contentWidth * 0.2, yPos);
+          doc.text(`$${parseFloat(expense.amount.toString()).toFixed(2)}`, margin + contentWidth * 0.85, yPos);
+          yPos += 5;
+        });
+      }
+
       // Footer con información de la empresa
       const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
@@ -588,86 +676,110 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
             </div>
           </Card>
 
-          {/* Items */}
-          <Card className="p-6">
-            <h3 className="font-semibold mb-4">Detalles</h3>
-            {isLoading ? (
-              <p className="text-center text-muted-foreground">Cargando items...</p>
-            ) : (
-              <div className="space-y-3">
-                {items.map((item) => (
-                  <div key={item.id} className="flex justify-between items-start pb-3 border-b last:border-0">
-                    <div className="flex-1">
-                      <p className="font-medium">{item.item_name}</p>
-                      {item.description && (
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
+          {/* Tabs para Detalles y Gastos */}
+          <Tabs defaultValue="details" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">
+                <FileText className="mr-2 h-4 w-4" />
+                Detalles
+              </TabsTrigger>
+              <TabsTrigger value="expenses">
+                <TrendingDown className="mr-2 h-4 w-4" />
+                Gastos y Utilidad
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="details" className="space-y-6">
+              {/* Items */}
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Detalles</h3>
+                {isLoading ? (
+                  <p className="text-center text-muted-foreground">Cargando items...</p>
+                ) : (
+                  <div className="space-y-3">
+                    {items.map((item) => (
+                      <div key={item.id} className="flex justify-between items-start pb-3 border-b last:border-0">
+                        <div className="flex-1">
+                          <p className="font-medium">{item.item_name}</p>
+                          {item.description && (
+                            <p className="text-sm text-muted-foreground">{item.description}</p>
+                          )}
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Cantidad: {item.quantity} × ${item.unit_price.toFixed(2)}
+                            {item.discount_percentage > 0 && (
+                              <span className="text-destructive ml-2">
+                                (-{item.discount_percentage}% desc.)
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="text-right font-semibold">
+                          ${item.total.toFixed(2)}
+                        </div>
+                      </div>
+                    ))}
+
+                    <Separator className="my-4" />
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span>Subtotal:</span>
+                        <span className="font-semibold">${quotation.subtotal.toFixed(2)}</span>
+                      </div>
+                      {quotation.discount_percentage > 0 && (
+                        <div className="flex justify-between text-destructive">
+                          <span>Descuento Global ({quotation.discount_percentage}%):</span>
+                          <span>-${quotation.discount_amount.toFixed(2)}</span>
+                        </div>
                       )}
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Cantidad: {item.quantity} × ${item.unit_price.toFixed(2)}
-                        {item.discount_percentage > 0 && (
-                          <span className="text-destructive ml-2">
-                            (-{item.discount_percentage}% desc.)
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                    <div className="text-right font-semibold">
-                      ${item.total.toFixed(2)}
+                      {quotation.discount_percentage > 0 && (
+                        <div className="flex justify-between">
+                          <span>Subtotal con Descuento:</span>
+                          <span className="font-semibold">${(quotation.subtotal - quotation.discount_amount).toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>IVA ({quotation.tax_rate}%):</span>
+                        <span>${quotation.tax_amount.toFixed(2)}</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between text-lg font-bold">
+                        <span>Total:</span>
+                        <span className="text-primary">${quotation.total.toFixed(2)}</span>
+                      </div>
                     </div>
                   </div>
-                ))}
+                )}
+              </Card>
 
-                <Separator className="my-4" />
+              {/* Notas y términos */}
+              {quotation.notes && (
+                <Card className="p-6">
+                  <h3 className="font-semibold mb-2">Notas</h3>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {quotation.notes}
+                  </p>
+                </Card>
+              )}
 
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal:</span>
-                    <span className="font-semibold">${quotation.subtotal.toFixed(2)}</span>
-                  </div>
-                  {quotation.discount_percentage > 0 && (
-                    <div className="flex justify-between text-destructive">
-                      <span>Descuento Global ({quotation.discount_percentage}%):</span>
-                      <span>-${quotation.discount_amount.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {quotation.discount_percentage > 0 && (
-                    <div className="flex justify-between">
-                      <span>Subtotal con Descuento:</span>
-                      <span className="font-semibold">${(quotation.subtotal - quotation.discount_amount).toFixed(2)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>IVA ({quotation.tax_rate}%):</span>
-                    <span>${quotation.tax_amount.toFixed(2)}</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total:</span>
-                    <span className="text-primary">${quotation.total.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Card>
+              {quotation.terms_conditions && (
+                <Card className="p-6">
+                  <h3 className="font-semibold mb-2">Términos y Condiciones</h3>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {quotation.terms_conditions}
+                  </p>
+                </Card>
+              )}
+            </TabsContent>
 
-          {/* Notas y términos */}
-          {quotation.notes && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-2">Notas</h3>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {quotation.notes}
-              </p>
-            </Card>
-          )}
-
-          {quotation.terms_conditions && (
-            <Card className="p-6">
-              <h3 className="font-semibold mb-2">Términos y Condiciones</h3>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {quotation.terms_conditions}
-              </p>
-            </Card>
-          )}
+            <TabsContent value="expenses">
+              <ExpensesList
+                quotationId={quotation.id}
+                currency={quotation.currency}
+                totalRevenue={quotation.total}
+              />
+            </TabsContent>
+          </Tabs>
 
           {/* Acciones */}
           <div className="space-y-3">
