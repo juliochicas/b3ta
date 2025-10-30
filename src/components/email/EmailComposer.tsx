@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Send, X } from "lucide-react";
+import { EmailAIAssistant } from "./EmailAIAssistant";
 
 interface EmailComposerProps {
   open: boolean;
@@ -177,7 +178,13 @@ export const EmailComposer = ({
           </div>
 
           <div>
-            <Label>Mensaje *</Label>
+            <div className="flex items-center justify-between mb-2">
+              <Label>Mensaje *</Label>
+              <EmailAIAssistant 
+                currentText={body}
+                onApply={(text) => setBody(text)}
+              />
+            </div>
             <Textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
