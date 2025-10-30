@@ -6,18 +6,19 @@ const plans = [
   {
     icon: Zap,
     name: "Starter",
-    tagline: "Para PyMEs que inician",
-    price: "$15K - $35K",
-    duration: "4-8 semanas",
-    description: "Automatización básica o e-commerce funcional",
+    tagline: "Para pequeños negocios",
+    price: "Desde $100",
+    duration: "1-4 semanas",
+    description: "Páginas web, landing pages y automatizaciones básicas",
     features: [
-      "Consultoría inicial incluida",
-      "1 servicio principal (n8n o Shopify básico)",
-      "Hasta 3 integraciones",
-      "Capacitación del equipo (4 horas)",
-      "1 mes de soporte post go-live",
-      "Documentación técnica",
-      "SLA respuesta 24 horas"
+      "Consultoría inicial gratuita",
+      "Desarrollo web responsivo",
+      "Landing pages optimizadas",
+      "Automatizaciones simples",
+      "Hasta 2 integraciones básicas",
+      "1 mes de soporte post lanzamiento",
+      "Documentación básica",
+      "SLA respuesta 48 horas"
     ],
     cta: "Solicitar Cotización",
     popular: false
@@ -26,18 +27,18 @@ const plans = [
     icon: Rocket,
     name: "Professional",
     tagline: "Para empresas en crecimiento",
-    price: "$35K - $120K",
-    duration: "8-12 semanas",
-    description: "Soluciones SAP o automatización avanzada con IA",
+    price: "Desde $500",
+    duration: "4-8 semanas",
+    description: "Automatizaciones avanzadas, consultoría de infraestructura y aplicaciones web",
     features: [
       "Todo en Starter +",
-      "SAP S/4HANA o Shopify Plus",
-      "Automatización con IA (copilots)",
-      "Integraciones ilimitadas",
-      "Capacitación extendida (12 horas)",
-      "3 meses de soporte 24/7",
-      "SLA respuesta 4 horas",
-      "1 feature request/mes incluido",
+      "Aplicaciones web completas",
+      "Automatización con IA",
+      "Consultoría de infraestructura cloud",
+      "Integraciones avanzadas ilimitadas",
+      "Capacitación del equipo (8 horas)",
+      "3 meses de soporte técnico",
+      "SLA respuesta 12 horas",
       "Arquitectura escalable"
     ],
     cta: "Plan Más Popular",
@@ -47,11 +48,12 @@ const plans = [
     icon: Building2,
     name: "Enterprise",
     tagline: "Para corporativos",
-    price: "$120K+",
-    duration: "12-24 semanas",
-    description: "Transformación digital completa end-to-end",
+    price: "Desde $15K",
+    duration: "8-24 semanas",
+    description: "Integraciones SAP, transformación digital completa y soluciones enterprise",
     features: [
       "Todo en Professional +",
+      "SAP S/4HANA integración completa",
       "Arquitectura multi-cloud",
       "IA custom con LLMs fine-tuned",
       "Equipo dedicado full-time",
@@ -59,9 +61,8 @@ const plans = [
       "6 meses soporte premium 24/7",
       "SLA respuesta 1 hora",
       "Features ilimitados",
-      "Auditorías de seguridad trimestrales",
-      "ROI tracking dashboard",
-      "Consultoría estratégica mensual"
+      "Auditorías de seguridad",
+      "ROI tracking dashboard"
     ],
     cta: "Contactar para Demo",
     popular: false
@@ -143,7 +144,7 @@ export const Pricing = () => {
         <div className="mt-16 text-center">
           <Card className="inline-block p-8 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
             <p className="text-lg text-foreground mb-4">
-              <span className="font-bold">¿Proyecto custom?</span> Todos nuestros planes se adaptan a tus necesidades específicas.
+              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos páginas web desde $100, automatizaciones desde $500, y consultorías personalizadas desde $1,000. Todos nuestros servicios se adaptan a tu presupuesto y necesidades.
             </p>
             <Button variant="outline" size="lg" onClick={scrollToContact}>
               Solicitar Propuesta Personalizada
