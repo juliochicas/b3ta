@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { EmailComposer } from "@/components/email/EmailComposer";
 import { EmailList } from "@/components/email/EmailList";
 import { EmailViewer } from "@/components/email/EmailViewer";
+import { EmailSetupGuide } from "@/components/email/EmailSetupGuide";
 import {
   ArrowLeft,
   Inbox,
@@ -17,8 +18,15 @@ import {
   Mail,
   Search,
   RefreshCw,
+  HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Email = () => {
   const navigate = useNavigate();
@@ -27,6 +35,7 @@ const Email = () => {
   const [selectedFolder, setSelectedFolder] = useState("inbox");
   const [selectedEmail, setSelectedEmail] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSetupGuide, setShowSetupGuide] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -52,13 +61,21 @@ const Email = () => {
 
   const handleSync = async () => {
     try {
-      const { error } = await supabase.functions.invoke("sync-emails");
+      toast.info("Sincronizando correos...");
+      
+      const { data, error } = await supabase.functions.invoke("poll-emails-imap");
       
       if (error) throw error;
       
-      toast.success("Sincronizando correos...");
+      if (data?.saved > 0) {
+        toast.success(`${data.saved} correos nuevos recibidos`);
+        window.location.reload(); // Recargar para mostrar los nuevos correos
+      } else {
+        toast.info("No hay correos nuevos");
+      }
     } catch (error: any) {
-      toast.error(error.message || "Error al sincronizar");
+      console.error("Error syncing emails:", error);
+      toast.error(error.message || "Error al sincronizar. Verifica la configuración IMAP.");
     }
   };
 
@@ -137,6 +154,15 @@ const Email = () => {
               <RefreshCw className="mr-2 h-4 w-4" />
               Sincronizar
             </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full"
+              onClick={() => setShowSetupGuide(true)}
+            >
+              <HelpCircle className="mr-2 h-4 w-4" />
+              Guía de Configuración
+            </Button>
           </div>
 
           {/* Email List */}
@@ -181,6 +207,15 @@ const Email = () => {
           setSelectedFolder("sent");
         }}
       />
+
+      <Dialog open={showSetupGuide} onOpenChange={setShowSetupGuide}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Configuración del Correo Electrónico</DialogTitle>
+          </DialogHeader>
+          <EmailSetupGuide />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

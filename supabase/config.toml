@@ -29,3 +29,9 @@ verify_jwt = true
 
 [functions.improve-email-text]
 verify_jwt = true
+
+[functions.receive-email-webhook]
+verify_jwt = false
+
+[functions.poll-emails-imap]
+verify_jwt = true
