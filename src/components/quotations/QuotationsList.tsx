@@ -18,6 +18,8 @@ interface Quotation {
   customer_company: string | null;
   status: string;
   subtotal: number;
+  discount_percentage: number;
+  discount_amount: number;
   tax_rate: number;
   tax_amount: number;
   total: number;

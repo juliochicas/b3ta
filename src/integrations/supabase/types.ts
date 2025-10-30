@@ -332,6 +332,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          discount_percentage: number | null
           id: string
           item_name: string
           product_service_id: string | null
@@ -343,6 +344,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           item_name: string
           product_service_id?: string | null
@@ -354,6 +356,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           item_name?: string
           product_service_id?: string | null
@@ -387,6 +390,8 @@ export type Database = {
           customer_company: string | null
           customer_email: string
           customer_name: string
+          discount_amount: number | null
+          discount_percentage: number | null
           id: string
           lead_id: string | null
           notes: string | null
@@ -410,6 +415,8 @@ export type Database = {
           customer_company?: string | null
           customer_email: string
           customer_name: string
+          discount_amount?: number | null
+          discount_percentage?: number | null
           id?: string
           lead_id?: string | null
           notes?: string | null
@@ -433,6 +440,8 @@ export type Database = {
           customer_company?: string | null
           customer_email?: string
           customer_name?: string
+          discount_amount?: number | null
+          discount_percentage?: number | null
           id?: string
           lead_id?: string | null
           notes?: string | null

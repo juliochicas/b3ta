@@ -21,6 +21,8 @@ interface Quotation {
   customer_company: string | null;
   status: string;
   subtotal: number;
+  discount_percentage: number;
+  discount_amount: number;
   tax_rate: number;
   tax_amount: number;
   total: number;
@@ -40,6 +42,7 @@ interface QuotationItem {
   description: string | null;
   quantity: number;
   unit_price: number;
+  discount_percentage: number;
   total: number;
 }
 
@@ -286,8 +289,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.rect(margin, yPos - 5, contentWidth, 8, 'F');
       doc.setFontSize(9);
       doc.text('Producto/Servicio', margin + 2, yPos);
-      doc.text('Cant.', margin + contentWidth * 0.6, yPos);
-      doc.text('P. Unit.', margin + contentWidth * 0.75, yPos);
+      doc.text('Cant.', margin + contentWidth * 0.55, yPos);
+      doc.text('P. Unit.', margin + contentWidth * 0.68, yPos);
+      doc.text('Desc.', margin + contentWidth * 0.8, yPos);
       doc.text('Total', margin + contentWidth * 0.9, yPos);
       yPos += 8;
 
@@ -299,9 +303,10 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           doc.addPage();
           yPos = 20;
         }
-        doc.text(item.item_name.substring(0, 40), margin + 2, yPos);
-        doc.text(String(item.quantity), margin + contentWidth * 0.6, yPos);
-        doc.text(`$${item.unit_price.toFixed(2)}`, margin + contentWidth * 0.75, yPos);
+        doc.text(item.item_name.substring(0, 35), margin + 2, yPos);
+        doc.text(String(item.quantity), margin + contentWidth * 0.55, yPos);
+        doc.text(`$${item.unit_price.toFixed(2)}`, margin + contentWidth * 0.68, yPos);
+        doc.text(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '-', margin + contentWidth * 0.8, yPos);
         doc.text(`$${item.total.toFixed(2)}`, margin + contentWidth * 0.9, yPos);
         yPos += 6;
 
@@ -325,8 +330,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
 
       // Totales
       yPos += 10;
+      const totalsSectionHeight = quotation.discount_percentage > 0 ? 40 : 30;
       doc.setFillColor(248, 249, 250);
-      doc.rect(margin + contentWidth * 0.5, yPos - 5, contentWidth * 0.5, 30, 'F');
+      doc.rect(margin + contentWidth * 0.5, yPos - 5, contentWidth * 0.5, totalsSectionHeight, 'F');
 
       doc.setFontSize(10);
       doc.text('Subtotal:', margin + contentWidth * 0.55, yPos);
@@ -337,6 +343,29 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         { align: 'right' }
       );
       yPos += 6;
+
+      // Mostrar descuento global si existe
+      if (quotation.discount_percentage > 0) {
+        doc.setTextColor(220, 38, 38);
+        doc.text(`Descuento Global (${quotation.discount_percentage}%):`, margin + contentWidth * 0.55, yPos);
+        doc.text(
+          `-${quotation.currency} $${quotation.discount_amount.toFixed(2)}`,
+          margin + contentWidth * 0.92,
+          yPos,
+          { align: 'right' }
+        );
+        yPos += 6;
+
+        doc.setTextColor(0, 0, 0);
+        doc.text('Subtotal con Descuento:', margin + contentWidth * 0.55, yPos);
+        doc.text(
+          `${quotation.currency} $${(quotation.subtotal - quotation.discount_amount).toFixed(2)}`,
+          margin + contentWidth * 0.92,
+          yPos,
+          { align: 'right' }
+        );
+        yPos += 6;
+      }
 
       doc.setTextColor(100, 100, 100);
       doc.text(`IVA (${quotation.tax_rate}%):`, margin + contentWidth * 0.55, yPos);
@@ -575,6 +604,11 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                       )}
                       <p className="text-sm text-muted-foreground mt-1">
                         Cantidad: {item.quantity} × ${item.unit_price.toFixed(2)}
+                        {item.discount_percentage > 0 && (
+                          <span className="text-destructive ml-2">
+                            (-{item.discount_percentage}% desc.)
+                          </span>
+                        )}
                       </p>
                     </div>
                     <div className="text-right font-semibold">
@@ -590,6 +624,18 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                     <span>Subtotal:</span>
                     <span className="font-semibold">${quotation.subtotal.toFixed(2)}</span>
                   </div>
+                  {quotation.discount_percentage > 0 && (
+                    <div className="flex justify-between text-destructive">
+                      <span>Descuento Global ({quotation.discount_percentage}%):</span>
+                      <span>-${quotation.discount_amount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {quotation.discount_percentage > 0 && (
+                    <div className="flex justify-between">
+                      <span>Subtotal con Descuento:</span>
+                      <span className="font-semibold">${(quotation.subtotal - quotation.discount_amount).toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-muted-foreground">
                     <span>IVA ({quotation.tax_rate}%):</span>
                     <span>${quotation.tax_amount.toFixed(2)}</span>

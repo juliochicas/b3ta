@@ -25,6 +25,7 @@ interface QuotationItem {
   description: string;
   quantity: number;
   unit_price: number;
+  discount_percentage: number;
   total: number;
 }
 
@@ -40,6 +41,7 @@ export const CreateQuotationModal = ({ onClose, onSuccess }: Props) => {
     customer_company: "",
     currency: "USD",
     tax_rate: "16",
+    discount_percentage: "0",
     valid_days: "30",
     tracking_number: "",
     notes: "",
@@ -80,6 +82,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       description: "",
       quantity: 1,
       unit_price: 0,
+      discount_percentage: 0,
       total: 0,
     }]);
   };
@@ -91,6 +94,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       description: product.description || "",
       quantity: 1,
       unit_price: product.unit_price,
+      discount_percentage: 0,
       total: product.unit_price,
     };
     setItems([...items, newItem]);
@@ -101,8 +105,10 @@ Para proceder con esta cotización, por favor realice el pago a través del link
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     
-    if (field === 'quantity' || field === 'unit_price') {
-      newItems[index].total = newItems[index].quantity * newItems[index].unit_price;
+    if (field === 'quantity' || field === 'unit_price' || field === 'discount_percentage') {
+      const subtotal = newItems[index].quantity * newItems[index].unit_price;
+      const discount = subtotal * (newItems[index].discount_percentage / 100);
+      newItems[index].total = subtotal - discount;
     }
     
     setItems(newItems);
@@ -114,9 +120,11 @@ Para proceder con esta cotización, por favor realice el pago a través del link
 
   const calculateTotals = () => {
     const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-    const taxAmount = subtotal * (parseFloat(formData.tax_rate) / 100);
-    const total = subtotal + taxAmount;
-    return { subtotal, taxAmount, total };
+    const globalDiscount = subtotal * (parseFloat(formData.discount_percentage) / 100);
+    const subtotalAfterDiscount = subtotal - globalDiscount;
+    const taxAmount = subtotalAfterDiscount * (parseFloat(formData.tax_rate) / 100);
+    const total = subtotalAfterDiscount + taxAmount;
+    return { subtotal, globalDiscount, subtotalAfterDiscount, taxAmount, total };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,7 +142,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
     setIsSaving(true);
 
     try {
-      const { subtotal, taxAmount, total } = calculateTotals();
+      const { subtotal, globalDiscount, taxAmount, total } = calculateTotals();
       
       // Generar número de cotización
       const { data: numberData, error: numberError } = await supabase
@@ -154,6 +162,8 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           customer_email: formData.customer_email,
           customer_company: formData.customer_company || null,
           subtotal,
+          discount_percentage: parseFloat(formData.discount_percentage),
+          discount_amount: globalDiscount,
           tax_rate: parseFloat(formData.tax_rate),
           tax_amount: taxAmount,
           total,
@@ -176,6 +186,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
         description: item.description || null,
         quantity: item.quantity,
         unit_price: item.unit_price,
+        discount_percentage: item.discount_percentage,
         total: item.total,
       }));
 
@@ -202,7 +213,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
     }
   };
 
-  const { subtotal, taxAmount, total } = calculateTotals();
+  const { subtotal, globalDiscount, subtotalAfterDiscount, taxAmount, total } = calculateTotals();
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -337,7 +348,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
               {items.map((item, index) => (
                 <Card key={index} className="p-4">
                   <div className="grid md:grid-cols-12 gap-3 items-start">
-                    <div className="md:col-span-4">
+                    <div className="md:col-span-3">
                       <Label className="text-xs">Nombre</Label>
                       <Input
                         value={item.item_name}
@@ -345,15 +356,15 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                         required
                       />
                     </div>
-                    <div className="md:col-span-3">
+                    <div className="md:col-span-2">
                       <Label className="text-xs">Descripción</Label>
                       <Input
                         value={item.description}
                         onChange={(e) => updateItem(index, 'description', e.target.value)}
                       />
                     </div>
-                    <div className="md:col-span-2">
-                      <Label className="text-xs">Cantidad</Label>
+                    <div className="md:col-span-1">
+                      <Label className="text-xs">Cant.</Label>
                       <Input
                         type="number"
                         step="0.01"
@@ -372,8 +383,19 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                         required
                       />
                     </div>
-                    <div className="md:col-span-1 flex items-end gap-2">
-                      <div>
+                    <div className="md:col-span-2">
+                      <Label className="text-xs">Desc. %</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={item.discount_percentage}
+                        onChange={(e) => updateItem(index, 'discount_percentage', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="md:col-span-2 flex items-end gap-2">
+                      <div className="flex-1">
                         <Label className="text-xs">Total</Label>
                         <div className="font-semibold">${item.total.toFixed(2)}</div>
                       </div>
@@ -401,11 +423,29 @@ Para proceder con esta cotización, por favor realice el pago a través del link
             {items.length > 0 && (
               <div className="mt-6 border-t pt-4">
                 <div className="flex justify-end space-y-2 flex-col items-end">
-                  <div className="flex justify-between w-64">
+                  <div className="flex justify-between w-80">
                     <span>Subtotal:</span>
                     <span className="font-semibold">{formData.currency} ${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between w-64 items-center gap-2">
+                  <div className="flex justify-between w-80 items-center gap-2">
+                    <span>Descuento Global:</span>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="100"
+                      value={formData.discount_percentage}
+                      onChange={(e) => setFormData({ ...formData, discount_percentage: e.target.value })}
+                      className="w-20 text-right"
+                    />
+                    <span>%</span>
+                    <span className="font-semibold text-destructive">-{formData.currency} ${globalDiscount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between w-80">
+                    <span>Subtotal con Descuento:</span>
+                    <span className="font-semibold">{formData.currency} ${subtotalAfterDiscount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between w-80 items-center gap-2">
                     <span>IVA:</span>
                     <Input
                       type="number"
@@ -417,7 +457,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                     <span>%</span>
                     <span className="font-semibold">{formData.currency} ${taxAmount.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between w-64 text-lg font-bold">
+                  <div className="flex justify-between w-80 text-lg font-bold">
                     <span>Total:</span>
                     <span className="text-primary">{formData.currency} ${total.toFixed(2)}</span>
                   </div>
