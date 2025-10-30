@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MessageCircle, MapPin } from "lucide-react";
 import { z } from "zod";
 
 // Validación de formulario con Zod
@@ -194,10 +194,25 @@ export const ContactForm = () => {
                 <p className="text-sm text-muted-foreground">hi@b3ta.us</p>
               </Card>
 
-              <Card className="p-8 bg-card border-border">
-                <Phone className="h-6 w-6 text-primary mb-4" />
-                <h3 className="font-semibold mb-2">WhatsApp</h3>
-                <p className="text-sm text-muted-foreground">+14355348065</p>
+              <Card className="p-8 bg-card border-border hover:shadow-lg transition-shadow">
+                <div className="flex items-start justify-between mb-4">
+                  <MessageCircle className="h-6 w-6 text-[#25D366]" />
+                </div>
+                <h3 className="font-semibold mb-2 text-foreground">WhatsApp</h3>
+                <p className="text-sm text-muted-foreground mb-4">+1 (435) 534-8065</p>
+                <Button
+                  onClick={() => {
+                    const phoneNumber = "14355348065";
+                    const message = "Hola, me interesa una consultoría con B3TA";
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white"
+                  size="sm"
+                >
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Chatea con nosotros
+                </Button>
               </Card>
 
               <Card className="p-8 bg-card border-border">
