@@ -14,6 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
+      consultation_reports: {
+        Row: {
+          conclusions: string | null
+          consultant_name: string
+          consultant_signature: string | null
+          created_at: string
+          created_by: string | null
+          current_situation: string | null
+          customer_company: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          findings: string | null
+          id: string
+          lead_id: string | null
+          recommendations: string | null
+          report_number: string
+          sections_config: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          conclusions?: string | null
+          consultant_name: string
+          consultant_signature?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_situation?: string | null
+          customer_company?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          findings?: string | null
+          id?: string
+          lead_id?: string | null
+          recommendations?: string | null
+          report_number: string
+          sections_config?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          conclusions?: string | null
+          consultant_name?: string
+          consultant_signature?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_situation?: string | null
+          customer_company?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          findings?: string | null
+          id?: string
+          lead_id?: string | null
+          recommendations?: string | null
+          report_number?: string
+          sections_config?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_reports_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_b3ta"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_categories: {
         Row: {
           created_at: string
@@ -474,6 +545,7 @@ export type Database = {
           lead_id: string | null
           notes: string | null
           quotation_number: string
+          report_id: string | null
           sent_at: string | null
           status: string
           stripe_payment_link: string | null
@@ -500,6 +572,7 @@ export type Database = {
           lead_id?: string | null
           notes?: string | null
           quotation_number: string
+          report_id?: string | null
           sent_at?: string | null
           status?: string
           stripe_payment_link?: string | null
@@ -526,6 +599,7 @@ export type Database = {
           lead_id?: string | null
           notes?: string | null
           quotation_number?: string
+          report_id?: string | null
           sent_at?: string | null
           status?: string
           stripe_payment_link?: string | null
@@ -545,6 +619,54 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads_b3ta"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotations_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_media: {
+        Row: {
+          caption: string | null
+          created_at: string
+          file_size: number | null
+          id: string
+          is_external: boolean
+          report_id: string
+          type: string
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_external?: boolean
+          report_id: string
+          type: string
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_external?: boolean
+          report_id?: string
+          type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_media_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_reports"
             referencedColumns: ["id"]
           },
         ]
@@ -577,6 +699,7 @@ export type Database = {
     Functions: {
       generate_invoice_number: { Args: never; Returns: string }
       generate_quotation_number: { Args: never; Returns: string }
+      generate_report_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

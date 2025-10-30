@@ -32,9 +32,10 @@ interface QuotationItem {
 interface Props {
   onClose: () => void;
   onSuccess: () => void;
+  leadId?: string;
 }
 
-export const CreateQuotationModal = ({ onClose, onSuccess }: Props) => {
+export const CreateQuotationModal = ({ onClose, onSuccess, leadId }: Props) => {
   const [formData, setFormData] = useState({
     customer_name: "",
     customer_email: "",
@@ -58,13 +59,16 @@ Para proceder con esta cotización, por favor realice el pago a través del link
   
   const [items, setItems] = useState<QuotationItem[]>([]);
   const [products, setProducts] = useState<ProductService[]>([]);
+  const [reports, setReports] = useState<any[]>([]);
+  const [selectedReportId, setSelectedReportId] = useState<string>("");
   const [showProductSelector, setShowProductSelector] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     loadProducts();
-  }, []);
+    if (leadId) loadReportsForLead();
+  }, [leadId]);
 
   const loadProducts = async () => {
     const { data } = await supabase
@@ -74,6 +78,16 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       .order('name');
     
     setProducts(data || []);
+  };
+
+  const loadReportsForLead = async () => {
+    const { data } = await supabase
+      .from('consultation_reports')
+      .select('*')
+      .eq('lead_id', leadId)
+      .order('created_at', { ascending: false });
+    
+    setReports(data || []);
   };
 
   const addItem = () => {
@@ -178,6 +192,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           notes: formData.notes || null,
           tags: tagsArray,
           terms_conditions: formData.terms_conditions,
+          report_id: selectedReportId || null,
         }])
         .select()
         .single();
@@ -260,6 +275,23 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                   onChange={(e) => setFormData({ ...formData, customer_company: e.target.value })}
                 />
               </div>
+              {reports.length > 0 && (
+                <div>
+                  <Label htmlFor="report">Informe de Consultoría (opcional)</Label>
+                  <Select value={selectedReportId} onValueChange={setSelectedReportId}>
+                    <SelectTrigger id="report">
+                      <SelectValue placeholder="Seleccionar informe" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {reports.map((report) => (
+                        <SelectItem key={report.id} value={report.id}>
+                          {report.report_number} - {new Date(report.created_at).toLocaleDateString('es-ES')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <Label htmlFor="currency">Moneda *</Label>
                 <Select value={formData.currency} onValueChange={(value) => setFormData({ ...formData, currency: value })}>

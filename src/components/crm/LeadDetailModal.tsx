@@ -19,10 +19,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Mail, Phone, Building2, MessageSquare, Calendar, 
-  Star, Sparkles, Save, Activity, Trash2 
+  Star, Sparkles, Save, Activity, Trash2, FileText 
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { CreateReportModal } from "@/components/reports/CreateReportModal";
 
 interface Lead {
   id: string;
@@ -62,6 +63,7 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCreateReport, setShowCreateReport] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
@@ -334,6 +336,15 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
             </div>
 
             <Button
+              onClick={() => setShowCreateReport(true)}
+              variant="outline"
+              className="w-full"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Crear Informe de Consultoría
+            </Button>
+
+            <Button
               onClick={() => setShowDeleteDialog(true)}
               variant="destructive"
               className="w-full"
@@ -387,6 +398,23 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {showCreateReport && (
+        <CreateReportModal
+          onClose={() => setShowCreateReport(false)}
+          onSuccess={() => {
+            setShowCreateReport(false);
+            onUpdate();
+          }}
+          leadId={lead.id}
+          leadData={{
+            name: lead.name,
+            email: lead.email,
+            company: lead.company,
+            phone: lead.phone,
+          }}
+        />
+      )}
     </Dialog>
   );
 };
