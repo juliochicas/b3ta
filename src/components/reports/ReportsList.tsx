@@ -25,6 +25,7 @@ interface Report {
   conclusions: string | null;
   created_at: string;
   lead_id: string | null;
+  public_slug: string | null;
 }
 
 export const ReportsList = () => {

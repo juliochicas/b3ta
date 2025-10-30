@@ -29,6 +29,7 @@ export type Database = {
           findings: string | null
           id: string
           lead_id: string | null
+          public_slug: string | null
           recommendations: string | null
           report_number: string
           sections_config: Json
@@ -49,6 +50,7 @@ export type Database = {
           findings?: string | null
           id?: string
           lead_id?: string | null
+          public_slug?: string | null
           recommendations?: string | null
           report_number: string
           sections_config?: Json
@@ -69,6 +71,7 @@ export type Database = {
           findings?: string | null
           id?: string
           lead_id?: string | null
+          public_slug?: string | null
           recommendations?: string | null
           report_number?: string
           sections_config?: Json
@@ -700,6 +703,7 @@ export type Database = {
       generate_invoice_number: { Args: never; Returns: string }
       generate_quotation_number: { Args: never; Returns: string }
       generate_report_number: { Args: never; Returns: string }
+      generate_report_slug: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

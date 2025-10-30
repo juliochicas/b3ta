@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Download, Mail, Image as ImageIcon, Video, ExternalLink } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { FileText, Download, Mail, Image as ImageIcon, Video, ExternalLink, Copy, ExternalLinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 
@@ -25,6 +26,7 @@ interface Report {
   recommendations: string | null;
   conclusions: string | null;
   created_at: string;
+  public_slug: string | null;
 }
 
 interface Media {
@@ -231,6 +233,21 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
     }
   };
 
+  const copyPublicLink = () => {
+    if (!report.public_slug) return;
+    const url = `${window.location.origin}/informe/${report.public_slug}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "Enlace copiado",
+      description: "El enlace público ha sido copiado al portapapeles",
+    });
+  };
+
+  const openPublicReport = () => {
+    if (!report.public_slug) return;
+    window.open(`/informe/${report.public_slug}`, '_blank');
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       draft: { label: "Borrador", variant: "secondary" as const },
@@ -245,13 +262,25 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-3">
               <FileText className="h-6 w-6" />
               {report.report_number}
               {getStatusBadge(report.status)}
             </DialogTitle>
             <div className="flex gap-2">
+              {report.public_slug && (
+                <>
+                  <Button size="sm" variant="outline" onClick={openPublicReport}>
+                    <ExternalLinkIcon className="mr-2 h-4 w-4" />
+                    Ver Público
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={copyPublicLink}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copiar Link
+                  </Button>
+                </>
+              )}
               <Button size="sm" onClick={downloadPDF} disabled={loading}>
                 <Download className="mr-2 h-4 w-4" />
                 Descargar PDF

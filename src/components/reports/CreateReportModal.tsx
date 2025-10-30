@@ -107,12 +107,16 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
       const { data: reportNumber, error: numberError } = await supabase.rpc('generate_report_number');
       if (numberError) throw numberError;
 
+      const { data: reportSlug, error: slugError } = await supabase.rpc('generate_report_slug');
+      if (slugError) throw slugError;
+
       const { data: { user } } = await supabase.auth.getUser();
 
       const { data: report, error: reportError } = await supabase
         .from('consultation_reports')
         .insert({
           report_number: reportNumber,
+          public_slug: reportSlug,
           lead_id: formData.selectedLeadId || null,
           created_by: user?.id,
           customer_name: formData.customerName,
