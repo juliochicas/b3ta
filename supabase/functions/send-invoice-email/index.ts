@@ -1,8 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -141,15 +140,28 @@ serve(async (req) => {
       </html>
     `;
 
-    // Send email
-    const emailResponse = await resend.emails.send({
-      from: "B3TA <onboarding@resend.dev>",
-      to: [invoice.customer_email],
-      subject: `Factura ${invoice.invoice_number} - B3TA`,
-      html: html,
+    // Send email using Resend REST API
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "B3TA <onboarding@resend.dev>",
+        to: [invoice.customer_email],
+        subject: `Factura ${invoice.invoice_number} - B3TA`,
+        html: html,
+      }),
     });
 
-    console.log("[SEND-INVOICE] Email sent:", emailResponse);
+    const emailData = await emailResponse.json();
+    
+    if (!emailResponse.ok) {
+      throw new Error(`Resend API error: ${JSON.stringify(emailData)}`);
+    }
+
+    console.log("[SEND-INVOICE] Email sent:", emailData);
 
     // Update sent_at timestamp
     await supabaseClient
