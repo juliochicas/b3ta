@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { FileSpreadsheet, Download, TrendingUp, DollarSign, TrendingDown, Percent } from "lucide-react";
+import { FileSpreadsheet, Download, TrendingUp, DollarSign, TrendingDown, Percent, Link2, Send, CheckCircle, XCircle, Users } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -21,10 +21,20 @@ interface ReportData {
   currency: string;
 }
 
+interface ReportStats {
+  totalQuotations: number;
+  quotationsWithLinks: number;
+  sentQuotations: number;
+  paidQuotations: number;
+  unpaidQuotations: number;
+  leadsWithoutQuotations: number;
+}
+
 export const FinancialReport = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reportData, setReportData] = useState<ReportData[]>([]);
+  const [reportStats, setReportStats] = useState<ReportStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -80,6 +90,42 @@ export const FinancialReport = () => {
 
       const report = await Promise.all(reportPromises);
       setReportData(report);
+
+      // Calcular estadísticas adicionales
+      const quotationsWithLinks = quotations?.filter(q => q.stripe_payment_link).length || 0;
+      const sentQuotations = quotations?.filter(q => q.sent_at).length || 0;
+      
+      // Obtener facturas pagadas en el periodo
+      const { data: invoices } = await supabase
+        .from('invoices')
+        .select('quotation_id')
+        .eq('payment_status', 'paid')
+        .in('quotation_id', quotations?.map(q => q.id) || []);
+      
+      const paidQuotationIds = new Set(invoices?.map(inv => inv.quotation_id) || []);
+      const paidQuotations = quotations?.filter(q => paidQuotationIds.has(q.id)).length || 0;
+      const unpaidQuotations = sentQuotations - paidQuotations;
+
+      // Contar leads sin cotizaciones
+      const { data: leadsWithoutQuotations, error: leadsError } = await supabase
+        .from('leads_b3ta')
+        .select('id')
+        .is('id', null)
+        .not('id', 'in', `(SELECT lead_id FROM quotations WHERE lead_id IS NOT NULL)`);
+
+      const { count: leadsCount } = await supabase
+        .from('leads_b3ta')
+        .select('id', { count: 'exact', head: true })
+        .filter('id', 'not.in', `(SELECT lead_id FROM quotations WHERE lead_id IS NOT NULL)`);
+
+      setReportStats({
+        totalQuotations: report.length,
+        quotationsWithLinks,
+        sentQuotations,
+        paidQuotations,
+        unpaidQuotations,
+        leadsWithoutQuotations: leadsCount || 0,
+      });
 
       toast({
         title: "Reporte generado",
@@ -224,6 +270,83 @@ export const FinancialReport = () => {
           </div>
         </div>
       </Card>
+
+      {/* Estadísticas de cotizaciones */}
+      {reportStats && (
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <Card className="p-4 bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900">
+            <div className="flex items-center gap-2 mb-2">
+              <Link2 className="h-6 w-6 text-cyan-600" />
+              <div>
+                <p className="text-xs text-muted-foreground">Links Generados</p>
+                <p className="text-xl font-bold text-cyan-600">
+                  {reportStats.quotationsWithLinks}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950 dark:to-indigo-900">
+            <div className="flex items-center gap-2 mb-2">
+              <Send className="h-6 w-6 text-indigo-600" />
+              <div>
+                <p className="text-xs text-muted-foreground">Enviadas</p>
+                <p className="text-xl font-bold text-indigo-600">
+                  {reportStats.sentQuotations}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className="h-6 w-6 text-green-600" />
+              <div>
+                <p className="text-xs text-muted-foreground">Pagadas</p>
+                <p className="text-xl font-bold text-green-600">
+                  {reportStats.paidQuotations}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900">
+            <div className="flex items-center gap-2 mb-2">
+              <XCircle className="h-6 w-6 text-orange-600" />
+              <div>
+                <p className="text-xs text-muted-foreground">No Pagadas</p>
+                <p className="text-xl font-bold text-orange-600">
+                  {reportStats.unpaidQuotations}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="h-6 w-6 text-amber-600" />
+              <div>
+                <p className="text-xs text-muted-foreground">Leads Sin Cotizar</p>
+                <p className="text-xl font-bold text-amber-600">
+                  {reportStats.leadsWithoutQuotations}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+            <div className="flex items-center gap-2 mb-2">
+              <FileSpreadsheet className="h-6 w-6 text-slate-600" />
+              <div>
+                <p className="text-xs text-muted-foreground">Total Cotizaciones</p>
+                <p className="text-xl font-bold text-slate-600">
+                  {reportStats.totalQuotations}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Resumen general */}
       {reportData.length > 0 && (
