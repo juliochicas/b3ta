@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -112,6 +112,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
       if (slugError) throw slugError;
 
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
 
       const { data: report, error: reportError } = await supabase
         .from('consultation_reports')
@@ -138,39 +139,50 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
 
       if (reportError) throw reportError;
 
-      // Upload media files
-      for (const media of mediaFiles) {
-        if (media.file) {
-          const fileExt = media.file.name.split('.').pop();
-          const fileName = `${report.id}/${Date.now()}.${fileExt}`;
-          const { error: uploadError } = await supabase.storage
-            .from('consultation-reports')
-            .upload(fileName, media.file);
+      // Upload media files (continue even if one fails, but log errors)
+      const mediaUploadPromises = mediaFiles.map(async (media) => {
+        try {
+          if (media.file) {
+            const fileExt = media.file.name.split('.').pop();
+            const fileName = `${report.id}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+            
+            const { error: uploadError } = await supabase.storage
+              .from('consultation-reports')
+              .upload(fileName, media.file, {
+                cacheControl: '3600',
+                upsert: false,
+              });
 
-          if (uploadError) throw uploadError;
+            if (uploadError) throw uploadError;
 
-          const { data: { publicUrl } } = supabase.storage
-            .from('consultation-reports')
-            .getPublicUrl(fileName);
+            const { data: { publicUrl } } = supabase.storage
+              .from('consultation-reports')
+              .getPublicUrl(fileName);
 
-          await supabase.from('report_media').insert({
-            report_id: report.id,
-            type: media.type,
-            url: publicUrl,
-            is_external: false,
-            caption: media.caption,
-            file_size: media.file.size,
-          });
-        } else if (media.url) {
-          await supabase.from('report_media').insert({
-            report_id: report.id,
-            type: media.type,
-            url: media.url,
-            is_external: true,
-            caption: media.caption,
-          });
+            return supabase.from('report_media').insert({
+              report_id: report.id,
+              type: media.type,
+              url: publicUrl,
+              is_external: false,
+              caption: media.caption || null,
+              file_size: media.file.size,
+            });
+          } else if (media.url) {
+            return supabase.from('report_media').insert({
+              report_id: report.id,
+              type: media.type,
+              url: media.url,
+              is_external: true,
+              caption: media.caption || null,
+            });
+          }
+        } catch (error) {
+          console.error('Error uploading media:', error);
+          return null;
         }
-      }
+      });
+
+      await Promise.allSettled(mediaUploadPromises);
 
       toast({
         title: "Éxito",
@@ -193,6 +205,9 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nuevo Informe de Consultoría</DialogTitle>
+          <DialogDescription>
+            Crea un nuevo informe completo con análisis, hallazgos y recomendaciones para tu cliente.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">

@@ -20,7 +20,7 @@ export type Database = {
           consultant_name: string
           consultant_signature: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           current_situation: string | null
           customer_company: string | null
           customer_email: string
@@ -41,7 +41,7 @@ export type Database = {
           consultant_name: string
           consultant_signature?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           current_situation?: string | null
           customer_company?: string | null
           customer_email: string
@@ -62,7 +62,7 @@ export type Database = {
           consultant_name?: string
           consultant_signature?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           current_situation?: string | null
           customer_company?: string | null
           customer_email?: string
@@ -81,6 +81,13 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "consultation_reports_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_b3ta"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_consultation_reports_lead"
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads_b3ta"
@@ -537,7 +544,7 @@ export type Database = {
       quotations: {
         Row: {
           created_at: string
-          created_by: string | null
+          created_by: string
           currency: string
           customer_company: string | null
           customer_email: string
@@ -564,7 +571,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           currency?: string
           customer_company?: string | null
           customer_email: string
@@ -591,7 +598,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           currency?: string
           customer_company?: string | null
           customer_email?: string
@@ -617,6 +624,20 @@ export type Database = {
           valid_until?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_quotations_lead"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_b3ta"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_quotations_report"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_reports"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "quotations_lead_id_fkey"
             columns: ["lead_id"]
@@ -700,6 +721,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      count_consultation_reports: { Args: never; Returns: number }
       generate_invoice_number: { Args: never; Returns: string }
       generate_quotation_number: { Args: never; Returns: string }
       generate_report_number: { Args: never; Returns: string }

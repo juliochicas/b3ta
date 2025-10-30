@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileText, Search, Calendar, User } from "lucide-react";
+import { FileText, Search, Calendar, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ReportDetailModal } from "./ReportDetailModal";
 
@@ -33,22 +33,40 @@ export const ReportsList = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const ITEMS_PER_PAGE = 10;
   const { toast } = useToast();
 
   useEffect(() => {
     loadReports();
-  }, []);
+  }, [currentPage, searchTerm]);
 
   const loadReports = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Build query with pagination
+      let query = supabase
         .from('consultation_reports')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*', { count: 'exact' });
+
+      // Apply search filter if exists
+      if (searchTerm) {
+        query = query.or(`customer_name.ilike.%${searchTerm}%,report_number.ilike.%${searchTerm}%,customer_company.ilike.%${searchTerm}%`);
+      }
+
+      // Apply pagination
+      const from = (currentPage - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+      
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
       setReports(data || []);
+      setTotalCount(count || 0);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -60,11 +78,8 @@ export const ReportsList = () => {
     }
   };
 
-  const filteredReports = reports.filter(report =>
-    report.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.report_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.customer_company?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Search is now handled server-side, so just use reports directly
+  const filteredReports = reports;
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -140,6 +155,35 @@ export const ReportsList = () => {
           ))
         )}
       </div>
+
+      {filteredReports.length > 0 && (
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {((currentPage - 1) * ITEMS_PER_PAGE) + 1} a {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} de {totalCount} informes
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-md">
+              <span className="text-sm">Página {currentPage} de {Math.ceil(totalCount / ITEMS_PER_PAGE)}</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              disabled={currentPage >= Math.ceil(totalCount / ITEMS_PER_PAGE)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {selectedReport && (
         <ReportDetailModal

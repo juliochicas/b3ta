@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -653,6 +653,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           <div className="flex justify-between items-start">
             <div>
               <DialogTitle className="text-2xl mb-2">{quotation.quotation_number}</DialogTitle>
+              <DialogDescription className="mb-2">
+                Detalle completo de la cotización con items, totales y opciones de pago.
+              </DialogDescription>
               <Badge>
                 {quotation.status === 'draft' ? 'Borrador' :
                  quotation.status === 'sent' ? 'Enviada' :
