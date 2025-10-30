@@ -1,13 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Zap, Rocket, Building2 } from "lucide-react";
+import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
 
 const plans = [
   {
     icon: Zap,
     name: "Starter",
     tagline: "Para pequeños negocios",
-    price: "Desde $100",
+    priceUSD: 100,
     duration: "1-4 semanas",
     description: "Páginas web, landing pages y automatizaciones básicas",
     features: [
@@ -27,7 +28,7 @@ const plans = [
     icon: Rocket,
     name: "Professional",
     tagline: "Para empresas en crecimiento",
-    price: "Desde $500",
+    priceUSD: 500,
     duration: "4-8 semanas",
     description: "Automatizaciones avanzadas, consultoría de infraestructura y aplicaciones web",
     features: [
@@ -48,7 +49,7 @@ const plans = [
     icon: Building2,
     name: "Enterprise",
     tagline: "Para corporativos",
-    price: "Desde $15K",
+    priceUSD: 15000,
     duration: "8-24 semanas",
     description: "Integraciones SAP, transformación digital completa y soluciones enterprise",
     features: [
@@ -70,6 +71,8 @@ const plans = [
 ];
 
 export const Pricing = () => {
+  const { formatPrice, currencyData, loading } = useCurrencyConverter();
+  
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -110,7 +113,16 @@ export const Pricing = () => {
               <p className="text-sm text-muted-foreground mb-4">{plan.tagline}</p>
 
               <div className="mb-6">
-                <span className="text-4xl font-bold text-primary">{plan.price}</span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-4xl font-bold text-primary">
+                    {loading ? "..." : `Desde ${formatPrice(plan.priceUSD)}`}
+                  </span>
+                  {currencyData.currency !== 'USD' && !loading && (
+                    <span className="text-xs text-muted-foreground">
+                      ≈ ${plan.priceUSD.toLocaleString()} USD
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-muted-foreground mt-2">
                   Duración: {plan.duration}
                 </p>
@@ -144,7 +156,12 @@ export const Pricing = () => {
         <div className="mt-16 text-center">
           <Card className="inline-block p-8 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
             <p className="text-lg text-foreground mb-4">
-              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos páginas web desde $100, automatizaciones desde $500, y consultorías personalizadas desde $1,000. Todos nuestros servicios se adaptan a tu presupuesto y necesidades.
+              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos páginas web desde {loading ? "..." : formatPrice(100)}, automatizaciones desde {loading ? "..." : formatPrice(500)}, y consultorías personalizadas desde {loading ? "..." : formatPrice(1000)}. 
+              {currencyData.currency !== 'USD' && !loading && (
+                <span className="block mt-2 text-sm text-muted-foreground">
+                  Precios de referencia en {currencyData.currency}. Facturación en USD.
+                </span>
+              )}
             </p>
             <Button variant="outline" size="lg" onClick={scrollToContact}>
               Solicitar Propuesta Personalizada
