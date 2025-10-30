@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { FileSpreadsheet, Download, TrendingUp, DollarSign, TrendingDown, Percent, Link2, Send, CheckCircle, XCircle, Users } from "lucide-react";
+import { FileSpreadsheet, Download, TrendingUp, DollarSign, TrendingDown, Percent, Link2, Send, CheckCircle, XCircle, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -36,6 +36,8 @@ export const FinancialReport = () => {
   const [reportData, setReportData] = useState<ReportData[]>([]);
   const [reportStats, setReportStats] = useState<ReportStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
   const { toast } = useToast();
 
   const generateReport = async () => {
@@ -90,6 +92,7 @@ export const FinancialReport = () => {
 
       const report = await Promise.all(reportPromises);
       setReportData(report);
+      setCurrentPage(1); // Reset a la primera página cuando se genera un nuevo reporte
 
       // Calcular estadísticas adicionales
       const quotationsWithLinks = quotations?.filter(q => q.stripe_payment_link).length || 0;
@@ -226,6 +229,12 @@ export const FinancialReport = () => {
   const averageMargin = reportData.length > 0
     ? reportData.reduce((sum, item) => sum + item.profit_margin, 0) / reportData.length
     : 0;
+
+  // Paginación
+  const totalPages = Math.ceil(reportData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = reportData.slice(startIndex, endIndex);
 
   return (
     <div className="space-y-6">
@@ -436,7 +445,7 @@ export const FinancialReport = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {reportData.map((item) => (
+                  {paginatedData.map((item) => (
                     <tr key={item.quotation_id} className="border-b hover:bg-muted/50">
                       <td className="p-3 text-sm">
                         {format(new Date(item.created_at), 'dd MMM yyyy', { locale: es })}
@@ -477,6 +486,38 @@ export const FinancialReport = () => {
                 </tfoot>
               </table>
             </div>
+
+            {/* Controles de paginación */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <p className="text-sm text-muted-foreground">
+                  Mostrando {startIndex + 1} - {Math.min(endIndex, reportData.length)} de {reportData.length} cotizaciones
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Anterior
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Página {currentPage} de {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Siguiente
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
         </>
       )}
