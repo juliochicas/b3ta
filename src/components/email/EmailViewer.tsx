@@ -6,7 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowLeft, Reply, ReplyAll, Forward, Trash2, Star, MessageSquare, AlertOctagon, Trash } from "lucide-react";
+import { ArrowLeft, Reply, ReplyAll, Forward, Trash2, Star, MessageSquare, AlertOctagon, Trash, MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -149,69 +156,106 @@ export const EmailViewer = ({ email, onBack, onReply, onEmailChange }: EmailView
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center gap-2 p-4 border-b">
+      {/* Header con acciones - Responsivo */}
+      <div className="flex items-center gap-2 p-3 md:p-4 border-b">
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" />
+          <span className="sr-only">Volver</span>
         </Button>
+        
         <div className="flex-1" />
+        
+        {/* Botón de conversación - Visible en desktop */}
         {hasThread && (
           <Button 
             variant={showThread ? "secondary" : "ghost"} 
             size="sm"
             onClick={() => setShowThread(!showThread)}
+            className="hidden md:flex"
           >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            {showThread ? "Ocultar conversación" : `Ver conversación (${threadEmails.length})`}
+            <MessageSquare className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">
+              {showThread ? "Ocultar conversación" : `Ver conversación (${threadEmails.length})`}
+            </span>
           </Button>
         )}
-        <Separator orientation="vertical" className="h-6" />
-        <Button variant="ghost" size="sm" onClick={() => onReply(email)}>
-          <Reply className="h-4 w-4 mr-2" />
-          Responder
+        
+        {/* Acciones principales - Siempre visibles */}
+        <Button variant="ghost" size="sm" onClick={() => onReply(email)} className="hidden sm:flex">
+          <Reply className="h-4 w-4 md:mr-2" />
+          <span className="hidden md:inline">Responder</span>
         </Button>
-        <Button variant="ghost" size="sm">
-          <ReplyAll className="h-4 w-4 mr-2" />
-          Responder a todos
-        </Button>
-        <Button variant="ghost" size="sm">
-          <Forward className="h-4 w-4 mr-2" />
-          Reenviar
-        </Button>
-        <Separator orientation="vertical" className="h-6" />
-        <Button variant="ghost" size="sm">
-          <Star className={`h-4 w-4 ${email.is_starred ? "fill-yellow-500 text-yellow-500" : ""}`} />
-        </Button>
-        {email.folder !== "spam" && (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={handleMarkAsSpam}
-            title="Marcar como spam"
-          >
-            <AlertOctagon className="h-4 w-4" />
-          </Button>
-        )}
-        {email.folder !== "trash" && (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={handleMoveToTrash}
-            title="Mover a papelera"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        )}
-        {email.folder === "trash" && (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => setShowDeleteDialog(true)}
-            title="Eliminar permanentemente"
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        )}
+        
+        {/* Menú desplegable para más acciones */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="h-4 w-4" />
+              <span className="sr-only">Más acciones</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            {/* Acción de responder en móvil */}
+            <DropdownMenuItem onClick={() => onReply(email)} className="sm:hidden">
+              <Reply className="h-4 w-4 mr-2" />
+              Responder
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem>
+              <ReplyAll className="h-4 w-4 mr-2" />
+              Responder a todos
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem>
+              <Forward className="h-4 w-4 mr-2" />
+              Reenviar
+            </DropdownMenuItem>
+            
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem>
+              <Star className={`h-4 w-4 mr-2 ${email.is_starred ? "fill-yellow-500 text-yellow-500" : ""}`} />
+              {email.is_starred ? "Quitar favorito" : "Marcar favorito"}
+            </DropdownMenuItem>
+            
+            {/* Conversación en móvil */}
+            {hasThread && (
+              <DropdownMenuItem onClick={() => setShowThread(!showThread)} className="md:hidden">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                {showThread ? "Ocultar conversación" : `Ver conversación (${threadEmails.length})`}
+              </DropdownMenuItem>
+            )}
+            
+            <DropdownMenuSeparator />
+            
+            {email.folder !== "spam" && (
+              <DropdownMenuItem onClick={handleMarkAsSpam}>
+                <AlertOctagon className="h-4 w-4 mr-2" />
+                Marcar como spam
+              </DropdownMenuItem>
+            )}
+            
+            {email.folder !== "trash" && (
+              <DropdownMenuItem onClick={handleMoveToTrash}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Mover a papelera
+              </DropdownMenuItem>
+            )}
+            
+            {email.folder === "trash" && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash className="h-4 w-4 mr-2" />
+                  Eliminar permanentemente
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6">
