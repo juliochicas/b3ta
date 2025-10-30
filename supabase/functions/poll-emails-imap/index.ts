@@ -45,9 +45,9 @@ async function fetchEmailsViaIMAP() {
     console.log("Selecting INBOX...");
     await sendCommand("a002 SELECT INBOX");
 
-    // Buscar correos no leídos
-    console.log("Searching for unseen emails...");
-    const searchResponse = await sendCommand("a003 SEARCH UNSEEN");
+    // Buscar correos recientes (últimos 50 para no sobrecargar)
+    console.log("Searching for recent emails...");
+    const searchResponse = await sendCommand("a003 SEARCH ALL");
     
     // Parsear IDs de correos
     const emailIds = searchResponse
@@ -56,12 +56,13 @@ async function fetchEmailsViaIMAP() {
       .split(" ")
       .filter(id => id) || [];
 
-    console.log(`Found ${emailIds.length} unseen emails`);
+    console.log(`Found ${emailIds.length} emails in inbox`);
 
     const emails = [];
 
-    // Obtener detalles de cada correo
-    for (const id of emailIds.slice(0, 10)) { // Limitar a 10 correos por ejecución
+    // Obtener detalles de cada correo (últimos 20)
+    const recentIds = emailIds.slice(-20); // Tomar los últimos 20
+    for (const id of recentIds) {
       try {
         const fetchResponse = await sendCommand(
           `a00${4 + parseInt(id)} FETCH ${id} (BODY[HEADER] BODY[TEXT])`
@@ -73,6 +74,8 @@ async function fetchEmailsViaIMAP() {
         const subjectMatch = fetchResponse.match(/Subject: ([^\r\n]+)/i);
         const dateMatch = fetchResponse.match(/Date: ([^\r\n]+)/i);
         const messageIdMatch = fetchResponse.match(/Message-ID: <([^>]+)>/i);
+        const inReplyToMatch = fetchResponse.match(/In-Reply-To: <([^>]+)>/i);
+        const referencesMatch = fetchResponse.match(/References: ([^\r\n]+)/i);
 
         // Parsear body (simplificado)
         const bodyMatch = fetchResponse.match(/BODY\[TEXT\]\s+\{[\d]+\}\r\n([\s\S]+?)\)/);
@@ -83,11 +86,12 @@ async function fetchEmailsViaIMAP() {
           subject: subjectMatch?.[1] || "(Sin asunto)",
           body_text: bodyMatch?.[1]?.trim() || "",
           message_id: messageIdMatch?.[1] || null,
+          in_reply_to: inReplyToMatch?.[1] || null,
+          references: referencesMatch?.[1]?.split(/\s+/).filter(r => r.startsWith("<")) || null,
           received_at: dateMatch?.[1] || new Date().toISOString(),
         });
 
-        // Marcar como leído
-        await sendCommand(`a00${5 + parseInt(id)} STORE ${id} +FLAGS (\\Seen)`);
+        // NO marcar como leído para permitir sincronizaciones futuras
       } catch (error) {
         console.error(`Error fetching email ${id}:`, error);
       }
@@ -162,6 +166,24 @@ serve(async (req) => {
 
       if (customer) customerId = customer.id;
 
+      // Determinar thread_id y in_reply_to
+      let threadId = null;
+      let inReplyTo = null;
+      
+      if (email.in_reply_to) {
+        inReplyTo = email.in_reply_to;
+        // Buscar el correo original para obtener o crear thread_id
+        const { data: originalEmail } = await supabase
+          .from("emails")
+          .select("thread_id, id")
+          .eq("message_id", email.in_reply_to)
+          .single();
+        
+        if (originalEmail) {
+          threadId = originalEmail.thread_id || originalEmail.id;
+        }
+      }
+
       // Guardar el correo
       const { data: savedEmail, error } = await supabase
         .from("emails")
@@ -173,6 +195,9 @@ serve(async (req) => {
             subject: email.subject,
             body_text: email.body_text,
             body_html: email.body_text,
+            thread_id: threadId,
+            in_reply_to: inReplyTo,
+            email_references: email.references,
             is_read: false,
             folder: "inbox",
             lead_id: leadId,
