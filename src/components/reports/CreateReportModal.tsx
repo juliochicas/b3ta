@@ -104,23 +104,56 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
 
     try {
       setSaving(true);
+      console.log('🚀 Iniciando creación de informe...');
 
+      // Verificar autenticación
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('❌ Error de autenticación:', authError);
+        throw new Error('No estás autenticado. Por favor inicia sesión.');
+      }
+      console.log('✅ Usuario autenticado:', user.email);
+
+      // Verificar roles
+      const { data: userRoles, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (roleError || !userRoles) {
+        console.error('❌ Error verificando rol:', roleError);
+        throw new Error('Tu usuario no tiene permisos para crear informes. Contacta al administrador.');
+      }
+      console.log('✅ Rol del usuario:', userRoles.role);
+
+      // Generar número de informe
+      console.log('📝 Generando número de informe...');
       const { data: reportNumber, error: numberError } = await supabase.rpc('generate_report_number');
-      if (numberError) throw numberError;
+      if (numberError) {
+        console.error('❌ Error generando número:', numberError);
+        throw new Error(`Error generando número de informe: ${numberError.message}`);
+      }
+      console.log('✅ Número generado:', reportNumber);
 
+      // Generar slug
+      console.log('🔗 Generando slug público...');
       const { data: reportSlug, error: slugError } = await supabase.rpc('generate_report_slug');
-      if (slugError) throw slugError;
+      if (slugError) {
+        console.error('❌ Error generando slug:', slugError);
+        throw new Error(`Error generando slug: ${slugError.message}`);
+      }
+      console.log('✅ Slug generado:', reportSlug);
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Usuario no autenticado');
-
+      // Insertar informe
+      console.log('💾 Guardando informe en base de datos...');
       const { data: report, error: reportError } = await supabase
         .from('consultation_reports')
         .insert({
           report_number: reportNumber,
           public_slug: reportSlug,
           lead_id: formData.selectedLeadId || null,
-          created_by: user?.id,
+          created_by: user.id,
           customer_name: formData.customerName,
           customer_email: formData.customerEmail,
           customer_company: formData.customerCompany || null,
@@ -137,7 +170,14 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
         .select()
         .single();
 
-      if (reportError) throw reportError;
+      if (reportError) {
+        console.error('❌ Error insertando informe:', reportError);
+        if (reportError.code === 'PGRST301') {
+          throw new Error('No tienes permisos para crear informes. Verifica que tu usuario tenga rol de Admin o Sales.');
+        }
+        throw new Error(`Error guardando informe: ${reportError.message}`);
+      }
+      console.log('✅ Informe guardado:', report.id);
 
       // Upload media files (continue even if one fails, but log errors)
       const mediaUploadPromises = mediaFiles.map(async (media) => {
@@ -184,15 +224,17 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
 
       await Promise.allSettled(mediaUploadPromises);
 
+      console.log('✅ ¡Informe creado exitosamente!');
       toast({
         title: "Éxito",
         description: "Informe creado correctamente",
       });
       onSuccess();
     } catch (error: any) {
+      console.error('❌ Error completo:', error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Error al crear informe",
+        description: error.message || "Ocurrió un error inesperado",
         variant: "destructive",
       });
     } finally {
