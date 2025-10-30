@@ -76,6 +76,7 @@ serve(async (req) => {
       customer: customerId,
       line_items: lineItems,
       mode: "payment",
+      locale: "en", // Forzar formato con punto decimal (200.00 en lugar de 200,00)
       success_url: `${req.headers.get("origin")}/quotations?payment=success&quotation=${quotation.quotation_number}`,
       cancel_url: `${req.headers.get("origin")}/quotations?payment=canceled`,
       metadata: {
