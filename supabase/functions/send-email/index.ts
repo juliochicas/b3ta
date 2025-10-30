@@ -50,6 +50,9 @@ serve(async (req) => {
       },
     });
 
+    // Convert line breaks to HTML <br> tags for proper formatting
+    const htmlBody = body.replace(/\n/g, '<br>');
+
     await client.send({
       from: hostingerEmail,
       to: Array.isArray(to) ? to : [to],
@@ -57,7 +60,7 @@ serve(async (req) => {
       bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
       subject: subject,
       content: body,
-      html: body,
+      html: htmlBody,
     });
 
     await client.close();
@@ -74,8 +77,8 @@ serve(async (req) => {
           cc_email: cc ? (Array.isArray(cc) ? cc : [cc]) : null,
           bcc_email: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : null,
           subject: subject,
-          body_html: body,
-          body_text: body.replace(/<[^>]*>/g, ""),
+          body_html: htmlBody,
+          body_text: body,
           is_sent: true,
           folder: "sent",
           lead_id: leadId || null,
