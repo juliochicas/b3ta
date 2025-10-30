@@ -4,26 +4,30 @@ import { Clock, Users, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const UrgencyBanner = () => {
-  const [spotsLeft, setSpotsLeft] = useState(3);
+  const [spotsLeft] = useState(3);
   const [timeLeft, setTimeLeft] = useState({
-    days: 4,
-    hours: 12,
-    minutes: 34
+    days: 0,
+    hours: 0,
+    minutes: 0
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1 };
-        } else if (prev.hours > 0) {
-          return { ...prev, hours: prev.hours - 1, minutes: 59 };
-        } else if (prev.days > 0) {
-          return { ...prev, days: prev.days - 1, hours: 23, minutes: 59 };
-        }
-        return prev;
-      });
-    }, 60000); // Cada minuto
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+      const diff = endOfMonth.getTime() - now.getTime();
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        setTimeLeft({ days, hours, minutes });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
   }, []);
