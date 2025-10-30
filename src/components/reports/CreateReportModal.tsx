@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { MediaUploadSection } from "./MediaUploadSection";
 import { SignatureCanvas } from "./SignatureCanvas";
+import { AITextHelper } from "./AITextHelper";
 
 interface Props {
   onClose: () => void;
@@ -268,16 +269,24 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="currentSituation">Análisis de Situación Actual</Label>
-                  <Switch
-                    checked={sectionsConfig.current_situation}
-                    onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, current_situation: checked })}
-                  />
+                  <div className="flex items-center gap-2">
+                    <AITextHelper
+                      text={formData.currentSituation}
+                      section="current_situation"
+                      onTextImproved={(newText) => setFormData({ ...formData, currentSituation: newText })}
+                    />
+                    <Switch
+                      checked={sectionsConfig.current_situation}
+                      onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, current_situation: checked })}
+                    />
+                  </div>
                 </div>
                 <Textarea
                   id="currentSituation"
                   value={formData.currentSituation}
                   onChange={(e) => setFormData({ ...formData, currentSituation: e.target.value })}
                   rows={4}
+                  placeholder="Describe la situación actual del cliente..."
                 />
               </div>
             )}
@@ -286,16 +295,24 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="findings">Hallazgos Principales</Label>
-                  <Switch
-                    checked={sectionsConfig.findings}
-                    onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, findings: checked })}
-                  />
+                  <div className="flex items-center gap-2">
+                    <AITextHelper
+                      text={formData.findings}
+                      section="findings"
+                      onTextImproved={(newText) => setFormData({ ...formData, findings: newText })}
+                    />
+                    <Switch
+                      checked={sectionsConfig.findings}
+                      onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, findings: checked })}
+                    />
+                  </div>
                 </div>
                 <Textarea
                   id="findings"
                   value={formData.findings}
                   onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
                   rows={4}
+                  placeholder="Describe los hallazgos más importantes..."
                 />
               </div>
             )}
@@ -317,16 +334,24 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="recommendations">Recomendaciones</Label>
-                  <Switch
-                    checked={sectionsConfig.recommendations}
-                    onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, recommendations: checked })}
-                  />
+                  <div className="flex items-center gap-2">
+                    <AITextHelper
+                      text={formData.recommendations}
+                      section="recommendations"
+                      onTextImproved={(newText) => setFormData({ ...formData, recommendations: newText })}
+                    />
+                    <Switch
+                      checked={sectionsConfig.recommendations}
+                      onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, recommendations: checked })}
+                    />
+                  </div>
                 </div>
                 <Textarea
                   id="recommendations"
                   value={formData.recommendations}
                   onChange={(e) => setFormData({ ...formData, recommendations: e.target.value })}
                   rows={4}
+                  placeholder="Escribe las recomendaciones para el cliente..."
                 />
               </div>
             )}
@@ -335,16 +360,24 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData }: Prop
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="conclusions">Conclusiones</Label>
-                  <Switch
-                    checked={sectionsConfig.conclusions}
-                    onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, conclusions: checked })}
-                  />
+                  <div className="flex items-center gap-2">
+                    <AITextHelper
+                      text={formData.conclusions}
+                      section="conclusions"
+                      onTextImproved={(newText) => setFormData({ ...formData, conclusions: newText })}
+                    />
+                    <Switch
+                      checked={sectionsConfig.conclusions}
+                      onCheckedChange={(checked) => setSectionsConfig({ ...sectionsConfig, conclusions: checked })}
+                    />
+                  </div>
                 </div>
                 <Textarea
                   id="conclusions"
                   value={formData.conclusions}
                   onChange={(e) => setFormData({ ...formData, conclusions: e.target.value })}
                   rows={4}
+                  placeholder="Escribe las conclusiones del análisis..."
                 />
               </div>
             )}
