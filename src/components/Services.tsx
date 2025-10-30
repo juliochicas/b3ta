@@ -46,18 +46,20 @@ export const Services = () => {
             <Card 
               key={service.title}
               className="p-6 sm:p-8 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card group cursor-pointer"
+              role="article"
+              aria-label={`Servicio de ${service.title}`}
             >
               <div className="mb-6 w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <service.icon className="h-8 w-8 text-primary" />
+                <service.icon className="h-8 w-8 text-primary" aria-hidden="true" />
               </div>
               
               <h3 className="text-xl font-bold text-foreground mb-3">{service.title}</h3>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{service.description}</p>
               
-              <ul className="space-y-2">
+              <ul className="space-y-2" role="list">
                 {service.features.map((feature) => (
                   <li key={feature} className="text-sm text-muted-foreground flex items-center">
-                    <span className="w-1.5 h-1.5 rounded-full bg-secondary mr-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-secondary mr-2" aria-hidden="true" />
                     {feature}
                   </li>
                 ))}

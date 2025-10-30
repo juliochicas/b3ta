@@ -188,10 +188,15 @@ export const ContactForm = () => {
             </Card>
 
             <div className="space-y-8">
-              <Card className="p-8 bg-card border-border">
+              <Card className="p-8 bg-card border-border hover:shadow-lg transition-shadow">
                 <Mail className="h-6 w-6 text-primary mb-4" />
-                <h3 className="font-semibold mb-2">Email</h3>
-                <p className="text-sm text-muted-foreground">hi@b3ta.us</p>
+                <h3 className="font-semibold mb-2 text-foreground">Email</h3>
+                <a 
+                  href="mailto:hi@b3ta.us?subject=Consultoría B3TA&body=Hola, me interesa conocer más sobre sus servicios."
+                  className="text-sm text-primary hover:underline transition-colors"
+                >
+                  hi@b3ta.us
+                </a>
               </Card>
 
               <Card className="p-8 bg-card border-border hover:shadow-lg transition-shadow">
