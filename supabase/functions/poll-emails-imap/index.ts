@@ -45,49 +45,74 @@ async function fetchEmailsViaIMAP() {
     console.log("Selecting INBOX...");
     await sendCommand("a002 SELECT INBOX");
 
-    // Buscar correos recientes (últimos 50 para no sobrecargar)
-    console.log("Searching for recent emails...");
-    const searchResponse = await sendCommand("a003 SEARCH ALL");
+    // Buscar correos no vistos primero, si no hay buscar los últimos 50
+    console.log("Searching for unseen emails...");
+    let searchResponse = await sendCommand("a003 SEARCH UNSEEN");
     
     // Parsear IDs de correos
-    const emailIds = searchResponse
+    let emailIds = searchResponse
       .match(/\* SEARCH ([\d\s]+)/)?.[1]
       ?.trim()
       .split(" ")
       .filter(id => id) || [];
 
-    console.log(`Found ${emailIds.length} emails in inbox`);
+    console.log(`Found ${emailIds.length} unseen emails`);
+    
+    // Si no hay correos no vistos, buscar los últimos 50
+    if (emailIds.length === 0) {
+      console.log("No unseen emails, fetching recent emails...");
+      searchResponse = await sendCommand("a003 SEARCH ALL");
+      const allIds = searchResponse
+        .match(/\* SEARCH ([\d\s]+)/)?.[1]
+        ?.trim()
+        .split(" ")
+        .filter(id => id) || [];
+      emailIds = allIds.slice(-50); // Últimos 50
+      console.log(`Found ${emailIds.length} total emails in inbox`);
+    }
 
     const emails = [];
 
-    // Obtener detalles de cada correo (últimos 20)
-    const recentIds = emailIds.slice(-20); // Tomar los últimos 20
+    // Procesar todos los correos encontrados (ya sea unseen o los últimos)
+    console.log(`Processing ${emailIds.length} emails...`);
+    const recentIds = emailIds;
     for (const id of recentIds) {
       try {
+        const tag = `a${String(100 + parseInt(id)).padStart(3, '0')}`;
         const fetchResponse = await sendCommand(
-          `a00${4 + parseInt(id)} FETCH ${id} (BODY[HEADER] BODY[TEXT])`
+          `${tag} FETCH ${id} (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE MESSAGE-ID IN-REPLY-TO REFERENCES)] BODY[TEXT])`
         );
         
-        // Parsear headers básicos
-        const fromMatch = fetchResponse.match(/From: ([^\r\n]+)/i);
-        const toMatch = fetchResponse.match(/To: ([^\r\n]+)/i);
-        const subjectMatch = fetchResponse.match(/Subject: ([^\r\n]+)/i);
-        const dateMatch = fetchResponse.match(/Date: ([^\r\n]+)/i);
-        const messageIdMatch = fetchResponse.match(/Message-ID: <([^>]+)>/i);
-        const inReplyToMatch = fetchResponse.match(/In-Reply-To: <([^>]+)>/i);
-        const referencesMatch = fetchResponse.match(/References: ([^\r\n]+)/i);
+        console.log(`Fetching email ${id}...`);
+        
+        // Parsear headers con mejor manejo de saltos de línea
+        const fromMatch = fetchResponse.match(/From:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
+        const toMatch = fetchResponse.match(/To:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
+        const subjectMatch = fetchResponse.match(/Subject:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
+        const dateMatch = fetchResponse.match(/Date:\s*([^\r\n]+)/i);
+        const messageIdMatch = fetchResponse.match(/Message-ID:\s*<?([^>\r\n]+)>?/i);
+        const inReplyToMatch = fetchResponse.match(/In-Reply-To:\s*<?([^>\r\n]+)>?/i);
+        const referencesMatch = fetchResponse.match(/References:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
 
-        // Parsear body (simplificado)
-        const bodyMatch = fetchResponse.match(/BODY\[TEXT\]\s+\{[\d]+\}\r\n([\s\S]+?)\)/);
+        // Parsear body
+        const bodyMatch = fetchResponse.match(/BODY\[TEXT\]\s*(?:\{[\d]+\})?\r?\n([\s\S]+?)(?:\r?\n\)|$)/);
+        const bodyText = bodyMatch?.[1]?.trim() || "";
+        
+        const from = fromMatch?.[1]?.replace(/\s+/g, ' ').trim() || "";
+        const subject = subjectMatch?.[1]?.replace(/\s+/g, ' ').trim() || "(Sin asunto)";
+        const messageId = messageIdMatch?.[1]?.trim() || null;
+        const inReplyTo = inReplyToMatch?.[1]?.trim() || null;
+        
+        console.log(`Email ${id}: From=${from}, Subject=${subject}, MessageID=${messageId}, InReplyTo=${inReplyTo}`);
         
         emails.push({
-          from: fromMatch?.[1] || "",
+          from,
           to: toMatch?.[1]?.split(",").map(e => e.trim()) || [],
-          subject: subjectMatch?.[1] || "(Sin asunto)",
-          body_text: bodyMatch?.[1]?.trim() || "",
-          message_id: messageIdMatch?.[1] || null,
-          in_reply_to: inReplyToMatch?.[1] || null,
-          references: referencesMatch?.[1]?.split(/\s+/).filter(r => r.startsWith("<")) || null,
+          subject,
+          body_text: bodyText,
+          message_id: messageId,
+          in_reply_to: inReplyTo,
+          references: referencesMatch?.[1]?.split(/\s+/).map(r => r.replace(/[<>]/g, '').trim()).filter(r => r) || null,
           received_at: dateMatch?.[1] || new Date().toISOString(),
         });
 

@@ -38,6 +38,10 @@ serve(async (req) => {
 
     console.log("Connecting to SMTP server:", smtpHost);
 
+    // Generate a unique message ID for tracking
+    const messageId = `${crypto.randomUUID()}@${hostingerEmail.split('@')[1]}`;
+    console.log("Generated Message-ID:", messageId);
+
     const client = new SMTPClient({
       connection: {
         hostname: smtpHost,
@@ -61,6 +65,9 @@ serve(async (req) => {
       subject: subject,
       content: body,
       html: htmlBody,
+      headers: {
+        "Message-ID": `<${messageId}>`,
+      },
     });
 
     await client.close();
@@ -72,6 +79,7 @@ serve(async (req) => {
       .from("emails")
       .insert([
         {
+          message_id: messageId,
           from_email: hostingerEmail,
           to_email: Array.isArray(to) ? to : [to],
           cc_email: cc ? (Array.isArray(cc) ? cc : [cc]) : null,
