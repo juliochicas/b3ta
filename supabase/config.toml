@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.improve-report-text]
 verify_jwt = true
+
+[functions.send-meeting-reminder]
+verify_jwt = false

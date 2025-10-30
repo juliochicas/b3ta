@@ -441,6 +441,69 @@ export type Database = {
         }
         Relationships: []
       }
+      meetings: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          duration_minutes: number
+          id: string
+          lead_id: string | null
+          meeting_type: string
+          notes: string | null
+          reminder_sent: boolean | null
+          scheduled_at: string
+          status: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          duration_minutes?: number
+          id?: string
+          lead_id?: string | null
+          meeting_type?: string
+          notes?: string | null
+          reminder_sent?: boolean | null
+          scheduled_at: string
+          status?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          duration_minutes?: number
+          id?: string
+          lead_id?: string | null
+          meeting_type?: string
+          notes?: string | null
+          reminder_sent?: boolean | null
+          scheduled_at?: string
+          status?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_b3ta"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products_services: {
         Row: {
           created_at: string
@@ -772,6 +835,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_availability: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_active: boolean | null
+          start_time: string
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_active?: boolean | null
+          start_time: string
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_active?: boolean | null
+          start_time?: string
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

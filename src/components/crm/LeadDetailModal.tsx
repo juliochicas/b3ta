@@ -24,6 +24,7 @@ import {
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { CreateReportModal } from "@/components/reports/CreateReportModal";
+import { ScheduleMeetingModal } from "@/components/meetings/ScheduleMeetingModal";
 
 interface Lead {
   id: string;
@@ -64,6 +65,7 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCreateReport, setShowCreateReport] = useState(false);
+  const [showScheduleMeeting, setShowScheduleMeeting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
@@ -345,6 +347,15 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
             </Button>
 
             <Button
+              onClick={() => setShowScheduleMeeting(true)}
+              variant="outline"
+              className="w-full"
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Agendar Reunión
+            </Button>
+
+            <Button
               onClick={() => setShowDeleteDialog(true)}
               variant="destructive"
               className="w-full"
@@ -415,6 +426,19 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
           }}
         />
       )}
+
+      <ScheduleMeetingModal
+        open={showScheduleMeeting}
+        onOpenChange={setShowScheduleMeeting}
+        onSuccess={() => {
+          setShowScheduleMeeting(false);
+          toast({
+            title: "Reunión agendada",
+            description: "La reunión se ha agendado exitosamente",
+          });
+        }}
+        leadId={lead.id}
+      />
     </Dialog>
   );
 };

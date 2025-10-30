@@ -111,6 +111,14 @@ export default function CRM() {
                 <FileText className="mr-2 h-4 w-4" />
                 Cotizaciones
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/meetings')}
+              >
+                <Clock className="mr-2 h-4 w-4" />
+                Reuniones
+              </Button>
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium">{user?.email}</p>
                 <p className="text-xs text-muted-foreground capitalize">{userRole || 'Usuario'}</p>
