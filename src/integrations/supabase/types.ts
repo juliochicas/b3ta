@@ -153,6 +153,54 @@ export type Database = {
         }
         Relationships: []
       }
+      email_accounts: {
+        Row: {
+          created_at: string
+          created_by: string
+          display_name: string
+          email: string
+          id: string
+          imap_host: string
+          imap_port: number
+          is_active: boolean
+          is_default: boolean
+          password_encrypted: string
+          smtp_host: string
+          smtp_port: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          display_name: string
+          email: string
+          id?: string
+          imap_host: string
+          imap_port?: number
+          is_active?: boolean
+          is_default?: boolean
+          password_encrypted: string
+          smtp_host: string
+          smtp_port?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          display_name?: string
+          email?: string
+          id?: string
+          imap_host?: string
+          imap_port?: number
+          is_active?: boolean
+          is_default?: boolean
+          password_encrypted?: string
+          smtp_host?: string
+          smtp_port?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_attachments: {
         Row: {
           content_type: string | null
@@ -193,6 +241,8 @@ export type Database = {
       }
       emails: {
         Row: {
+          account_id: string | null
+          assigned_to: string | null
           bcc_email: string[] | null
           body_html: string | null
           body_text: string | null
@@ -220,6 +270,8 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          account_id?: string | null
+          assigned_to?: string | null
           bcc_email?: string[] | null
           body_html?: string | null
           body_text?: string | null
@@ -247,6 +299,8 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          account_id?: string | null
+          assigned_to?: string | null
           bcc_email?: string[] | null
           body_html?: string | null
           body_text?: string | null
@@ -274,6 +328,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "emails_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "email_accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "emails_customer_id_fkey"
             columns: ["customer_id"]

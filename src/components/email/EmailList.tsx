@@ -28,17 +28,23 @@ interface EmailListProps {
   folder: string;
   onEmailSelect: (email: Email) => void;
   selectedEmail: Email | null;
+  accountId?: string;
 }
 
-export const EmailList = ({ folder, onEmailSelect, selectedEmail }: EmailListProps) => {
+export const EmailList = ({ folder, onEmailSelect, selectedEmail, accountId }: EmailListProps) => {
   const { data: emails, refetch } = useQuery({
-    queryKey: ["emails", folder],
+    queryKey: ["emails", folder, accountId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("emails")
         .select("*")
-        .eq("folder", folder)
-        .order("created_at", { ascending: false });
+        .eq("folder", folder);
+
+      if (accountId) {
+        query = query.eq("account_id", accountId);
+      }
+
+      const { data, error } = await query.order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as Email[];

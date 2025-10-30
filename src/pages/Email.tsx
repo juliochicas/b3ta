@@ -9,6 +9,7 @@ import { EmailComposer } from "@/components/email/EmailComposer";
 import { EmailList } from "@/components/email/EmailList";
 import { EmailViewer } from "@/components/email/EmailViewer";
 import { EmailSetupGuide } from "@/components/email/EmailSetupGuide";
+import { EmailAccountsManager } from "@/components/email/EmailAccountsManager";
 import {
   ArrowLeft,
   Inbox,
@@ -36,6 +37,7 @@ const Email = () => {
   const [selectedEmail, setSelectedEmail] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSetupGuide, setShowSetupGuide] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -60,10 +62,17 @@ const Email = () => {
   };
 
   const handleSync = async () => {
+    if (!selectedAccountId) {
+      toast.error("Por favor selecciona una cuenta de correo primero");
+      return;
+    }
+
     try {
       toast.info("Sincronizando correos...");
       
-      const { data, error } = await supabase.functions.invoke("poll-emails-imap");
+      const { data, error } = await supabase.functions.invoke("poll-emails-imap", {
+        body: { accountId: selectedAccountId }
+      });
       
       if (error) throw error;
       
@@ -121,12 +130,27 @@ const Email = () => {
       <main className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-12 gap-6 h-[calc(100vh-180px)]">
           {/* Sidebar */}
-          <div className="col-span-3 space-y-4">
-            <Button onClick={() => setShowComposer(true)} className="w-full">
+          <div className="col-span-3 space-y-4 overflow-y-auto">
+            <Button 
+              onClick={() => setShowComposer(true)} 
+              className="w-full"
+              disabled={!selectedAccountId}
+            >
               <Mail className="mr-2 h-4 w-4" />
               Nuevo Correo
             </Button>
 
+            {/* Gestor de Cuentas */}
+            <Card className="p-4">
+              <EmailAccountsManager 
+                selectedAccountId={selectedAccountId}
+                onSelectAccount={setSelectedAccountId}
+              />
+            </Card>
+
+            <Separator />
+
+            {/* Carpetas */}
             <Card className="p-2">
               <div className="space-y-1">
                 {folders.map((folder) => (
@@ -150,6 +174,7 @@ const Email = () => {
               variant="outline"
               className="w-full"
               onClick={handleSync}
+              disabled={!selectedAccountId}
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Sincronizar
@@ -184,6 +209,7 @@ const Email = () => {
                 folder={selectedFolder}
                 onEmailSelect={setSelectedEmail}
                 selectedEmail={selectedEmail}
+                accountId={selectedAccountId}
               />
             </div>
           </div>
@@ -202,6 +228,7 @@ const Email = () => {
       <EmailComposer
         open={showComposer}
         onOpenChange={setShowComposer}
+        accountId={selectedAccountId}
         onSuccess={() => {
           toast.success("Correo enviado");
           setSelectedFolder("sent");

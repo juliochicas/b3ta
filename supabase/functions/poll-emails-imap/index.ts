@@ -8,19 +8,14 @@ const corsHeaders = {
 };
 
 // Función auxiliar para conectar via IMAP
-async function fetchEmailsViaIMAP() {
-  const imapHost = Deno.env.get("HOSTINGER_IMAP_HOST")!;
-  const imapPort = parseInt(Deno.env.get("HOSTINGER_IMAP_PORT") || "993");
-  const email = Deno.env.get("HOSTINGER_EMAIL")!;
-  const password = Deno.env.get("HOSTINGER_PASSWORD")!;
-
+async function fetchEmailsViaIMAP(account: any) {
   try {
-    console.log(`Connecting to IMAP: ${imapHost}:${imapPort}`);
+    console.log(`Connecting to IMAP: ${account.imap_host}:${account.imap_port}`);
     
     // Conectar via socket SSL
     const conn = await Deno.connectTls({
-      hostname: imapHost,
-      port: imapPort,
+      hostname: account.imap_host,
+      port: account.imap_port,
     });
 
     const encoder = new TextEncoder();
@@ -39,7 +34,7 @@ async function fetchEmailsViaIMAP() {
 
     // Login
     console.log("Logging in...");
-    await sendCommand(`a001 LOGIN ${email} ${password}`);
+    await sendCommand(`a001 LOGIN ${account.email} ${account.password_encrypted}`);
 
     // Seleccionar INBOX
     console.log("Selecting INBOX...");
@@ -144,10 +139,37 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log("Starting email polling...");
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("No authorization header");
+    
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    if (userError || !user) throw new Error("Unauthorized");
+
+    const { accountId } = await req.json();
+
+    if (!accountId) {
+      throw new Error("Account ID is required");
+    }
+
+    console.log("Fetching email account:", accountId);
+
+    // Obtener configuración de la cuenta de correo
+    const { data: account, error: accountError } = await supabase
+      .from("email_accounts")
+      .select("*")
+      .eq("id", accountId)
+      .eq("is_active", true)
+      .single();
+
+    if (accountError || !account) {
+      throw new Error("Email account not found or inactive");
+    }
+
+    console.log("Starting email polling for:", account.email);
 
     // Obtener correos via IMAP
-    const emails = await fetchEmailsViaIMAP();
+    const emails = await fetchEmailsViaIMAP(account);
     
     console.log(`Retrieved ${emails.length} emails`);
 
@@ -227,6 +249,7 @@ serve(async (req) => {
             folder: "inbox",
             lead_id: leadId,
             customer_id: customerId,
+            account_id: accountId,
             received_at: email.received_at,
           },
         ])

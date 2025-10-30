@@ -17,6 +17,7 @@ interface EmailComposerProps {
   defaultSubject?: string;
   leadId?: string;
   customerId?: string;
+  accountId?: string;
 }
 
 export const EmailComposer = ({
@@ -27,6 +28,7 @@ export const EmailComposer = ({
   defaultSubject = "",
   leadId,
   customerId,
+  accountId,
 }: EmailComposerProps) => {
   const [to, setTo] = useState(defaultTo);
   const [cc, setCc] = useState("");
@@ -43,6 +45,11 @@ export const EmailComposer = ({
       return;
     }
 
+    if (!accountId) {
+      toast.error("Por favor selecciona una cuenta de correo");
+      return;
+    }
+
     setIsSending(true);
 
     try {
@@ -55,6 +62,7 @@ export const EmailComposer = ({
           body,
           leadId,
           customerId,
+          accountId,
         },
       });
 

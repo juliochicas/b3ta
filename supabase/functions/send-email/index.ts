@@ -16,10 +16,6 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const hostingerEmail = Deno.env.get("HOSTINGER_EMAIL")!;
-    const hostingerPassword = Deno.env.get("HOSTINGER_PASSWORD")!;
-    const smtpHost = Deno.env.get("HOSTINGER_SMTP_HOST")!;
-    const smtpPort = parseInt(Deno.env.get("HOSTINGER_SMTP_PORT") || "465");
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
@@ -30,26 +26,44 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) throw new Error("Unauthorized");
 
-    const { to, cc, bcc, subject, body, leadId, customerId } = await req.json();
+    const { to, cc, bcc, subject, body, leadId, customerId, accountId } = await req.json();
 
     if (!to || !subject || !body) {
       throw new Error("Missing required fields: to, subject, body");
     }
 
-    console.log("Connecting to SMTP server:", smtpHost);
+    if (!accountId) {
+      throw new Error("Account ID is required");
+    }
+
+    console.log("Fetching email account:", accountId);
+
+    // Obtener configuración de la cuenta de correo
+    const { data: account, error: accountError } = await supabase
+      .from("email_accounts")
+      .select("*")
+      .eq("id", accountId)
+      .eq("is_active", true)
+      .single();
+
+    if (accountError || !account) {
+      throw new Error("Email account not found or inactive");
+    }
+
+    console.log("Connecting to SMTP server:", account.smtp_host);
 
     // Generate a unique message ID for tracking
-    const messageId = `${crypto.randomUUID()}@${hostingerEmail.split('@')[1]}`;
+    const messageId = `${crypto.randomUUID()}@${account.email.split('@')[1]}`;
     console.log("Generated Message-ID:", messageId);
 
     const client = new SMTPClient({
       connection: {
-        hostname: smtpHost,
-        port: smtpPort,
+        hostname: account.smtp_host,
+        port: account.smtp_port,
         tls: true,
         auth: {
-          username: hostingerEmail,
-          password: hostingerPassword,
+          username: account.email,
+          password: account.password_encrypted, // En producción debe estar encriptado
         },
       },
     });
@@ -58,7 +72,7 @@ serve(async (req) => {
     const htmlBody = body.replace(/\n/g, '<br>');
 
     await client.send({
-      from: hostingerEmail,
+      from: account.email,
       to: Array.isArray(to) ? to : [to],
       cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
       bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
@@ -80,7 +94,7 @@ serve(async (req) => {
       .insert([
         {
           message_id: messageId,
-          from_email: hostingerEmail,
+          from_email: account.email,
           to_email: Array.isArray(to) ? to : [to],
           cc_email: cc ? (Array.isArray(cc) ? cc : [cc]) : null,
           bcc_email: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : null,
@@ -92,6 +106,7 @@ serve(async (req) => {
           lead_id: leadId || null,
           customer_id: customerId || null,
           user_id: user.id,
+          account_id: accountId,
           sent_at: new Date().toISOString(),
         },
       ])
