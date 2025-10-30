@@ -25,61 +25,108 @@ export const MediaUploadSection = ({ mediaFiles, setMediaFiles }: Props) => {
   const { toast } = useToast();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'photo' | 'video') => {
-    const files = e.target.files;
-    if (!files) return;
-
-    for (const file of Array.from(files)) {
-      const maxSize = type === 'video' ? 20 * 1024 * 1024 : 2 * 1024 * 1024; // 20MB for video, 2MB for photo
-      
+    const files = Array.from(e.target.files || []);
+    
+    for (const file of files) {
+      // Check file size (50MB for videos, 5MB for photos before resize)
+      const maxSize = type === 'video' ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
       if (file.size > maxSize) {
-        if (type === 'photo') {
-          // Auto-resize photo
-          const resized = await resizeImage(file);
-          setMediaFiles([...mediaFiles, { type, file: resized, caption: "" }]);
-        } else {
-          toast({
-            title: "Error",
-            description: `El video excede el límite de 20MB`,
-            variant: "destructive",
-          });
+        toast({
+          title: "Archivo muy grande",
+          description: `El ${type === 'video' ? 'video' : 'foto'} excede el tamaño máximo de ${type === 'video' ? '50MB' : '5MB'}`,
+          variant: "destructive",
+        });
+        continue;
+      }
+
+      try {
+        let processedFile = file;
+        
+        // Auto-resize all photos over 1MB
+        if (type === 'photo' && file.size > 1 * 1024 * 1024) {
+          try {
+            processedFile = await resizeImage(file);
+            const sizeSaved = ((1 - processedFile.size / file.size) * 100).toFixed(0);
+            toast({
+              title: "Imagen optimizada",
+              description: `Tamaño reducido en ${sizeSaved}% sin perder calidad`,
+            });
+          } catch (resizeError) {
+            console.error('Resize error:', resizeError);
+            // Use original file if resize fails
+            processedFile = file;
+          }
         }
-      } else {
-        setMediaFiles([...mediaFiles, { type, file, caption: "" }]);
+
+        setMediaFiles([...mediaFiles, { type, file: processedFile, caption: '' }]);
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: "Error",
+          description: "No se pudo procesar el archivo",
+          variant: "destructive",
+        });
       }
     }
   };
 
   const resizeImage = (file: File): Promise<File> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
+      reader.readAsDataURL(file);
       reader.onload = (e) => {
-        const img = new window.Image();
+        const img = document.createElement('img');
+        img.src = e.target?.result as string;
         img.onload = () => {
           const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'));
+            return;
+          }
+          
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1920;
           let width = img.width;
           let height = img.height;
-
-          const maxSize = 1920;
-          if (width > height && width > maxSize) {
-            height *= maxSize / width;
-            width = maxSize;
-          } else if (height > maxSize) {
-            width *= maxSize / height;
-            height = maxSize;
+          
+          // Calculate new dimensions maintaining aspect ratio
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = (height * MAX_WIDTH) / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = (width * MAX_HEIGHT) / height;
+              height = MAX_HEIGHT;
+            }
           }
-
+          
           canvas.width = width;
           canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-
+          
+          // Use better image rendering
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, width, height);
+          
           canvas.toBlob((blob) => {
-            resolve(new File([blob!], file.name, { type: 'image/jpeg' }));
-          }, 'image/jpeg', 0.85);
+            if (blob) {
+              const resizedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(resizedFile);
+            } else {
+              reject(new Error('Canvas to Blob conversion failed'));
+            }
+          }, 'image/jpeg', 0.90);
         };
-        img.src = e.target?.result as string;
+        img.onerror = () => reject(new Error('Image loading failed'));
       };
-      reader.readAsDataURL(file);
+      reader.onerror = () => reject(new Error('File reading failed'));
     });
   };
 

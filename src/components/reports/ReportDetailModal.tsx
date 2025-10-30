@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { FileText, Download, Mail, Image as ImageIcon, Video, ExternalLink, Copy, ExternalLinkIcon } from "lucide-react";
+import { FileText, Download, Mail, Image as ImageIcon, Video, ExternalLink, Copy, ExternalLinkIcon, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
 import jsPDF from 'jspdf';
 
 interface Report {
@@ -46,6 +47,7 @@ interface Props {
 export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -248,6 +250,62 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
     window.open(`/informe/${report.public_slug}`, '_blank');
   };
 
+  const deleteReport = async () => {
+    try {
+      setLoading(true);
+      
+      // Delete related media from storage first
+      const { data: mediaFiles } = await supabase
+        .from('report_media')
+        .select('url, is_external')
+        .eq('report_id', report.id);
+
+      if (mediaFiles) {
+        for (const mediaItem of mediaFiles) {
+          if (!mediaItem.is_external) {
+            // Extract path from public URL
+            const urlParts = mediaItem.url.split('/');
+            const path = urlParts.slice(-2).join('/');
+            await supabase.storage
+              .from('consultation-reports')
+              .remove([path]);
+          }
+        }
+      }
+
+      // Delete media records
+      await supabase
+        .from('report_media')
+        .delete()
+        .eq('report_id', report.id);
+
+      // Delete report
+      const { error } = await supabase
+        .from('consultation_reports')
+        .delete()
+        .eq('id', report.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Informe eliminado",
+        description: "El informe ha sido eliminado correctamente",
+      });
+      
+      onUpdate();
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo eliminar el informe",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+      setShowDeleteDialog(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       draft: { label: "Borrador", variant: "secondary" as const },
@@ -284,6 +342,15 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
               <Button size="sm" onClick={downloadPDF} disabled={loading}>
                 <Download className="mr-2 h-4 w-4" />
                 Descargar PDF
+              </Button>
+              <Button 
+                size="sm" 
+                variant="destructive"
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={loading}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Eliminar
               </Button>
             </div>
           </div>
@@ -437,6 +504,14 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
           </TabsContent>
         </Tabs>
       </DialogContent>
+
+      <AlertDeleteDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={deleteReport}
+        title="¿Eliminar informe?"
+        description="Esta acción no se puede deshacer. Se eliminará el informe y todos sus archivos multimedia asociados."
+      />
     </Dialog>
   );
 };
