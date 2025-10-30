@@ -7,7 +7,7 @@ const plans = [
     icon: Zap,
     name: "Starter",
     tagline: "Para pequeños negocios",
-    price: "Desde $100",
+    price: "Desde Q1,500",
     duration: "1-4 semanas",
     description: "Páginas web, landing pages y automatizaciones básicas",
     features: [
@@ -27,7 +27,7 @@ const plans = [
     icon: Rocket,
     name: "Professional",
     tagline: "Para empresas en crecimiento",
-    price: "Desde $500",
+    price: "Desde Q4,000",
     duration: "4-8 semanas",
     description: "Automatizaciones avanzadas, consultoría de infraestructura y aplicaciones web",
     features: [
@@ -48,7 +48,7 @@ const plans = [
     icon: Building2,
     name: "Enterprise",
     tagline: "Para corporativos",
-    price: "Desde $15K",
+    price: "Desde Q120K",
     duration: "8-24 semanas",
     description: "Integraciones SAP, transformación digital completa y soluciones enterprise",
     features: [
@@ -144,7 +144,7 @@ export const Pricing = () => {
         <div className="mt-16 text-center">
           <Card className="inline-block p-8 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
             <p className="text-lg text-foreground mb-4">
-              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos páginas web desde $100, automatizaciones desde $500, y consultorías personalizadas desde $1,000. Todos nuestros servicios se adaptan a tu presupuesto y necesidades.
+              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos páginas web desde Q1,500, automatizaciones desde Q4,000, y consultorías personalizadas desde Q8,000. Todos nuestros servicios se adaptan a tu presupuesto y necesidades.
             </p>
             <Button variant="outline" size="lg" onClick={scrollToContact}>
               Solicitar Propuesta Personalizada
