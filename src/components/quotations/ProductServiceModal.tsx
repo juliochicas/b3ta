@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { AITextHelper } from "@/components/reports/AITextHelper";
 
 interface ProductService {
   id: string;
@@ -103,7 +104,14 @@ export const ProductServiceModal = ({ item, onClose, onSuccess }: Props) => {
             </div>
 
             <div>
-              <Label htmlFor="description">Descripción</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="description">Descripción</Label>
+                <AITextHelper
+                  text={formData.description}
+                  section="product_description"
+                  onTextImproved={(newText) => setFormData({ ...formData, description: newText })}
+                />
+              </div>
               <Textarea
                 id="description"
                 value={formData.description}
