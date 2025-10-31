@@ -11,8 +11,8 @@ const services = [
   {
     icon: ShoppingCart,
     title: "E-commerce",
-    description: "Shopify Plus, arquitectura headless, optimización de conversión",
-    features: ["Shopify Plus", "Headless Commerce", "CRO"]
+    description: "Shopify (todos los planes) y Shopify Plus, arquitectura headless, optimización de conversión",
+    features: ["Shopify & Shopify Plus", "Headless Commerce", "CRO"]
   },
   {
     icon: Zap,

@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "¿Qué tecnologías usan? ¿Son modernas?",
-    answer: "Stack enterprise actual: SAP Business One for HANA, Shopify Plus, n8n/Make para automatización, OpenAI GPT-4 + RAG para IA, React + TypeScript para frontends. Todo cloud-native, escalable y con las mejores prácticas de 2025."
+    answer: "Stack enterprise actual: SAP Business One for HANA, Shopify (todos los planes) y Shopify Plus, n8n/Make para automatización, OpenAI GPT-4 + RAG para IA, React + TypeScript para frontends. Todo cloud-native, escalable y con las mejores prácticas de 2025."
   },
   {
     question: "¿Ofrecen financiamiento o pagos flexibles?",
