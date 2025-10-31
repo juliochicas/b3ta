@@ -21,6 +21,9 @@ verify_jwt = true
 [functions.send-meeting-reminder]
 verify_jwt = false
 
+[functions.send-meeting-confirmation]
+verify_jwt = true
+
 [functions.send-email]
 verify_jwt = true
 

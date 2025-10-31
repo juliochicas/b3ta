@@ -125,12 +125,27 @@ export const ScheduleMeetingModal = ({
         if (error) throw error;
         toast.success("Reunión actualizada");
       } else {
-        const { error } = await supabase
+        const { data: newMeeting, error } = await supabase
           .from("meetings")
-          .insert([meetingData]);
+          .insert([meetingData])
+          .select()
+          .single();
 
         if (error) throw error;
-        toast.success("Reunión agendada");
+        
+        // Send confirmation email
+        if (newMeeting && selectedLeadId && selectedLeadId !== "none") {
+          try {
+            await supabase.functions.invoke("send-meeting-confirmation", {
+              body: { meetingId: newMeeting.id },
+            });
+          } catch (emailError) {
+            console.error("Error sending confirmation email:", emailError);
+            // Don't fail the whole operation if email fails
+          }
+        }
+        
+        toast.success("Reunión agendada y correo de confirmación enviado");
       }
 
       onSuccess();
