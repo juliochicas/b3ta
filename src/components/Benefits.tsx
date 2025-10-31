@@ -29,8 +29,8 @@ const benefits = [
   {
     icon: Clock,
     title: "Soporte 24/7",
-    description: "Equipo disponible en tu timezone. SLA de respuesta < 2 horas en producción.",
-    metric: "<2h response"
+    description: "Equipo disponible en tu timezone. SLA de respuesta < 24 horas garantizado.",
+    metric: "<24h response"
   },
   {
     icon: Award,

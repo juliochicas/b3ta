@@ -9,20 +9,20 @@ import { MessageCircle } from "lucide-react";
 
 const faqs = [
   {
-    question: "¿Cuánto tiempo toma implementar una solución SAP Business One for HANA?",
-    answer: "Depende del tamaño de tu empresa y complejidad. Para PyMEs: 8-12 semanas. Para enterprise (500+ empleados): 16-24 semanas. Incluye migración de datos, personalización, integración y capacitación. Usamos metodología SAP Activate para máxima eficiencia."
+    question: "¿Cuánto tiempo toma implementar una solución?",
+    answer: "Los tiempos varían según la dimensión y complejidad del proyecto. Tenemos proyectos express desde 24 horas hasta implementaciones enterprise de 1 año. Para soluciones SAP: PyMEs 8-12 semanas, Enterprise 16-24 semanas. Para automatizaciones: 1-8 semanas. Usamos metodologías ágiles para máxima eficiencia."
   },
   {
     question: "¿Qué incluye el precio? ¿Hay costos ocultos?",
-    answer: "100% transparencia. El precio incluye: consultoría, desarrollo, testing, capacitación y 3 meses de soporte post go-live. Los únicos costos adicionales son licencias de terceros (SAP, Shopify, etc.) que te informamos desde el día 1. Sin sorpresas."
+    answer: "100% transparencia. El precio incluye: consultoría, desarrollo, testing, capacitación y soporte post go-live (duración según el plan contratado). Los únicos costos adicionales son licencias de terceros (SAP, Shopify, etc.) que te informamos desde el día 1. Sin sorpresas."
   },
   {
     question: "¿Trabajan con empresas pequeñas o solo corporativos?",
-    answer: "Trabajamos con empresas desde $500K hasta $500M de facturación anual. Nuestros proyectos van desde $15K (automatización básica) hasta $500K+ (SAP enterprise). Si buscas calidad profesional, somos tu partner ideal."
+    answer: "Trabajamos con empresas de todos los tamaños. Nuestros proyectos van desde $100 (soluciones específicas) hasta $15K+ (implementaciones enterprise). El precio se ajusta según tus requerimientos y la dimensión del proyecto. Si buscas calidad profesional, somos tu partner ideal."
   },
   {
     question: "¿Qué pasa si necesito cambios después del go-live?",
-    answer: "Incluimos 3 meses de soporte post go-live sin costo. Después, ofrecemos planes de mantenimiento desde $2K/mes que incluyen: soporte 24/7, actualizaciones, nuevas features y consultoría on-demand. También trabajamos por horas para cambios puntuales."
+    answer: "El soporte post go-live varía según el plan contratado y puede ser negociado según tus necesidades. Después del período incluido, ofrecemos planes de mantenimiento personalizados que incluyen: soporte 24/7, actualizaciones, nuevas features y consultoría on-demand. También trabajamos por horas para cambios puntuales."
   },
   {
     question: "¿Cómo garantizan la seguridad de nuestros datos?",

@@ -24,14 +24,14 @@ const steps = [
     icon: Code,
     title: "Implementación Ágil",
     description: "Sprints de 2 semanas con demos continuas. Metodología SCRUM, daily standups, 100% transparencia.",
-    duration: "4-12 semanas",
+    duration: "24h - 1 año",
     deliverable: "Solución funcional + Testing + QA"
   },
   {
     number: "04",
     icon: Rocket,
     title: "Go-Live & Soporte",
-    description: "Despliegue sin downtime. Capacitación del equipo. Soporte 24/7 por 3 meses incluido.",
+    description: "Despliegue sin downtime. Capacitación del equipo. Soporte según plan contratado.",
     duration: "Día del lanzamiento",
     deliverable: "Sistema productivo + Documentación + Capacitación"
   }

@@ -17,9 +17,9 @@ const plans = [
       "Landing pages optimizadas",
       "Automatizaciones simples",
       "Hasta 2 integraciones básicas",
-      "1 mes de soporte post lanzamiento",
+      "Soporte post lanzamiento (según negociación)",
       "Documentación básica",
-      "SLA respuesta 48 horas"
+      "SLA respuesta < 24 horas"
     ],
     cta: "Solicitar Cotización",
     popular: false
@@ -38,8 +38,8 @@ const plans = [
       "Consultoría de infraestructura cloud",
       "Integraciones avanzadas ilimitadas",
       "Capacitación del equipo (8 horas)",
-      "3 meses de soporte técnico",
-      "SLA respuesta 12 horas",
+      "Soporte técnico extendido (según plan)",
+      "SLA respuesta < 24 horas",
       "Arquitectura escalable"
     ],
     cta: "Plan Más Popular",
@@ -59,8 +59,8 @@ const plans = [
       "IA custom con LLMs fine-tuned",
       "Equipo dedicado full-time",
       "Account manager exclusivo",
-      "6 meses soporte premium 24/7",
-      "SLA respuesta 1 hora",
+      "Soporte premium 24/7 (según negociación)",
+      "SLA respuesta prioritario",
       "Features ilimitados",
       "Auditorías de seguridad",
       "ROI tracking dashboard"
@@ -156,7 +156,7 @@ export const Pricing = () => {
         <div className="mt-16 text-center">
           <Card className="inline-block p-8 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
             <p className="text-lg text-foreground mb-4">
-              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos páginas web desde {loading ? "..." : formatPrice(100)}, automatizaciones desde {loading ? "..." : formatPrice(500)}, y consultorías personalizadas desde {loading ? "..." : formatPrice(1000)}. 
+              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos soluciones desde {loading ? "..." : formatPrice(100)} hasta {loading ? "..." : formatPrice(15000)}+ según tus requerimientos. Los precios se ajustan a la dimensión y complejidad de tu proyecto.
               {currencyData.currency !== 'USD' && !loading && (
                 <span className="block mt-2 text-sm text-muted-foreground">
                   Precios de referencia en {currencyData.currency}. Facturación en USD.
