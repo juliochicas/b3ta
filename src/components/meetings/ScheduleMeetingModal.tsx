@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -56,6 +57,17 @@ export const ScheduleMeetingModal = ({
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState("scheduled");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Attendees management
+  interface Attendee {
+    type: 'lead' | 'customer' | 'external';
+    id?: string;
+    name: string;
+    email: string;
+  }
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [newAttendeeType, setNewAttendeeType] = useState<'lead' | 'customer' | 'external'>('lead');
+  const [selectedAttendeeId, setSelectedAttendeeId] = useState("");
 
   useEffect(() => {
     if (meetingToEdit) {
@@ -83,6 +95,18 @@ export const ScheduleMeetingModal = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("leads_b3ta")
+        .select("id, name, email")
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: customers } = useQuery({
+    queryKey: ["customers-for-meeting"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customers")
         .select("id, name, email")
         .order("name");
       if (error) throw error;
@@ -133,19 +157,38 @@ export const ScheduleMeetingModal = ({
 
         if (error) throw error;
         
+        // Insert attendees
+        if (newMeeting && attendees.length > 0) {
+          const attendeesData = attendees.map(att => ({
+            meeting_id: newMeeting.id,
+            attendee_type: att.type,
+            lead_id: att.type === 'lead' ? att.id : null,
+            customer_id: att.type === 'customer' ? att.id : null,
+            external_name: att.type === 'external' ? att.name : null,
+            external_email: att.type === 'external' ? att.email : null,
+          }));
+          
+          const { error: attendeesError } = await supabase
+            .from("meeting_attendees")
+            .insert(attendeesData);
+            
+          if (attendeesError) {
+            console.error("Error inserting attendees:", attendeesError);
+          }
+        }
+        
         // Send confirmation email
-        if (newMeeting && selectedLeadId && selectedLeadId !== "none") {
+        if (newMeeting) {
           try {
             await supabase.functions.invoke("send-meeting-confirmation", {
               body: { meetingId: newMeeting.id },
             });
           } catch (emailError) {
             console.error("Error sending confirmation email:", emailError);
-            // Don't fail the whole operation if email fails
           }
         }
         
-        toast.success("Reunión agendada y correo de confirmación enviado");
+        toast.success("Reunión agendada con " + attendees.length + " invitado(s)");
       }
 
       onSuccess();
@@ -251,6 +294,118 @@ export const ScheduleMeetingModal = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label>Agregar Invitados</Label>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Select value={newAttendeeType} onValueChange={(v: any) => setNewAttendeeType(v)}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lead">Prospecto</SelectItem>
+                    <SelectItem value="customer">Cliente</SelectItem>
+                    <SelectItem value="external">Externo</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                {newAttendeeType !== 'external' ? (
+                  <Select 
+                    value={selectedAttendeeId} 
+                    onValueChange={(value) => {
+                      const list = newAttendeeType === 'lead' ? leads : customers;
+                      const selected = list?.find(item => item.id === value);
+                      if (selected) {
+                        setAttendees([...attendees, {
+                          type: newAttendeeType,
+                          id: selected.id,
+                          name: selected.name,
+                          email: selected.email
+                        }]);
+                        setSelectedAttendeeId("");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder={`Seleccionar ${newAttendeeType === 'lead' ? 'prospecto' : 'cliente'}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(newAttendeeType === 'lead' ? leads : customers)?.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name} - {item.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="flex-1 flex gap-2">
+                    <Input 
+                      placeholder="Nombre"
+                      id="external-name"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const name = e.currentTarget.value;
+                          const email = (document.getElementById('external-email') as HTMLInputElement)?.value;
+                          if (name && email) {
+                            setAttendees([...attendees, {
+                              type: 'external',
+                              name,
+                              email
+                            }]);
+                            e.currentTarget.value = '';
+                            (document.getElementById('external-email') as HTMLInputElement).value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <Input 
+                      placeholder="Email"
+                      type="email"
+                      id="external-email"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const email = e.currentTarget.value;
+                          const name = (document.getElementById('external-name') as HTMLInputElement)?.value;
+                          if (name && email) {
+                            setAttendees([...attendees, {
+                              type: 'external',
+                              name,
+                              email
+                            }]);
+                            e.currentTarget.value = '';
+                            (document.getElementById('external-name') as HTMLInputElement).value = '';
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              
+              {attendees.length > 0 && (
+                <div className="border rounded-md p-2 space-y-1">
+                  {attendees.map((att, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-muted px-3 py-1 rounded">
+                      <span className="text-sm">
+                        {att.name} ({att.email}) - {att.type === 'lead' ? 'Prospecto' : att.type === 'customer' ? 'Cliente' : 'Externo'}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setAttendees(attendees.filter((_, i) => i !== idx))}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {meetingToEdit && (

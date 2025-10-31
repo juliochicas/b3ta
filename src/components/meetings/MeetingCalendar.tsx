@@ -28,6 +28,15 @@ interface Meeting {
     name: string;
     email: string;
   };
+  meeting_attendees?: Array<{
+    id: string;
+    attendee_type: string;
+    attendance_status: string;
+    leads_b3ta?: { name: string; email: string };
+    customers?: { name: string; email: string };
+    external_name?: string;
+    external_email?: string;
+  }>;
 }
 
 export const MeetingCalendar = () => {
@@ -43,7 +52,16 @@ export const MeetingCalendar = () => {
         .select(`
           *,
           leads_b3ta!fk_meetings_lead (name, email),
-          customers!fk_meetings_customer (name, email)
+          customers!fk_meetings_customer (name, email),
+          meeting_attendees (
+            id,
+            attendee_type,
+            attendance_status,
+            leads_b3ta (name, email),
+            customers (name, email),
+            external_name,
+            external_email
+          )
         `)
         .order("scheduled_at");
 
@@ -181,25 +199,41 @@ export const MeetingCalendar = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <span>
-                        {meeting.leads_b3ta?.name ||
-                          meeting.customers?.name ||
-                          "Sin asignar"}
-                      </span>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <span>
+                          {meeting.leads_b3ta?.name ||
+                            meeting.customers?.name ||
+                            "Sin asignar"}
+                        </span>
+                      </div>
+                      {meeting.meeting_attendees && meeting.meeting_attendees.length > 0 && (
+                        <div className="ml-6 space-y-1">
+                          <p className="text-xs font-semibold text-muted-foreground">
+                            Invitados ({meeting.meeting_attendees.length}):
+                          </p>
+                          {meeting.meeting_attendees.map((att: any) => (
+                            <p key={att.id} className="text-xs pl-2">
+                              • {att.attendee_type === 'lead' ? att.leads_b3ta?.name :
+                                 att.attendee_type === 'customer' ? att.customers?.name :
+                                 att.external_name} ({att.attendee_type === 'lead' ? 'Prospecto' :
+                                                       att.attendee_type === 'customer' ? 'Cliente' :
+                                                       'Externo'})
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        <span>{meeting.timezone}</span>
+                      </div>
+                      {meeting.notes && (
+                        <p className="text-muted-foreground mt-2">
+                          {meeting.notes}
+                        </p>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{meeting.timezone}</span>
-                    </div>
-                    {meeting.notes && (
-                      <p className="text-muted-foreground mt-2">
-                        {meeting.notes}
-                      </p>
-                    )}
-                  </div>
                 </div>
               ))}
             </div>
