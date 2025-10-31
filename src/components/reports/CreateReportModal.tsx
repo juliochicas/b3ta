@@ -110,6 +110,14 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
   };
 
   const handleLeadSelect = (selectedId: string) => {
+    if (selectedId === "none") {
+      setFormData({
+        ...formData,
+        selectedLeadId: undefined,
+      });
+      return;
+    }
+    
     const lead = leads.find(l => l.id === selectedId);
     if (lead) {
       setFormData({
@@ -407,7 +415,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
                 <SelectValue placeholder="Seleccionar lead o crear manual" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sin vincular</SelectItem>
+                <SelectItem value="none">Sin vincular</SelectItem>
                 {leads.map((lead) => (
                   <SelectItem key={lead.id} value={lead.id}>
                     {lead.name} - {lead.email}
