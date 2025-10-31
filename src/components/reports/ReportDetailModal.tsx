@@ -276,6 +276,35 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
     window.open(`/informe/${report.public_slug}`, '_blank');
   };
 
+  const sendReport = async () => {
+    try {
+      setLoading(true);
+      
+      const { error } = await supabase
+        .from('consultation_reports')
+        .update({ status: 'sent' })
+        .eq('id', report.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Informe enviado",
+        description: "El informe ahora está en estado 'Enviado' y el enlace público está activo",
+      });
+      
+      onUpdate();
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo enviar el informe",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const deleteReport = async () => {
     try {
       setLoading(true);
@@ -352,7 +381,19 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
               {report.report_number}
               {getStatusBadge(report.status)}
             </DialogTitle>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              {report.status !== 'sent' && (
+                <Button 
+                  size="sm" 
+                  variant="default"
+                  onClick={sendReport}
+                  disabled={loading}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Enviar Informe
+                </Button>
+              )}
               {report.public_slug && (
                 <>
                   {report.status === 'sent' ? (
@@ -377,9 +418,6 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
                         <Copy className="mr-2 h-4 w-4" />
                         Copiar Link (Inactivo)
                       </Button>
-                      <p className="text-xs text-muted-foreground self-center">
-                        Cambia el estado a "Enviado" para activar
-                      </p>
                     </>
                   )}
                 </>

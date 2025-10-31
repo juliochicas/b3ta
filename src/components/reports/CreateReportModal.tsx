@@ -42,6 +42,7 @@ interface Props {
     conclusions: string | null;
     lead_id: string | null;
     status?: string;
+    public_slug?: string;
   };
 }
 
@@ -62,7 +63,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
     findings: reportToEdit?.findings || "",
     recommendations: reportToEdit?.recommendations || "",
     conclusions: reportToEdit?.conclusions || "",
-    status: (reportToEdit as any)?.status || 'draft',
+    status: reportToEdit?.status || 'draft',
   });
 
   const [sectionsConfig, setSectionsConfig] = useState(
