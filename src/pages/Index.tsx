@@ -77,7 +77,7 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Servicios</h4>
               <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>SAP S/4HANA</li>
+                <li>SAP Business One for HANA</li>
                 <li>E-commerce Shopify</li>
                 <li>Automatización n8n</li>
                 <li>IA Corporativa</li>

@@ -9,7 +9,7 @@ import { MessageCircle } from "lucide-react";
 
 const faqs = [
   {
-    question: "¿Cuánto tiempo toma implementar una solución SAP S/4HANA?",
+    question: "¿Cuánto tiempo toma implementar una solución SAP Business One for HANA?",
     answer: "Depende del tamaño de tu empresa y complejidad. Para PyMEs: 8-12 semanas. Para enterprise (500+ empleados): 16-24 semanas. Incluye migración de datos, personalización, integración y capacitación. Usamos metodología SAP Activate para máxima eficiencia."
   },
   {
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "¿Qué tecnologías usan? ¿Son modernas?",
-    answer: "Stack enterprise actual: SAP S/4HANA Cloud, Shopify Plus, n8n/Make para automatización, OpenAI GPT-4 + RAG para IA, React + TypeScript para frontends. Todo cloud-native, escalable y con las mejores prácticas de 2025."
+    answer: "Stack enterprise actual: SAP Business One for HANA, Shopify Plus, n8n/Make para automatización, OpenAI GPT-4 + RAG para IA, React + TypeScript para frontends. Todo cloud-native, escalable y con las mejores prácticas de 2025."
   },
   {
     question: "¿Ofrecen financiamiento o pagos flexibles?",

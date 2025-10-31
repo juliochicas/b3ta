@@ -5,8 +5,8 @@ const services = [
   {
     icon: Database,
     title: "SAP Consulting",
-    description: "Implementación, migración S/4HANA, optimización y soporte 24/7",
-    features: ["S/4HANA Migration", "Custom Development", "Integration"]
+    description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7",
+    features: ["SAP Business One for HANA Migration", "Custom Development", "Integration"]
   },
   {
     icon: ShoppingCart,

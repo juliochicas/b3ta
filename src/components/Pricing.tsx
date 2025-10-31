@@ -54,7 +54,7 @@ const plans = [
     description: "Integraciones SAP, transformación digital completa y soluciones enterprise",
     features: [
       "Todo en Professional +",
-      "SAP S/4HANA integración completa",
+      "SAP Business One for HANA integración completa",
       "Arquitectura multi-cloud",
       "IA custom con LLMs fine-tuned",
       "Equipo dedicado full-time",
