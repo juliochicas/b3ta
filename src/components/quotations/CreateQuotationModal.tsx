@@ -168,6 +168,48 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       const validUntil = new Date();
       validUntil.setDate(validUntil.getDate() + parseInt(formData.valid_days));
 
+      // 🔧 GESTIONAR RELACIÓN CON CLIENTE
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No autenticado');
+
+      let customerId: string;
+      
+      // Buscar si ya existe un cliente con este email
+      const { data: existingCustomer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', formData.customer_email)
+        .maybeSingle();
+
+      if (existingCustomer) {
+        // Cliente existe, actualizar sus datos
+        await supabase
+          .from('customers')
+          .update({
+            name: formData.customer_name,
+            company: formData.customer_company || null,
+          })
+          .eq('id', existingCustomer.id);
+        customerId = existingCustomer.id;
+      } else {
+        // Cliente no existe, crearlo
+        const { data: newCustomer, error: createError } = await supabase
+          .from('customers')
+          .insert({
+            email: formData.customer_email,
+            name: formData.customer_name,
+            company: formData.customer_company || null,
+            created_by: user.id,
+          })
+          .select('id')
+          .single();
+
+        if (createError || !newCustomer) {
+          throw new Error('Error creando cliente');
+        }
+        customerId = newCustomer.id;
+      }
+
       // Crear cotización
       const tagsArray = formData.tags
         ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
@@ -177,9 +219,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
         .from('quotations')
         .insert([{
           quotation_number: numberData,
-          customer_name: formData.customer_name,
-          customer_email: formData.customer_email,
-          customer_company: formData.customer_company || null,
+          customer_id: customerId,
           subtotal,
           discount_percentage: parseFloat(formData.discount_percentage),
           discount_amount: globalDiscount,

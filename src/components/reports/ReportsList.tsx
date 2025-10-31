@@ -11,10 +11,13 @@ import { ReportDetailModal } from "./ReportDetailModal";
 interface Report {
   id: string;
   report_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_company: string | null;
-  customer_phone: string | null;
+  customer_id: string;
+  customers: {
+    name: string;
+    email: string;
+    company: string | null;
+    phone: string | null;
+  };
   status: string;
   consultant_name: string;
   consultant_signature: string | null;
@@ -46,14 +49,22 @@ export const ReportsList = () => {
     try {
       setLoading(true);
       
-      // Build query with pagination
+      // Build query with JOIN to customers table
       let query = supabase
         .from('consultation_reports')
-        .select('*', { count: 'exact' });
+        .select(`
+          *,
+          customers (
+            name,
+            email,
+            company,
+            phone
+          )
+        `, { count: 'exact' });
 
       // Apply search filter if exists
       if (searchTerm) {
-        query = query.or(`customer_name.ilike.%${searchTerm}%,report_number.ilike.%${searchTerm}%,customer_company.ilike.%${searchTerm}%`);
+        query = query.or(`report_number.ilike.%${searchTerm}%,customers.name.ilike.%${searchTerm}%,customers.company.ilike.%${searchTerm}%`);
       }
 
       // Apply pagination
@@ -130,8 +141,8 @@ export const ReportsList = () => {
                       {getStatusBadge(report.status)}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      {report.customer_name}
-                      {report.customer_company && ` - ${report.customer_company}`}
+                      {report.customers.name}
+                      {report.customers.company && ` - ${report.customers.company}`}
                     </p>
                   </div>
                   <Button onClick={() => setSelectedReport(report)}>

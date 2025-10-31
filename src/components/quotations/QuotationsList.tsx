@@ -13,9 +13,12 @@ import { QuotationDetailModal } from "./QuotationDetailModal";
 interface Quotation {
   id: string;
   quotation_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_company: string | null;
+  customer_id: string;
+  customers: {
+    name: string;
+    email: string;
+    company: string | null;
+  };
   status: string;
   subtotal: number;
   discount_percentage: number;
@@ -54,8 +57,8 @@ export const QuotationsList = () => {
       setFilteredQuotations(
         quotations.filter(q =>
           q.quotation_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.customer_email.toLowerCase().includes(searchTerm.toLowerCase())
+          q.customers.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          q.customers.email.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     } else {
@@ -74,14 +77,21 @@ export const QuotationsList = () => {
 
       const { data, error } = await supabase
         .from('quotations')
-        .select('*')
+        .select(`
+          *,
+          customers (
+            name,
+            email,
+            company
+          )
+        `)
         .order('created_at', { ascending: false })
         .range(from, to);
 
       if (error) throw error;
       setTotalCount(count || 0);
-      setQuotations(data || []);
-      setFilteredQuotations(data || []);
+      setQuotations(data as any || []);
+      setFilteredQuotations(data as any || []);
     } catch (error) {
       toast({
         title: "Error",
@@ -148,11 +158,11 @@ export const QuotationsList = () => {
                     </div>
                     
                     <div className="space-y-1 text-sm text-muted-foreground">
-                      <p className="font-medium text-foreground">{quotation.customer_name}</p>
-                      {quotation.customer_company && (
-                        <p>{quotation.customer_company}</p>
+                      <p className="font-medium text-foreground">{quotation.customers.name}</p>
+                      {quotation.customers.company && (
+                        <p>{quotation.customers.company}</p>
                       )}
-                      <p>{quotation.customer_email}</p>
+                      <p>{quotation.customers.email}</p>
                     </div>
 
                     <div className="flex items-center gap-4 mt-4 text-sm">

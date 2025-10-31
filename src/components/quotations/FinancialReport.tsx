@@ -19,6 +19,9 @@ interface ReportData {
   net_profit: number;
   profit_margin: number;
   currency: string;
+  customers: {
+    name: string;
+  };
 }
 
 interface ReportStats {
@@ -52,10 +55,15 @@ export const FinancialReport = () => {
 
     setIsLoading(true);
     try {
-      // Obtener cotizaciones del periodo
+      // Obtener cotizaciones del periodo con JOIN a customers
       const { data: quotations, error: quotationsError } = await supabase
         .from('quotations')
-        .select('*')
+        .select(`
+          *,
+          customers (
+            name
+          )
+        `)
         .gte('created_at', startDate)
         .lte('created_at', endDate + 'T23:59:59')
         .order('created_at', { ascending: false });
@@ -80,13 +88,14 @@ export const FinancialReport = () => {
         return {
           quotation_id: quotation.id,
           quotation_number: quotation.quotation_number,
-          customer_name: quotation.customer_name,
+          customer_name: (quotation as any).customers.name,
           created_at: quotation.created_at,
           total_revenue: quotation.total,
           total_expenses: totalExpenses,
           net_profit: netProfit,
           profit_margin: profitMargin,
           currency: quotation.currency,
+          customers: (quotation as any).customers,
         };
       });
 

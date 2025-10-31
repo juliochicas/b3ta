@@ -26,10 +26,13 @@ interface Props {
   reportToEdit?: {
     id: string;
     report_number: string;
-    customer_name: string;
-    customer_email: string;
-    customer_company: string | null;
-    customer_phone: string | null;
+    customer_id: string;
+    customers: {
+      name: string;
+      email: string;
+      company: string | null;
+      phone: string | null;
+    };
     consultant_name: string;
     consultant_signature: string | null;
     sections_config: any;
@@ -50,10 +53,10 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
 
   const [formData, setFormData] = useState({
     selectedLeadId: reportToEdit?.lead_id || leadId || "",
-    customerName: reportToEdit?.customer_name || leadData?.name || "",
-    customerEmail: reportToEdit?.customer_email || leadData?.email || "",
-    customerCompany: reportToEdit?.customer_company || leadData?.company || "",
-    customerPhone: reportToEdit?.customer_phone || leadData?.phone || "",
+    customerName: reportToEdit?.customers?.name || leadData?.name || "",
+    customerEmail: reportToEdit?.customers?.email || leadData?.email || "",
+    customerCompany: reportToEdit?.customers?.company || leadData?.company || "",
+    customerPhone: reportToEdit?.customers?.phone || leadData?.phone || "",
     consultantName: reportToEdit?.consultant_name || "",
     currentSituation: reportToEdit?.current_situation || "",
     findings: reportToEdit?.findings || "",

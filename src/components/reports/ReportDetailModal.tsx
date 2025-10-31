@@ -15,10 +15,13 @@ import jsPDF from 'jspdf';
 interface Report {
   id: string;
   report_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_company: string | null;
-  customer_phone: string | null;
+  customer_id: string;
+  customers: {
+    name: string;
+    email: string;
+    company: string | null;
+    phone: string | null;
+  };
   status: string;
   consultant_name: string;
   consultant_signature: string | null;
@@ -109,16 +112,16 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
       yPos += 7;
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(10);
-      pdf.text(`Nombre: ${report.customer_name}`, 20, yPos);
+      pdf.text(`Nombre: ${report.customers.name}`, 20, yPos);
       yPos += 5;
-      pdf.text(`Email: ${report.customer_email}`, 20, yPos);
+      pdf.text(`Email: ${report.customers.email}`, 20, yPos);
       yPos += 5;
-      if (report.customer_company) {
-        pdf.text(`Empresa: ${report.customer_company}`, 20, yPos);
+      if (report.customers.company) {
+        pdf.text(`Empresa: ${report.customers.company}`, 20, yPos);
         yPos += 5;
       }
-      if (report.customer_phone) {
-        pdf.text(`Teléfono: ${report.customer_phone}`, 20, yPos);
+      if (report.customers.phone) {
+        pdf.text(`Teléfono: ${report.customers.phone}`, 20, yPos);
         yPos += 5;
       }
       yPos += 10;
@@ -409,22 +412,22 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-semibold">Nombre:</p>
-                    <p className="text-sm">{report.customer_name}</p>
+                    <p className="text-sm">{report.customers.name}</p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold">Email:</p>
-                    <p className="text-sm">{report.customer_email}</p>
+                    <p className="text-sm">{report.customers.email}</p>
                   </div>
-                  {report.customer_company && (
+                  {report.customers.company && (
                     <div>
                       <p className="text-sm font-semibold">Empresa:</p>
-                      <p className="text-sm">{report.customer_company}</p>
+                      <p className="text-sm">{report.customers.company}</p>
                     </div>
                   )}
-                  {report.customer_phone && (
+                  {report.customers.phone && (
                     <div>
                       <p className="text-sm font-semibold">Teléfono:</p>
-                      <p className="text-sm">{report.customer_phone}</p>
+                      <p className="text-sm">{report.customers.phone}</p>
                     </div>
                   )}
                 </div>

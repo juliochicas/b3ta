@@ -22,11 +22,7 @@ export type Database = {
           created_at: string
           created_by: string
           current_situation: string | null
-          customer_company: string | null
-          customer_email: string
-          customer_id: string | null
-          customer_name: string
-          customer_phone: string | null
+          customer_id: string
           findings: string | null
           id: string
           lead_id: string | null
@@ -44,11 +40,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           current_situation?: string | null
-          customer_company?: string | null
-          customer_email: string
-          customer_id?: string | null
-          customer_name: string
-          customer_phone?: string | null
+          customer_id: string
           findings?: string | null
           id?: string
           lead_id?: string | null
@@ -66,11 +58,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           current_situation?: string | null
-          customer_company?: string | null
-          customer_email?: string
-          customer_id?: string | null
-          customer_name?: string
-          customer_phone?: string | null
+          customer_id?: string
           findings?: string | null
           id?: string
           lead_id?: string | null
@@ -423,10 +411,7 @@ export type Database = {
         Row: {
           created_at: string
           currency: string
-          customer_company: string | null
-          customer_email: string
-          customer_id: string | null
-          customer_name: string
+          customer_id: string
           due_date: string | null
           id: string
           invoice_date: string
@@ -448,10 +433,7 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string
-          customer_company?: string | null
-          customer_email: string
-          customer_id?: string | null
-          customer_name: string
+          customer_id: string
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -473,10 +455,7 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string
-          customer_company?: string | null
-          customer_email?: string
-          customer_id?: string | null
-          customer_name?: string
+          customer_id?: string
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -875,10 +854,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
-          customer_company: string | null
-          customer_email: string
-          customer_id: string | null
-          customer_name: string
+          customer_id: string
           discount_amount: number | null
           discount_percentage: number | null
           id: string
@@ -903,10 +879,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
-          customer_company?: string | null
-          customer_email: string
-          customer_id?: string | null
-          customer_name: string
+          customer_id: string
           discount_amount?: number | null
           discount_percentage?: number | null
           id?: string
@@ -931,10 +904,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
-          customer_company?: string | null
-          customer_email?: string
-          customer_id?: string | null
-          customer_name?: string
+          customer_id?: string
           discount_amount?: number | null
           discount_percentage?: number | null
           id?: string

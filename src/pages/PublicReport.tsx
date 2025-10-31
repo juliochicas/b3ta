@@ -10,10 +10,13 @@ import { Button } from "@/components/ui/button";
 interface Report {
   id: string;
   report_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_company: string | null;
-  customer_phone: string | null;
+  customer_id: string;
+  customers: {
+    name: string;
+    email: string;
+    company: string | null;
+    phone: string | null;
+  };
   status: string;
   consultant_name: string;
   consultant_signature: string | null;
@@ -49,10 +52,18 @@ export default function PublicReport() {
     try {
       setLoading(true);
       
-      // Cargar informe público - La RLS automáticamente filtra por status='sent' y public_slug no nulo
+      // Cargar informe público con JOIN a customers
       const { data: reportData, error: reportError } = await supabase
         .from('consultation_reports')
-        .select('*')
+        .select(`
+          *,
+          customers (
+            name,
+            email,
+            company,
+            phone
+          )
+        `)
         .eq('public_slug', slug)
         .eq('status', 'sent')
         .single();
@@ -183,33 +194,33 @@ export default function PublicReport() {
                   <User className="h-5 w-5 text-primary mt-1" />
                   <div>
                     <p className="text-sm text-muted-foreground">Nombre</p>
-                    <p className="font-semibold text-lg">{report.customer_name}</p>
+                    <p className="font-semibold text-lg">{report.customers.name}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 text-primary mt-1" />
                   <div>
                     <p className="text-sm text-muted-foreground">Email</p>
-                    <p className="font-medium">{report.customer_email}</p>
+                    <p className="font-medium">{report.customers.email}</p>
                   </div>
                 </div>
               </div>
               <div className="space-y-4">
-                {report.customer_company && (
+                {report.customers.company && (
                   <div className="flex items-start gap-3">
                     <Building2 className="h-5 w-5 text-primary mt-1" />
                     <div>
                       <p className="text-sm text-muted-foreground">Empresa</p>
-                      <p className="font-medium">{report.customer_company}</p>
+                      <p className="font-medium">{report.customers.company}</p>
                     </div>
                   </div>
                 )}
-                {report.customer_phone && (
+                {report.customers.phone && (
                   <div className="flex items-start gap-3">
                     <Phone className="h-5 w-5 text-primary mt-1" />
                     <div>
                       <p className="text-sm text-muted-foreground">Teléfono</p>
-                      <p className="font-medium">{report.customer_phone}</p>
+                      <p className="font-medium">{report.customers.phone}</p>
                     </div>
                   </div>
                 )}
@@ -359,7 +370,7 @@ export default function PublicReport() {
           <p className="text-sm text-muted-foreground">www.b3ta.com | info@b3ta.com</p>
           <Separator className="my-4" />
           <p className="text-xs text-muted-foreground">
-            Este es un documento oficial de B3TA. Confidencial y de uso exclusivo para {report.customer_name}.
+            Este es un documento oficial de B3TA. Confidencial y de uso exclusivo para {report.customers.name}.
           </p>
         </div>
       </main>

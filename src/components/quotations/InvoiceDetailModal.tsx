@@ -13,9 +13,12 @@ import { es } from "date-fns/locale";
 interface Invoice {
   id: string;
   invoice_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_company: string | null;
+  customer_id: string;
+  customers: {
+    name: string;
+    email: string;
+    company: string | null;
+  };
   payment_status: string;
   subtotal: number;
   tax_rate: number;
@@ -88,7 +91,7 @@ export const InvoiceDetailModal = ({ invoice, onClose, onUpdate }: Props) => {
 
       toast({
         title: "Email enviado",
-        description: `La factura ha sido enviada a ${invoice.customer_email}`,
+        description: `La factura ha sido enviada a ${invoice.customers.email}`,
       });
       
       onUpdate();
@@ -146,13 +149,13 @@ export const InvoiceDetailModal = ({ invoice, onClose, onUpdate }: Props) => {
       yPos += 7;
       doc.setFontSize(10);
       doc.setFont(undefined, 'normal');
-      doc.text(invoice.customer_name, margin, yPos);
+      doc.text(invoice.customers.name, margin, yPos);
       yPos += 5;
-      if (invoice.customer_company) {
-        doc.text(invoice.customer_company, margin, yPos);
+      if (invoice.customers.company) {
+        doc.text(invoice.customers.company, margin, yPos);
         yPos += 5;
       }
-      doc.text(invoice.customer_email, margin, yPos);
+      doc.text(invoice.customers.email, margin, yPos);
       yPos += 15;
 
       // Payment status
@@ -356,11 +359,11 @@ export const InvoiceDetailModal = ({ invoice, onClose, onUpdate }: Props) => {
           <Card className="p-6">
             <h3 className="font-semibold mb-4">Cliente</h3>
             <div className="space-y-2 text-sm">
-              <p className="font-medium text-foreground">{invoice.customer_name}</p>
-              {invoice.customer_company && (
-                <p className="text-muted-foreground">{invoice.customer_company}</p>
+              <p className="font-medium text-foreground">{invoice.customers.name}</p>
+              {invoice.customers.company && (
+                <p className="text-muted-foreground">{invoice.customers.company}</p>
               )}
-              <p className="text-muted-foreground">{invoice.customer_email}</p>
+              <p className="text-muted-foreground">{invoice.customers.email}</p>
             </div>
             <div className="mt-4 pt-4 border-t space-y-2">
               <div className="flex justify-between text-sm">

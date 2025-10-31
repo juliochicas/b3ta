@@ -19,9 +19,12 @@ import { ExpensesList } from "./ExpensesList";
 interface Quotation {
   id: string;
   quotation_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_company: string | null;
+  customer_id: string;
+  customers: {
+    name: string;
+    email: string;
+    company: string | null;
+  };
   status: string;
   subtotal: number;
   discount_percentage: number;
@@ -231,7 +234,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
 
       toast({
         title: "Email enviado",
-        description: `La cotización ha sido enviada a ${quotation.customer_email}`,
+        description: `La cotización ha sido enviada a ${quotation.customers.email}`,
       });
       
       onUpdate();
@@ -338,13 +341,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       yPos += 7;
       doc.setFontSize(10);
       doc.setFont(undefined, 'normal');
-      doc.text(quotation.customer_name, margin, yPos);
+      doc.text(quotation.customers.name, margin, yPos);
       yPos += 5;
-      if (quotation.customer_company) {
-        doc.text(quotation.customer_company, margin, yPos);
+      if (quotation.customers.company) {
+        doc.text(quotation.customers.company, margin, yPos);
         yPos += 5;
       }
-      doc.text(quotation.customer_email, margin, yPos);
+      doc.text(quotation.customers.email, margin, yPos);
       yPos += 5;
       
       // Tracking number if available
@@ -677,11 +680,11 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           <Card className="p-6">
             <h3 className="font-semibold mb-4">Cliente</h3>
             <div className="space-y-2 text-sm">
-              <p className="font-medium text-foreground">{quotation.customer_name}</p>
-              {quotation.customer_company && (
-                <p className="text-muted-foreground">{quotation.customer_company}</p>
+              <p className="font-medium text-foreground">{quotation.customers.name}</p>
+              {quotation.customers.company && (
+                <p className="text-muted-foreground">{quotation.customers.company}</p>
               )}
-              <p className="text-muted-foreground">{quotation.customer_email}</p>
+              <p className="text-muted-foreground">{quotation.customers.email}</p>
             </div>
             <div className="mt-4 pt-4 border-t">
               <div className="flex justify-between text-sm">
