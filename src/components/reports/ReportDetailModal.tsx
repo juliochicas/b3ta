@@ -363,211 +363,233 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      draft: { label: "Borrador", variant: "secondary" as const },
-      completed: { label: "Completado", variant: "default" as const },
-      sent: { label: "Enviado", variant: "outline" as const },
+      draft: { label: "Borrador", variant: "secondary" as const, class: "bg-secondary/50" },
+      completed: { label: "Completado", variant: "default" as const, class: "bg-primary/10 text-primary" },
+      sent: { label: "Enviado", variant: "outline" as const, class: "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20" },
     };
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    return <Badge variant={config.variant} className={config.class}>{config.label}</Badge>;
   };
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-            <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-3">
-              <FileText className="h-6 w-6" />
-              {report.report_number}
-              {getStatusBadge(report.status)}
-            </DialogTitle>
-            <div className="flex gap-2 flex-wrap">
-              {report.status !== 'sent' && (
-                <Button 
-                  size="sm" 
-                  variant="default"
-                  onClick={sendReport}
-                  disabled={loading}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Mail className="mr-2 h-4 w-4" />
-                  Enviar Informe
-                </Button>
-              )}
-              {report.public_slug && (
-                <>
-                  {report.status === 'sent' ? (
-                    <>
-                      <Button size="sm" variant="outline" onClick={openPublicReport}>
-                        <ExternalLinkIcon className="mr-2 h-4 w-4" />
-                        Ver Público
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={copyPublicLink}>
-                        <Copy className="mr-2 h-4 w-4" />
-                        Copiar Link
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={copyPublicLink}
-                        className="opacity-60"
-                      >
-                        <Copy className="mr-2 h-4 w-4" />
-                        Copiar Link (Inactivo)
-                      </Button>
-                    </>
-                  )}
-                </>
-              )}
-              <Button size="sm" variant="outline" onClick={() => setShowEditModal(true)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Editar
-              </Button>
-              <Button size="sm" onClick={downloadPDF} disabled={loading}>
-                <Download className="mr-2 h-4 w-4" />
-                Descargar PDF
-              </Button>
-              <Button 
-                size="sm" 
-                variant="destructive"
-                onClick={() => setShowDeleteDialog(true)}
-                disabled={loading}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Eliminar
-              </Button>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader className="space-y-4 pb-4 border-b">
+          <div className="flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <FileText className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <DialogTitle className="text-2xl font-semibold">
+                    {report.report_number}
+                  </DialogTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Creado el {new Date(report.created_at).toLocaleDateString('es-ES', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </p>
+                </div>
+              </div>
             </div>
+            <div className="flex items-center gap-2">
+              {getStatusBadge(report.status)}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 pt-2">
+            {report.status !== 'sent' && (
+              <Button 
+                onClick={sendReport}
+                disabled={loading}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Enviar Informe
+              </Button>
+            )}
+            
+            {report.public_slug && report.status === 'sent' && (
+              <>
+                <Button variant="outline" onClick={openPublicReport}>
+                  <ExternalLinkIcon className="mr-2 h-4 w-4" />
+                  Ver Público
+                </Button>
+                <Button variant="outline" onClick={copyPublicLink}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copiar Link
+                </Button>
+              </>
+            )}
+            
+            {report.public_slug && report.status !== 'sent' && (
+              <Button 
+                variant="outline" 
+                onClick={copyPublicLink}
+                className="opacity-50"
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                Link Inactivo
+              </Button>
+            )}
+            
+            <div className="flex-1" />
+            
+            <Button variant="ghost" size="icon" onClick={() => setShowEditModal(true)}>
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={downloadPDF} disabled={loading}>
+              <Download className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={loading}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </DialogHeader>
 
-        <Tabs defaultValue="details" className="w-full">
-          <TabsList>
-            <TabsTrigger value="details">Detalles</TabsTrigger>
-            <TabsTrigger value="multimedia">Multimedia ({media.length})</TabsTrigger>
-          </TabsList>
+        <div className="flex-1 overflow-y-auto">
+          <Tabs defaultValue="details" className="w-full h-full flex flex-col">
+            <TabsList className="w-full justify-start border-b rounded-none h-12 p-0 bg-transparent px-6">
+              <TabsTrigger 
+                value="details" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4"
+              >
+                Detalles
+              </TabsTrigger>
+              <TabsTrigger 
+                value="multimedia"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4"
+              >
+                Multimedia ({media.length})
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="details" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Información del Cliente</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-semibold">Nombre:</p>
-                    <p className="text-sm">{report.customers.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold">Email:</p>
-                    <p className="text-sm">{report.customers.email}</p>
-                  </div>
-                  {report.customers.company && (
-                    <div>
-                      <p className="text-sm font-semibold">Empresa:</p>
-                      <p className="text-sm">{report.customers.company}</p>
+            <TabsContent value="details" className="flex-1 space-y-8 mt-0 px-6 py-6">
+              {/* Customer Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold tracking-tight">Información del Cliente</h3>
+                <div className="rounded-xl border bg-card/50 backdrop-blur p-6">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Nombre</p>
+                      <p className="text-sm font-medium">{report.customers.name}</p>
                     </div>
-                  )}
-                  {report.customers.phone && (
-                    <div>
-                      <p className="text-sm font-semibold">Teléfono:</p>
-                      <p className="text-sm">{report.customers.phone}</p>
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</p>
+                      <p className="text-sm font-medium">{report.customers.email}</p>
                     </div>
-                  )}
+                    {report.customers.company && (
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Empresa</p>
+                        <p className="text-sm font-medium">{report.customers.company}</p>
+                      </div>
+                    )}
+                    {report.customers.phone && (
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Teléfono</p>
+                        <p className="text-sm font-medium">{report.customers.phone}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {report.sections_config.current_situation && report.current_situation && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Análisis de Situación Actual</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm whitespace-pre-wrap">{report.current_situation}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {report.sections_config.findings && report.findings && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Hallazgos Principales</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm whitespace-pre-wrap">{report.findings}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {report.sections_config.recommendations && report.recommendations && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recomendaciones</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm whitespace-pre-wrap">{report.recommendations}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {report.sections_config.conclusions && report.conclusions && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Conclusiones</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm whitespace-pre-wrap">{report.conclusions}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Consultor Responsable</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm font-semibold mb-2">{report.consultant_name}</p>
-                {report.consultant_signature && (
-                  <div className="border rounded p-2 bg-white inline-block">
-                    <img src={report.consultant_signature} alt="Firma" className="h-20" />
+              {/* Report Sections */}
+              {report.sections_config.current_situation && report.current_situation && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold tracking-tight">Análisis de Situación Actual</h3>
+                  <div className="rounded-xl border bg-card/50 backdrop-blur p-6">
+                    <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">{report.current_situation}</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </div>
+              )}
 
-          <TabsContent value="multimedia" className="space-y-4">
-            {media.length === 0 ? (
-              <Card>
-                <CardContent className="py-8 text-center">
+              {report.sections_config.findings && report.findings && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold tracking-tight">Hallazgos Principales</h3>
+                  <div className="rounded-xl border bg-card/50 backdrop-blur p-6">
+                    <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">{report.findings}</p>
+                  </div>
+                </div>
+              )}
+
+              {report.sections_config.recommendations && report.recommendations && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold tracking-tight">Recomendaciones</h3>
+                  <div className="rounded-xl border bg-card/50 backdrop-blur p-6">
+                    <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">{report.recommendations}</p>
+                  </div>
+                </div>
+              )}
+
+              {report.sections_config.conclusions && report.conclusions && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold tracking-tight">Conclusiones</h3>
+                  <div className="rounded-xl border bg-card/50 backdrop-blur p-6">
+                    <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">{report.conclusions}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Consultant Signature */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold tracking-tight">Consultor Responsable</h3>
+                <div className="rounded-xl border bg-card/50 backdrop-blur p-6">
+                  <div className="space-y-4">
+                    <p className="text-sm font-semibold">{report.consultant_name}</p>
+                    {report.consultant_signature && (
+                      <div className="inline-block border rounded-lg p-4 bg-background/50">
+                        <img src={report.consultant_signature} alt="Firma" className="h-20" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="multimedia" className="flex-1 px-6 py-6 mt-0">
+              {media.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-64 rounded-xl border bg-card/50 backdrop-blur">
+                  <ImageIcon className="h-12 w-12 text-muted-foreground/50 mb-4" />
                   <p className="text-muted-foreground">No hay archivos multimedia</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-2 gap-4">
-                {media.map((item) => (
-                  <Card key={item.id}>
-                    <CardContent className="p-4">
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  {media.map((item) => (
+                    <div 
+                      key={item.id}
+                      className="rounded-xl border bg-card/50 backdrop-blur p-4 hover:shadow-md transition-shadow"
+                    >
                       <div className="flex items-start gap-3">
-                        {item.type === 'photo' ? (
-                          <ImageIcon className="h-5 w-5 mt-1 text-primary" />
-                        ) : (
-                          <Video className="h-5 w-5 mt-1 text-primary" />
-                        )}
-                        <div className="flex-1">
+                        <div className="p-2 rounded-lg bg-primary/10">
+                          {item.type === 'photo' ? (
+                            <ImageIcon className="h-5 w-5 text-primary" />
+                          ) : (
+                            <Video className="h-5 w-5 text-primary" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold mb-1">
                             {item.type === 'photo' ? 'Fotografía' : 'Video'}
                           </p>
                           {item.caption && (
-                            <p className="text-sm text-muted-foreground mb-2">{item.caption}</p>
+                            <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{item.caption}</p>
                           )}
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => window.open(item.url, '_blank')}
+                            className="w-full"
                           >
                             {item.is_external ? (
                               <>
@@ -583,13 +605,13 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
                           </Button>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
       </DialogContent>
 
       <AlertDeleteDialog
