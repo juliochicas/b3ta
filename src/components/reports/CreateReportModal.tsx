@@ -166,6 +166,60 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
       }
       console.log('✅ Rol del usuario:', userRoles.role);
 
+      // 🔧 GESTIONAR RELACIÓN CON CLIENTE
+      console.log('👤 Buscando/creando cliente...');
+      let customerId: string | null = null;
+      
+      // Buscar si ya existe un cliente con este email
+      const { data: existingCustomer, error: searchError } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', formData.customerEmail)
+        .maybeSingle();
+
+      if (searchError) {
+        console.error('⚠️ Error buscando cliente:', searchError);
+      }
+
+      if (existingCustomer) {
+        // Cliente existe, actualizar sus datos
+        console.log('✅ Cliente encontrado, actualizando datos...');
+        const { error: updateError } = await supabase
+          .from('customers')
+          .update({
+            name: formData.customerName,
+            company: formData.customerCompany || null,
+            phone: formData.customerPhone || null,
+          })
+          .eq('id', existingCustomer.id);
+
+        if (updateError) {
+          console.error('⚠️ Error actualizando cliente:', updateError);
+        }
+        customerId = existingCustomer.id;
+      } else {
+        // Cliente no existe, crearlo
+        console.log('📝 Creando nuevo cliente...');
+        const { data: newCustomer, error: createError } = await supabase
+          .from('customers')
+          .insert({
+            email: formData.customerEmail,
+            name: formData.customerName,
+            company: formData.customerCompany || null,
+            phone: formData.customerPhone || null,
+            created_by: user.id,
+          })
+          .select('id')
+          .single();
+
+        if (createError) {
+          console.error('⚠️ Error creando cliente:', createError);
+        } else if (newCustomer) {
+          customerId = newCustomer.id;
+          console.log('✅ Cliente creado:', customerId);
+        }
+      }
+
       let report: any;
 
       if (isEditMode && reportToEdit) {
@@ -175,6 +229,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           .from('consultation_reports')
           .update({
             lead_id: formData.selectedLeadId || null,
+            customer_id: customerId,
             customer_name: formData.customerName,
             customer_email: formData.customerEmail,
             customer_company: formData.customerCompany || null,
@@ -230,6 +285,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
             report_number: reportNumber,
             public_slug: reportSlug,
             lead_id: formData.selectedLeadId || null,
+            customer_id: customerId,
             created_by: user.id,
             customer_name: formData.customerName,
             customer_email: formData.customerEmail,
