@@ -71,13 +71,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "consultation_reports_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "consultation_reports_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
@@ -484,13 +477,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "fk_invoices_customer"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "invoices_customer_id_fkey"
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
@@ -959,13 +945,6 @@ export type Database = {
             columns: ["report_id"]
             isOneToOne: false
             referencedRelation: "consultation_reports"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "quotations_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
           {
