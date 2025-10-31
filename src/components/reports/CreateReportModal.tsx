@@ -38,6 +38,7 @@ interface Props {
     recommendations: string | null;
     conclusions: string | null;
     lead_id: string | null;
+    status?: string;
   };
 }
 
@@ -58,6 +59,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
     findings: reportToEdit?.findings || "",
     recommendations: reportToEdit?.recommendations || "",
     conclusions: reportToEdit?.conclusions || "",
+    status: (reportToEdit as any)?.status || 'draft',
   });
 
   const [sectionsConfig, setSectionsConfig] = useState(
@@ -184,6 +186,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
             conclusions: formData.conclusions || null,
             consultant_name: formData.consultantName,
             consultant_signature: signature,
+            status: formData.status,
           })
           .eq('id', reportToEdit.id)
           .select()
@@ -399,6 +402,30 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
               required
             />
           </div>
+
+          {isEditMode && (
+            <div className="space-y-2">
+              <Label htmlFor="status">Estado del Informe *</Label>
+              <Select 
+                value={formData.status} 
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
+              >
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Seleccionar estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Borrador</SelectItem>
+                  <SelectItem value="completed">Completado</SelectItem>
+                  <SelectItem value="sent">Enviado</SelectItem>
+                </SelectContent>
+              </Select>
+              {formData.status === 'sent' && (
+                <p className="text-sm text-amber-600 dark:text-amber-500">
+                  ⚠️ Al cambiar a "Enviado", el enlace público se activará y será accesible para cualquiera que tenga el link.
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="space-y-4">
             <h3 className="font-semibold">Secciones del Informe</h3>
