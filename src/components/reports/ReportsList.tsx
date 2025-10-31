@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileText, Search, Calendar, User, ChevronLeft, ChevronRight } from "lucide-react";
+import { FileText, Search, Calendar, User, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ReportDetailModal } from "./ReportDetailModal";
 
@@ -136,9 +136,15 @@ export const ReportsList = () => {
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
-                    <CardTitle className="text-lg flex items-center gap-2">
+                     <CardTitle className="text-lg flex items-center gap-2">
                       {report.report_number}
                       {getStatusBadge(report.status)}
+                      {report.public_slug && report.status === 'sent' && (
+                        <Badge variant="outline" className="gap-1">
+                          <ExternalLink className="h-3 w-3" />
+                          Link Público
+                        </Badge>
+                      )}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
                       {report.customers.name}

@@ -244,21 +244,21 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
   const copyPublicLink = () => {
     if (!report.public_slug) return;
     
-    if (report.status !== 'sent') {
-      toast({
-        title: "Enlace no disponible",
-        description: "El enlace público solo está disponible para informes enviados. Cambia el estado a 'Enviado' primero.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     const url = `${window.location.origin}/informe/${report.public_slug}`;
     navigator.clipboard.writeText(url);
-    toast({
-      title: "Enlace copiado",
-      description: "El enlace público ha sido copiado al portapapeles",
-    });
+    
+    if (report.status !== 'sent') {
+      toast({
+        title: "Link copiado (Inactivo)",
+        description: "⚠️ El enlace solo funcionará cuando cambies el estado a 'Enviado'",
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Enlace copiado",
+        description: "El enlace público ha sido copiado al portapapeles",
+      });
+    }
   };
 
   const openPublicReport = () => {
@@ -353,28 +353,36 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
               {getStatusBadge(report.status)}
             </DialogTitle>
             <div className="flex gap-2">
-              {report.public_slug && report.status === 'sent' && (
+              {report.public_slug && (
                 <>
-                  <Button size="sm" variant="outline" onClick={openPublicReport}>
-                    <ExternalLinkIcon className="mr-2 h-4 w-4" />
-                    Ver Público
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={copyPublicLink}>
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copiar Link
-                  </Button>
+                  {report.status === 'sent' ? (
+                    <>
+                      <Button size="sm" variant="outline" onClick={openPublicReport}>
+                        <ExternalLinkIcon className="mr-2 h-4 w-4" />
+                        Ver Público
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={copyPublicLink}>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copiar Link
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={copyPublicLink}
+                        className="opacity-60"
+                      >
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copiar Link (Inactivo)
+                      </Button>
+                      <p className="text-xs text-muted-foreground self-center">
+                        Cambia el estado a "Enviado" para activar
+                      </p>
+                    </>
+                  )}
                 </>
-              )}
-              {report.public_slug && report.status !== 'sent' && (
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  disabled
-                  title="El enlace público solo está disponible para informes enviados"
-                >
-                  <ExternalLinkIcon className="mr-2 h-4 w-4" />
-                  Link no disponible
-                </Button>
               )}
               <Button size="sm" variant="outline" onClick={() => setShowEditModal(true)}>
                 <Edit className="mr-2 h-4 w-4" />
