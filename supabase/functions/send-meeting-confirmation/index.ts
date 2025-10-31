@@ -82,52 +82,9 @@ serve(async (req) => {
       );
     }
 
-    // Generate personalized confirmation using AI
-    const aiResponse = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            {
-              role: "system",
-              content:
-                "Eres un asistente que genera confirmaciones de reuniones profesionales y amigables en español.",
-            },
-            {
-              role: "user",
-              content: `Genera un mensaje de confirmación de reunión para ${recipientName}. La reunión está programada para el ${new Date(
-                meeting.scheduled_at
-              ).toLocaleDateString("es-MX", {
-                dateStyle: "long",
-                timeZone: meeting.timezone,
-              })} a las ${new Date(meeting.scheduled_at).toLocaleTimeString(
-                "es-MX",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  timeZone: meeting.timezone,
-                }
-              )}. Duración: ${meeting.duration_minutes} minutos. ${
-                meeting.notes ? `Notas: ${meeting.notes}` : ""
-              } Genera un mensaje breve, profesional y amigable confirmando la reunión.`,
-            },
-          ],
-        }),
-      }
-    );
+    // Send confirmation email directly (simplified for speed)
+    const confirmationText = `¡Hola ${recipientName}! Tu reunión ha sido confirmada exitosamente. Nos vemos pronto.`;
 
-    const aiData = await aiResponse.json();
-    const confirmationText =
-      aiData.choices?.[0]?.message?.content ||
-      "Tu reunión ha sido agendada exitosamente.";
-
-    // Send confirmation email
     const { error: emailError } = await resend.emails.send({
       from: "B3TA Consulting <onboarding@resend.dev>",
       to: [recipientEmail],
@@ -185,6 +142,7 @@ serve(async (req) => {
       );
     }
 
+    console.log("Confirmation email sent successfully to:", recipientEmail);
     return new Response(
       JSON.stringify({
         success: true,
