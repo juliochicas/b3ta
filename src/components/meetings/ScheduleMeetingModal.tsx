@@ -68,6 +68,8 @@ export const ScheduleMeetingModal = ({
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [newAttendeeType, setNewAttendeeType] = useState<'lead' | 'customer' | 'external'>('lead');
   const [selectedAttendeeId, setSelectedAttendeeId] = useState("");
+  const [externalName, setExternalName] = useState("");
+  const [externalEmail, setExternalEmail] = useState("");
 
   useEffect(() => {
     if (meetingToEdit) {
@@ -113,6 +115,27 @@ export const ScheduleMeetingModal = ({
       return data;
     },
   });
+  const addAttendee = () => {
+    try {
+      if (newAttendeeType === 'external') {
+        if (!externalName || !externalEmail) return;
+        const exists = attendees.some(a => a.email.toLowerCase() === externalEmail.toLowerCase());
+        if (exists) { toast.error('Este invitado ya fue añadido'); return; }
+        setAttendees([...attendees, { type: 'external', name: externalName, email: externalEmail }]);
+        setExternalName("");
+        setExternalEmail("");
+      } else {
+        if (!selectedAttendeeId) return;
+        const list = newAttendeeType === 'lead' ? leads : customers;
+        const selected = list?.find((item: any) => item.id === selectedAttendeeId);
+        if (!selected) return;
+        const exists = attendees.some(a => a.email.toLowerCase() === selected.email.toLowerCase());
+        if (exists) { toast.error('Este invitado ya fue añadido'); return; }
+        setAttendees([...attendees, { type: newAttendeeType, id: selected.id, name: selected.name, email: selected.email }]);
+        setSelectedAttendeeId("");
+      }
+    } catch (e) { console.error('addAttendee error', e); }
+  };
 
   const handleSubmit = async () => {
     if (!date || !time) {
@@ -140,6 +163,41 @@ export const ScheduleMeetingModal = ({
         created_by: userData.user.id,
       };
 
+
+  const addAttendee = () => {
+    try {
+      if (newAttendeeType === 'external') {
+        if (!externalName || !externalEmail) return;
+        const exists = attendees.some(a => a.email.toLowerCase() === externalEmail.toLowerCase());
+        if (exists) {
+          toast.error('Este invitado ya fue añadido');
+          return;
+        }
+        setAttendees([...attendees, { type: 'external', name: externalName, email: externalEmail }]);
+        setExternalName("");
+        setExternalEmail("");
+      } else {
+        if (!selectedAttendeeId) return;
+        const list = newAttendeeType === 'lead' ? leads : customers;
+        const selected = list?.find((item: any) => item.id === selectedAttendeeId);
+        if (!selected) return;
+        const exists = attendees.some(a => a.email.toLowerCase() === selected.email.toLowerCase());
+        if (exists) {
+          toast.error('Este invitado ya fue añadido');
+          return;
+        }
+        setAttendees([...attendees, {
+          type: newAttendeeType,
+          id: selected.id,
+          name: selected.name,
+          email: selected.email,
+        }]);
+        setSelectedAttendeeId("");
+      }
+    } catch (e) {
+      console.error('addAttendee error', e);
+    }
+  };
       if (meetingToEdit) {
         const { error } = await supabase
           .from("meetings")
@@ -312,76 +370,44 @@ export const ScheduleMeetingModal = ({
                 </Select>
                 
                 {newAttendeeType !== 'external' ? (
-                  <Select 
-                    value={selectedAttendeeId} 
-                    onValueChange={(value) => {
-                      const list = newAttendeeType === 'lead' ? leads : customers;
-                      const selected = list?.find(item => item.id === value);
-                      if (selected) {
-                        setAttendees([...attendees, {
-                          type: newAttendeeType,
-                          id: selected.id,
-                          name: selected.name,
-                          email: selected.email
-                        }]);
-                        setSelectedAttendeeId("");
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder={`Seleccionar ${newAttendeeType === 'lead' ? 'prospecto' : 'cliente'}`} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(newAttendeeType === 'lead' ? leads : customers)?.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.name} - {item.email}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <>
+                    <Select 
+                      value={selectedAttendeeId} 
+                      onValueChange={(value) => setSelectedAttendeeId(value)}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder={`Seleccionar ${newAttendeeType === 'lead' ? 'prospecto' : 'cliente'}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(newAttendeeType === 'lead' ? leads : customers)?.map((item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {item.name} - {item.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button type="button" onClick={addAttendee}>Agregar</Button>
+                  </>
                 ) : (
                   <div className="flex-1 flex gap-2">
                     <Input 
                       placeholder="Nombre"
-                      id="external-name"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          const name = e.currentTarget.value;
-                          const email = (document.getElementById('external-email') as HTMLInputElement)?.value;
-                          if (name && email) {
-                            setAttendees([...attendees, {
-                              type: 'external',
-                              name,
-                              email
-                            }]);
-                            e.currentTarget.value = '';
-                            (document.getElementById('external-email') as HTMLInputElement).value = '';
-                          }
-                        }
-                      }}
+                      value={externalName}
+                      onChange={(e) => setExternalName(e.target.value)}
                     />
                     <Input 
                       placeholder="Email"
                       type="email"
-                      id="external-email"
+                      value={externalEmail}
+                      onChange={(e) => setExternalEmail(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          const email = e.currentTarget.value;
-                          const name = (document.getElementById('external-name') as HTMLInputElement)?.value;
-                          if (name && email) {
-                            setAttendees([...attendees, {
-                              type: 'external',
-                              name,
-                              email
-                            }]);
-                            e.currentTarget.value = '';
-                            (document.getElementById('external-name') as HTMLInputElement).value = '';
-                          }
+                          addAttendee();
                         }
                       }}
                     />
+                    <Button type="button" onClick={addAttendee}>Agregar</Button>
                   </div>
                 )}
               </div>
