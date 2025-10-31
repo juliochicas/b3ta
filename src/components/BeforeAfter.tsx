@@ -10,7 +10,7 @@ const comparisons = [
   },
   {
     before: "Sistemas legacy desconectados",
-    after: "Integración SAP S/4HANA cloud",
+    after: "Integración SAP Business One for HANA cloud",
     metric: "60% más rápido"
   },
   {
@@ -30,7 +30,7 @@ const caseStudy = {
   industry: "Retail E-commerce",
   size: "$45M facturación anual",
   challenge: "Operaciones manuales, inventario descontrolado, ventas estancadas",
-  solution: "SAP S/4HANA + Shopify Plus + Automatización IA",
+  solution: "SAP Business One for HANA + Shopify Plus + Automatización IA",
   results: [
     { metric: "+340%", label: "ROI primer año" },
     { metric: "-60%", label: "Tiempo operaciones" },
