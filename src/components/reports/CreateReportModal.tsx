@@ -79,7 +79,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
   const [signature, setSignature] = useState<string>(reportToEdit?.consultant_signature || "");
 
   useEffect(() => {
-    if (!leadId && !isEditMode) loadLeads();
+    if (!leadId) loadLeads();
     if (isEditMode) loadExistingMedia();
   }, [leadId, isEditMode]);
 
@@ -396,23 +396,26 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {!leadId && (
-            <div className="space-y-2">
-              <Label>Vincular a Lead (opcional)</Label>
-              <Select value={formData.selectedLeadId} onValueChange={handleLeadSelect}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar lead o crear manual" />
-                </SelectTrigger>
-                <SelectContent>
-                  {leads.map((lead) => (
-                    <SelectItem key={lead.id} value={lead.id}>
-                      {lead.name} - {lead.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label>Vincular a Lead (opcional)</Label>
+            <Select 
+              value={formData.selectedLeadId} 
+              onValueChange={handleLeadSelect}
+              disabled={!!leadId}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar lead o crear manual" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Sin vincular</SelectItem>
+                {leads.map((lead) => (
+                  <SelectItem key={lead.id} value={lead.id}>
+                    {lead.name} - {lead.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
