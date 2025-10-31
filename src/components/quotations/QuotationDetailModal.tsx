@@ -111,7 +111,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       if (error) throw error;
       setRelatedInvoice(data);
     } catch (error) {
-      console.error("Error loading invoice:", error);
+      // Error silencioso - no mostrar toast
     }
   };
 

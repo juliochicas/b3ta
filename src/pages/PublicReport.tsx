@@ -69,7 +69,6 @@ export default function PublicReport() {
         .single();
 
       if (reportError || !reportData) {
-        console.error('Error cargando reporte público:', reportError);
         setError(true);
         return;
       }
@@ -84,7 +83,6 @@ export default function PublicReport() {
 
       setMedia(mediaData || []);
     } catch (err) {
-      console.error('Error inesperado:', err);
       setError(true);
     } finally {
       setLoading(false);

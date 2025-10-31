@@ -96,7 +96,6 @@ export const InvoiceDetailModal = ({ invoice, onClose, onUpdate }: Props) => {
       
       onUpdate();
     } catch (error) {
-      console.error("Error sending email:", error);
       toast({
         title: "Error",
         description: "No se pudo enviar el email",

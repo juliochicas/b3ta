@@ -42,8 +42,8 @@ export const MeetingCalendar = () => {
         .from("meetings")
         .select(`
           *,
-          leads_b3ta (name, email),
-          customers (name, email)
+          leads_b3ta!fk_meetings_lead (name, email),
+          customers!fk_meetings_customer (name, email)
         `)
         .order("scheduled_at");
 

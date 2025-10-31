@@ -222,7 +222,6 @@ export const FinancialReport = () => {
         description: "El reporte financiero se ha exportado exitosamente",
       });
     } catch (error) {
-      console.error("Error exporting to Excel:", error);
       toast({
         title: "Error",
         description: "No se pudo exportar a Excel",

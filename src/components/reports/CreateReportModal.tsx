@@ -159,7 +159,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
       // Verificar autenticación
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) {
-        console.error('❌ Error de autenticación:', authError);
         throw new Error('No estás autenticado. Por favor inicia sesión.');
       }
 
@@ -171,7 +170,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
         .single();
       
       if (roleError || !userRoles) {
-        console.error('❌ Error verificando rol:', roleError);
         throw new Error('Tu usuario no tiene permisos para crear informes. Contacta al administrador.');
       }
 
@@ -185,10 +183,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
         .eq('email', formData.customerEmail)
         .maybeSingle();
 
-      if (searchError) {
-        console.error('⚠️ Error buscando cliente:', searchError);
-      }
-
       if (existingCustomer) {
         // Cliente existe, actualizar sus datos
         const { error: updateError } = await supabase
@@ -200,9 +194,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           })
           .eq('id', existingCustomer.id);
 
-        if (updateError) {
-          console.error('⚠️ Error actualizando cliente:', updateError);
-        }
         customerId = existingCustomer.id;
       } else {
         // Cliente no existe, crearlo
@@ -219,7 +210,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           .single();
 
         if (createError) {
-          console.error('⚠️ Error creando cliente:', createError);
+          throw new Error('Error creando cliente');
         } else if (newCustomer) {
           customerId = newCustomer.id;
         }
@@ -248,7 +239,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           .single();
 
         if (updateError) {
-          console.error('❌ Error actualizando informe:', updateError);
           throw new Error(`Error actualizando informe: ${updateError.message}`);
         }
         report = updatedReport;
@@ -263,13 +253,11 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
         // MODO CREACIÓN: Crear nuevo informe
         const { data: reportNumber, error: numberError } = await supabase.rpc('generate_report_number');
         if (numberError) {
-          console.error('❌ Error generando número:', numberError);
           throw new Error(`Error generando número de informe: ${numberError.message}`);
         }
 
         const { data: reportSlug, error: slugError } = await supabase.rpc('generate_report_slug');
         if (slugError) {
-          console.error('❌ Error generando slug:', slugError);
           throw new Error(`Error generando slug: ${slugError.message}`);
         }
 
@@ -294,7 +282,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           .single();
 
         if (reportError) {
-          console.error('❌ Error insertando informe:', reportError);
           if (reportError.code === 'PGRST301') {
             throw new Error('No tienes permisos para crear informes. Verifica que tu usuario tenga rol de Admin o Sales.');
           }
@@ -341,7 +328,7 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
             });
           }
         } catch (error) {
-          console.error('Error uploading media:', error);
+          // Error silencioso en upload de media
           return null;
         }
       });
@@ -354,7 +341,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
       });
       onSuccess();
     } catch (error: any) {
-      console.error('❌ Error completo:', error);
       toast({
         title: "Error al crear informe",
         description: error.message || "Ocurrió un error inesperado",
