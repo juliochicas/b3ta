@@ -240,6 +240,16 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
 
   const copyPublicLink = () => {
     if (!report.public_slug) return;
+    
+    if (report.status !== 'sent') {
+      toast({
+        title: "Enlace no disponible",
+        description: "El enlace público solo está disponible para informes enviados. Cambia el estado a 'Enviado' primero.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const url = `${window.location.origin}/informe/${report.public_slug}`;
     navigator.clipboard.writeText(url);
     toast({
@@ -250,6 +260,16 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
 
   const openPublicReport = () => {
     if (!report.public_slug) return;
+    
+    if (report.status !== 'sent') {
+      toast({
+        title: "Informe no publicado",
+        description: "Este informe debe estar en estado 'Enviado' para poder visualizarse públicamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     window.open(`/informe/${report.public_slug}`, '_blank');
   };
 
@@ -330,7 +350,7 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
               {getStatusBadge(report.status)}
             </DialogTitle>
             <div className="flex gap-2">
-              {report.public_slug && (
+              {report.public_slug && report.status === 'sent' && (
                 <>
                   <Button size="sm" variant="outline" onClick={openPublicReport}>
                     <ExternalLinkIcon className="mr-2 h-4 w-4" />
@@ -341,6 +361,17 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
                     Copiar Link
                   </Button>
                 </>
+              )}
+              {report.public_slug && report.status !== 'sent' && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  disabled
+                  title="El enlace público solo está disponible para informes enviados"
+                >
+                  <ExternalLinkIcon className="mr-2 h-4 w-4" />
+                  Link no disponible
+                </Button>
               )}
               <Button size="sm" variant="outline" onClick={() => setShowEditModal(true)}>
                 <Edit className="mr-2 h-4 w-4" />

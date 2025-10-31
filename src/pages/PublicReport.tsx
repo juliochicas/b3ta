@@ -49,14 +49,16 @@ export default function PublicReport() {
     try {
       setLoading(true);
       
-      // Cargar informe público
+      // Cargar informe público - La RLS automáticamente filtra por status='sent' y public_slug no nulo
       const { data: reportData, error: reportError } = await supabase
         .from('consultation_reports')
         .select('*')
         .eq('public_slug', slug)
+        .eq('status', 'sent')
         .single();
 
       if (reportError || !reportData) {
+        console.error('Error cargando reporte público:', reportError);
         setError(true);
         return;
       }
@@ -71,6 +73,7 @@ export default function PublicReport() {
 
       setMedia(mediaData || []);
     } catch (err) {
+      console.error('Error inesperado:', err);
       setError(true);
     } finally {
       setLoading(false);
@@ -94,13 +97,23 @@ export default function PublicReport() {
         <Card className="max-w-md w-full">
           <CardContent className="py-12 text-center">
             <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-2xl font-bold mb-2">Informe no encontrado</h2>
+            <h2 className="text-2xl font-bold mb-2">Informe no disponible</h2>
             <p className="text-muted-foreground mb-6">
-              El informe que buscas no existe o ya no está disponible.
+              Este informe no existe, ha sido eliminado, o aún no ha sido publicado. Si recientemente recibiste este enlace, por favor contacta con tu consultor de B3TA.
             </p>
-            <Button onClick={() => navigate('/')}>
-              Ir al inicio
-            </Button>
+            <div className="space-y-3">
+              <Button onClick={() => navigate('/')} className="w-full">
+                Ir al inicio
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = 'mailto:hi@b3ta.us?subject=Problema con enlace de informe'}
+                className="w-full"
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Contactar soporte
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
