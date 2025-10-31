@@ -49,12 +49,12 @@ export const ReportsList = () => {
     try {
       setLoading(true);
       
-      // Build query with JOIN to customers table
+      // Build query with JOIN to customers table using specific foreign key name
       let query = supabase
         .from('consultation_reports')
         .select(`
           *,
-          customers!customer_id (
+          customers!fk_consultation_reports_customer (
             name,
             email,
             company,

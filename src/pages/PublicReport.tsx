@@ -57,7 +57,7 @@ export default function PublicReport() {
         .from('consultation_reports')
         .select(`
           *,
-          customers!customer_id (
+          customers!fk_consultation_reports_customer (
             name,
             email,
             company,
