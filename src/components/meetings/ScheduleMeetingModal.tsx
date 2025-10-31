@@ -107,7 +107,7 @@ export const ScheduleMeetingModal = ({
       if (!userData.user) throw new Error("No user found");
 
       const meetingData = {
-        lead_id: selectedLeadId || null,
+        lead_id: selectedLeadId && selectedLeadId !== "none" ? selectedLeadId : null,
         scheduled_at: scheduledAt.toISOString(),
         duration_minutes: parseInt(duration),
         timezone,
@@ -153,12 +153,12 @@ export const ScheduleMeetingModal = ({
         <div className="space-y-4">
           <div>
             <Label>Prospecto (opcional)</Label>
-            <Select value={selectedLeadId} onValueChange={setSelectedLeadId}>
+            <Select value={selectedLeadId || "none"} onValueChange={setSelectedLeadId}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona un prospecto" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sin asignar</SelectItem>
+                <SelectItem value="none">Sin asignar</SelectItem>
                 {leads?.map((lead) => (
                   <SelectItem key={lead.id} value={lead.id}>
                     {lead.name} - {lead.email}
