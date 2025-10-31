@@ -60,7 +60,7 @@ export const FinancialReport = () => {
         .from('quotations')
         .select(`
           *,
-          customers (
+          customers!fk_quotations_customer (
             name
           )
         `)
