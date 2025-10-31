@@ -103,8 +103,9 @@ export const BeforeAfter = () => {
               <div className="relative h-80 md:h-auto">
                 <img 
                   src={beforeAfter} 
-                  alt="Caso de éxito"
+                  alt="Caso de éxito: transformación digital empresarial con B3TA"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
 

@@ -549,7 +549,7 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
                     <p className="text-sm font-semibold">{report.consultant_name}</p>
                     {report.consultant_signature && (
                       <div className="inline-block border rounded-lg p-4 bg-background/50">
-                        <img src={report.consultant_signature} alt="Firma" className="h-20" />
+                        <img src={report.consultant_signature} alt="Firma del consultor" className="h-20" loading="lazy" />
                       </div>
                     )}
                   </div>

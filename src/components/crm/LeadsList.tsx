@@ -44,9 +44,10 @@ export const LeadsList = () => {
     // Suscripción a cambios en tiempo real
     const channel = supabase
       .channel('leads-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'leads_b3ta' }, (payload) => {
-        console.log('Lead change:', payload);
-        loadLeads();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'leads_b3ta' }, () => {
+        loadLeads().catch(err => {
+          console.error('Error reloading leads:', err);
+        });
       })
       .subscribe();
 

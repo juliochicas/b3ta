@@ -48,7 +48,6 @@ export default function CRM() {
 
       if (error) {
         // Si no tiene rol, podría ser el primer usuario
-        console.log('No role found, might be first user');
       }
 
       setUserRole(data?.role || null);

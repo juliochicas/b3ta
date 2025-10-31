@@ -155,7 +155,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
 
     try {
       setSaving(true);
-      console.log('🚀 Iniciando creación de informe...');
 
       // Verificar autenticación
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -163,7 +162,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
         console.error('❌ Error de autenticación:', authError);
         throw new Error('No estás autenticado. Por favor inicia sesión.');
       }
-      console.log('✅ Usuario autenticado:', user.email);
 
       // Verificar roles
       const { data: userRoles, error: roleError } = await supabase
@@ -176,10 +174,8 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
         console.error('❌ Error verificando rol:', roleError);
         throw new Error('Tu usuario no tiene permisos para crear informes. Contacta al administrador.');
       }
-      console.log('✅ Rol del usuario:', userRoles.role);
 
       // 🔧 GESTIONAR RELACIÓN CON CLIENTE
-      console.log('👤 Buscando/creando cliente...');
       let customerId: string | null = null;
       
       // Buscar si ya existe un cliente con este email
@@ -195,7 +191,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
 
       if (existingCustomer) {
         // Cliente existe, actualizar sus datos
-        console.log('✅ Cliente encontrado, actualizando datos...');
         const { error: updateError } = await supabase
           .from('customers')
           .update({
@@ -211,7 +206,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
         customerId = existingCustomer.id;
       } else {
         // Cliente no existe, crearlo
-        console.log('📝 Creando nuevo cliente...');
         const { data: newCustomer, error: createError } = await supabase
           .from('customers')
           .insert({
@@ -228,7 +222,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           console.error('⚠️ Error creando cliente:', createError);
         } else if (newCustomer) {
           customerId = newCustomer.id;
-          console.log('✅ Cliente creado:', customerId);
         }
       }
 
@@ -236,7 +229,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
 
       if (isEditMode && reportToEdit) {
         // MODO EDICIÓN: Actualizar informe existente
-        console.log('✏️ Actualizando informe existente...');
         const { data: updatedReport, error: updateError } = await supabase
           .from('consultation_reports')
           .update({
@@ -260,7 +252,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           throw new Error(`Error actualizando informe: ${updateError.message}`);
         }
         report = updatedReport;
-        console.log('✅ Informe actualizado:', report.id);
 
         // Eliminar media anterior para reemplazar con nueva
         await supabase
@@ -270,23 +261,18 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
 
       } else {
         // MODO CREACIÓN: Crear nuevo informe
-        console.log('📝 Generando número de informe...');
         const { data: reportNumber, error: numberError } = await supabase.rpc('generate_report_number');
         if (numberError) {
           console.error('❌ Error generando número:', numberError);
           throw new Error(`Error generando número de informe: ${numberError.message}`);
         }
-        console.log('✅ Número generado:', reportNumber);
 
-        console.log('🔗 Generando slug público...');
         const { data: reportSlug, error: slugError } = await supabase.rpc('generate_report_slug');
         if (slugError) {
           console.error('❌ Error generando slug:', slugError);
           throw new Error(`Error generando slug: ${slugError.message}`);
         }
-        console.log('✅ Slug generado:', reportSlug);
 
-        console.log('💾 Guardando informe en base de datos...');
         const { data: newReport, error: reportError } = await supabase
           .from('consultation_reports')
           .insert({
@@ -315,7 +301,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
           throw new Error(`Error guardando informe: ${reportError.message}`);
         }
         report = newReport;
-        console.log('✅ Informe creado:', report.id);
       }
 
       // Upload media files (continue even if one fails, but log errors)
@@ -363,7 +348,6 @@ export const CreateReportModal = ({ onClose, onSuccess, leadId, leadData, report
 
       await Promise.allSettled(mediaUploadPromises);
 
-      console.log(`✅ ¡Informe ${isEditMode ? 'actualizado' : 'creado'} exitosamente!`);
       toast({
         title: "Éxito",
         description: `Informe ${isEditMode ? 'actualizado' : 'creado'} correctamente`,

@@ -54,7 +54,7 @@ export const ReportsList = () => {
         .from('consultation_reports')
         .select(`
           *,
-          customers (
+          customers!customer_id (
             name,
             email,
             company,

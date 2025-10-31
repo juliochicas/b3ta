@@ -57,7 +57,7 @@ export default function PublicReport() {
         .from('consultation_reports')
         .select(`
           *,
-          customers (
+          customers!customer_id (
             name,
             email,
             company,
@@ -349,8 +349,9 @@ export default function PublicReport() {
                 <div className="border-2 rounded-lg p-4 bg-white">
                   <img 
                     src={report.consultant_signature} 
-                    alt="Firma" 
+                    alt="Firma del consultor responsable" 
                     className="h-20"
+                    loading="lazy"
                   />
                 </div>
               )}

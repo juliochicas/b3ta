@@ -100,8 +100,9 @@ export const Testimonials = () => {
         <div className="relative rounded-3xl overflow-hidden max-w-4xl mx-auto">
           <img 
             src={testimonial2} 
-            alt="Clientes satisfechos"
+            alt="Clientes satisfechos con soluciones B3TA en LATAM"
             className="w-full h-80 object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent flex items-end">
             <div className="p-8 text-white">
