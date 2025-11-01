@@ -121,14 +121,22 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Sending confirmation to ${recipients.length} recipients`);
+    // Dedupe recipients by email
+    const uniqueRecipientsMap = new Map<string, { name: string; email: string }>();
+    for (const r of recipients) uniqueRecipientsMap.set(r.email.toLowerCase(), r);
+    const finalRecipients = Array.from(uniqueRecipientsMap.values());
+
+    console.log(`Sending confirmation to ${finalRecipients.length} recipients`, finalRecipients.map(r => r.email));
+
+    const senderEmail = Deno.env.get("RESEND_FROM") ?? "onboarding@resend.dev";
+    const senderName = Deno.env.get("RESEND_FROM_NAME") ?? "B3TA Consulting";
 
     // Send emails to all recipients
-    const emailPromises = recipients.map(recipient => {
+    const emailPromises = finalRecipients.map(recipient => {
       const confirmationText = `¡Hola ${recipient.name}! Tu reunión ha sido confirmada exitosamente. Nos vemos pronto.`;
 
       return resend.emails.send({
-        from: "B3TA Consulting <onboarding@resend.dev>",
+        from: `${senderName} <${senderEmail}>`,
         to: [recipient.email],
         subject: "Confirmación de Reunión Agendada",
         html: `
