@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { format, isSameDay } from "date-fns";
-import { Clock, MapPin, User, Edit, Trash2 } from "lucide-react";
+import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, addMonths, subMonths, isSameMonth, startOfDay, endOfDay } from "date-fns";
+import { es } from "date-fns/locale";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { ScheduleMeetingModal } from "./ScheduleMeetingModal";
+import { MeetingCalendarDay } from "./MeetingCalendarDay";
+import { MeetingListItem } from "./MeetingListItem";
+import { MeetingFilters } from "./MeetingFilters";
+import { cn } from "@/lib/utils";
 
 interface Meeting {
   id: string;
@@ -40,9 +43,13 @@ interface Meeting {
 }
 
 export const MeetingCalendar = () => {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+  const [statusFilters, setStatusFilters] = useState<string[]>(['scheduled']);
+  const [preSelectedDate, setPreSelectedDate] = useState<Date | null>(null);
 
   const { data: meetings, refetch } = useQuery({
     queryKey: ["meetings"],
@@ -70,9 +77,18 @@ export const MeetingCalendar = () => {
     },
   });
 
-  const selectedDateMeetings = meetings?.filter((meeting) =>
+  const filteredMeetings = meetings?.filter(m => 
+    statusFilters.length === 0 || statusFilters.includes(m.status)
+  ) || [];
+
+  const selectedDateMeetings = filteredMeetings.filter((meeting) =>
     isSameDay(new Date(meeting.scheduled_at), selectedDate)
   );
+
+  const upcomingMeetings = filteredMeetings.filter((meeting) => {
+    const meetingDate = new Date(meeting.scheduled_at);
+    return meetingDate >= startOfDay(new Date());
+  }).slice(0, 10);
 
   const handleDeleteMeeting = async (meetingId: string) => {
     const { error } = await supabase
@@ -89,167 +105,214 @@ export const MeetingCalendar = () => {
     refetch();
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "scheduled":
-        return "bg-blue-500";
-      case "completed":
-        return "bg-green-500";
-      case "cancelled":
-        return "bg-red-500";
-      case "no_show":
-        return "bg-gray-500";
-      default:
-        return "bg-gray-500";
-    }
+  const handleDayClick = (date: Date) => {
+    setSelectedDate(date);
+    setPreSelectedDate(date);
+    setIsScheduleModalOpen(true);
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "scheduled":
-        return "Programada";
-      case "completed":
-        return "Completada";
-      case "cancelled":
-        return "Cancelada";
-      case "no_show":
-        return "No asistió";
-      default:
-        return status;
-    }
-  };
+  // Calendar grid calculation
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+
+  const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-1">
-        <CardHeader>
-          <CardTitle>Calendario</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={(date) => date && setSelectedDate(date)}
-            className="rounded-md border"
-          />
-          <Button
-            onClick={() => {
-              setSelectedMeeting(null);
-              setIsScheduleModalOpen(true);
-            }}
-            className="w-full mt-4"
-          >
-            Agendar Nueva Reunión
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header with Filters */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Reuniones</h1>
+          <p className="text-muted-foreground">Gestiona tu calendario y reuniones</p>
+        </div>
+        <MeetingFilters
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          statusFilters={statusFilters}
+          onStatusFiltersChange={setStatusFilters}
+        />
+      </div>
 
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle>
-            Reuniones para {format(selectedDate, "d 'de' MMMM, yyyy")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!selectedDateMeetings || selectedDateMeetings.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No hay reuniones programadas para este día
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {selectedDateMeetings.map((meeting) => (
-                <div
-                  key={meeting.id}
-                  className="p-4 border rounded-lg hover:border-primary transition-colors"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">
-                        {format(new Date(meeting.scheduled_at), "HH:mm")} -{" "}
-                        {format(
-                          new Date(
-                            new Date(meeting.scheduled_at).getTime() +
-                              meeting.duration_minutes * 60000
-                          ),
-                          "HH:mm"
-                        )}
-                      </span>
-                      <Badge className={getStatusColor(meeting.status)}>
-                        {getStatusLabel(meeting.status)}
-                      </Badge>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedMeeting(meeting);
-                          setIsScheduleModalOpen(true);
-                        }}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDeleteMeeting(meeting.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {meeting.leads_b3ta?.name ||
-                            meeting.customers?.name ||
-                            "Sin asignar"}
-                        </span>
-                      </div>
-                      {meeting.meeting_attendees && meeting.meeting_attendees.length > 0 && (
-                        <div className="ml-6 space-y-1">
-                          <p className="text-xs font-semibold text-muted-foreground">
-                            Invitados ({meeting.meeting_attendees.length}):
-                          </p>
-                          {meeting.meeting_attendees.map((att: any) => (
-                            <p key={att.id} className="text-xs pl-2">
-                              • {att.attendee_type === 'lead' ? att.leads_b3ta?.name :
-                                 att.attendee_type === 'customer' ? att.customers?.name :
-                                 att.external_name} ({att.attendee_type === 'lead' ? 'Prospecto' :
-                                                       att.attendee_type === 'customer' ? 'Cliente' :
-                                                       'Externo'})
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{meeting.timezone}</span>
-                      </div>
-                      {meeting.notes && (
-                        <p className="text-muted-foreground mt-2">
-                          {meeting.notes}
-                        </p>
-                      )}
-                    </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Calendar Section */}
+        {viewMode === 'calendar' && (
+          <Card className="lg:col-span-2 shadow-sm border-border/50">
+            <CardHeader className="space-y-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl font-semibold">
+                  {format(currentMonth, "MMMM yyyy", { locale: es })}
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                    className="h-9 w-9 hover:bg-accent hover:scale-105 transition-all duration-200"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setCurrentMonth(new Date());
+                      setSelectedDate(new Date());
+                    }}
+                    className="hover:bg-accent hover:scale-105 transition-all duration-200"
+                  >
+                    Hoy
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                    className="h-9 w-9 hover:bg-accent hover:scale-105 transition-all duration-200"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Week Days Header */}
+              <div className="grid grid-cols-7 gap-2 mb-2">
+                {weekDays.map((day) => (
+                  <div
+                    key={day}
+                    className="text-center text-xs font-semibold text-muted-foreground py-2"
+                  >
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-2">
+                {calendarDays.map((day, idx) => (
+                  <MeetingCalendarDay
+                    key={idx}
+                    date={day}
+                    meetings={filteredMeetings}
+                    isSelected={isSameDay(day, selectedDate)}
+                    isCurrentMonth={isSameMonth(day, currentMonth)}
+                    onClick={() => handleDayClick(day)}
+                  />
+                ))}
+              </div>
+
+              <Button
+                onClick={() => {
+                  setSelectedMeeting(null);
+                  setPreSelectedDate(null);
+                  setIsScheduleModalOpen(true);
+                }}
+                className="w-full mt-6 h-11 font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Agendar Nueva Reunión
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Meetings List */}
+        <Card className={cn(
+          "shadow-sm border-border/50",
+          viewMode === 'list' ? "lg:col-span-3" : "lg:col-span-1"
+        )}>
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">
+              {viewMode === 'calendar' 
+                ? format(selectedDate, "d 'de' MMMM", { locale: es })
+                : "Próximas Reuniones"}
+            </CardTitle>
+            {viewMode === 'calendar' && selectedDateMeetings.length > 0 && (
+              <p className="text-sm text-muted-foreground">
+                {selectedDateMeetings.length} {selectedDateMeetings.length === 1 ? 'reunión' : 'reuniones'}
+              </p>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-3 max-h-[600px] overflow-y-auto">
+            {viewMode === 'calendar' ? (
+              selectedDateMeetings.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">
+                    No hay reuniones para este día
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setPreSelectedDate(selectedDate);
+                      setIsScheduleModalOpen(true);
+                    }}
+                    className="hover:bg-accent"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agendar reunión
+                  </Button>
+                </div>
+              ) : (
+                selectedDateMeetings.map((meeting) => (
+                  <MeetingListItem
+                    key={meeting.id}
+                    meeting={meeting}
+                    onEdit={() => {
+                      setSelectedMeeting(meeting);
+                      setIsScheduleModalOpen(true);
+                    }}
+                    onDelete={() => handleDeleteMeeting(meeting.id)}
+                  />
+                ))
+              )
+            ) : (
+              upcomingMeetings.length === 0 ? (
+                <p className="text-center text-muted-foreground py-12">
+                  No hay reuniones próximas
+                </p>
+              ) : (
+                <div className={cn(
+                  "grid gap-3",
+                  viewMode === 'list' && "md:grid-cols-2 lg:grid-cols-3"
+                )}>
+                  {upcomingMeetings.map((meeting) => (
+                    <MeetingListItem
+                      key={meeting.id}
+                      meeting={meeting}
+                      onEdit={() => {
+                        setSelectedMeeting(meeting);
+                        setIsScheduleModalOpen(true);
+                      }}
+                      onDelete={() => handleDeleteMeeting(meeting.id)}
+                    />
+                  ))}
+                </div>
+              )
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <ScheduleMeetingModal
         open={isScheduleModalOpen}
-        onOpenChange={setIsScheduleModalOpen}
+        onOpenChange={(open) => {
+          setIsScheduleModalOpen(open);
+          if (!open) {
+            setSelectedMeeting(null);
+            setPreSelectedDate(null);
+          }
+        }}
         onSuccess={() => {
           refetch();
           setIsScheduleModalOpen(false);
           setSelectedMeeting(null);
+          setPreSelectedDate(null);
         }}
         meetingToEdit={selectedMeeting}
+        preSelectedDate={preSelectedDate}
       />
     </div>
   );

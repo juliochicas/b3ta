@@ -32,6 +32,7 @@ interface ScheduleMeetingModalProps {
   onSuccess: () => void;
   leadId?: string;
   meetingToEdit?: any;
+  preSelectedDate?: Date | null;
 }
 
 const TIMEZONES = [
@@ -48,6 +49,7 @@ export const ScheduleMeetingModal = ({
   onSuccess,
   leadId,
   meetingToEdit,
+  preSelectedDate,
 }: ScheduleMeetingModalProps) => {
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState("");
@@ -82,15 +84,16 @@ export const ScheduleMeetingModal = ({
       setNotes(meetingToEdit.notes || "");
       setStatus(meetingToEdit.status);
     } else {
-      setDate(undefined);
+      setDate(preSelectedDate || undefined);
       setTime("");
       setDuration("30");
       setTimezone("America/Mexico_City");
       setSelectedLeadId(leadId || "");
       setNotes("");
       setStatus("scheduled");
+      setAttendees([]);
     }
-  }, [meetingToEdit, leadId]);
+  }, [meetingToEdit, leadId, preSelectedDate]);
 
   const { data: leads } = useQuery({
     queryKey: ["leads-for-meeting"],
