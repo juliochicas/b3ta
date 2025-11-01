@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -243,6 +244,11 @@ export const ScheduleMeetingModal = ({
           <DialogTitle>
             {meetingToEdit ? "Editar Reunión" : "Agendar Nueva Reunión"}
           </DialogTitle>
+          <DialogDescription>
+            {meetingToEdit 
+              ? "Modifica los detalles de la reunión" 
+              : "Completa los detalles para agendar una nueva reunión"}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
