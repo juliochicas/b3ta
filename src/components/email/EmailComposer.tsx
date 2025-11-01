@@ -92,6 +92,7 @@ export const EmailComposer = ({
         <DialogHeader>
           <DialogTitle>Nuevo Correo</DialogTitle>
         </DialogHeader>
+        <span className="sr-only">Formulario para redactar y enviar un correo electrónico</span>
 
         <div className="space-y-4">
           <div>

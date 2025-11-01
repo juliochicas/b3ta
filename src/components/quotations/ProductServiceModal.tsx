@@ -90,6 +90,7 @@ export const ProductServiceModal = ({ item, onClose, onSuccess }: Props) => {
             {item ? "Editar" : "Nuevo"} Producto/Servicio
           </DialogTitle>
         </DialogHeader>
+        <span className="sr-only">Formulario para gestionar productos y servicios del catálogo</span>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">

@@ -120,6 +120,7 @@ export const ExpenseModal = ({ quotationId, expense, onClose, onSuccess }: Props
         <DialogHeader>
           <DialogTitle>{expense ? "Editar Gasto" : "Registrar Gasto"}</DialogTitle>
         </DialogHeader>
+        <span className="sr-only">Formulario para registrar gastos asociados a la cotización</span>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

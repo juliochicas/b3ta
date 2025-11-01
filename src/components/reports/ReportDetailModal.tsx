@@ -385,6 +385,7 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
                   <DialogTitle className="text-2xl font-semibold">
                     {report.report_number}
                   </DialogTitle>
+                  <span className="sr-only">Detalles completos del reporte de consultoría</span>
                   <p className="text-sm text-muted-foreground mt-1">
                     Creado el {new Date(report.created_at).toLocaleDateString('es-ES', { 
                       year: 'numeric', 

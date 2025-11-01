@@ -142,6 +142,7 @@ export const EmailAccountModal = ({
             {account ? "Editar Cuenta de Correo" : "Nueva Cuenta de Correo"}
           </DialogTitle>
         </DialogHeader>
+        <span className="sr-only">Formulario para configurar cuenta de correo electrónico IMAP/SMTP</span>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">

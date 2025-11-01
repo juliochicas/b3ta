@@ -344,6 +344,7 @@ export const InvoiceDetailModal = ({ invoice, onClose, onUpdate }: Props) => {
               <DialogTitle className="text-2xl mb-2">{invoice.invoice_number}</DialogTitle>
               {getStatusBadge()}
             </div>
+            <span className="sr-only">Detalles de la factura y opciones de envío</span>
             <div className="text-right">
               <div className="text-sm text-muted-foreground mb-1">Total</div>
               <div className="text-3xl font-bold text-primary">

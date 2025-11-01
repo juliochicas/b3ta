@@ -194,6 +194,7 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
         <DialogHeader>
           <DialogTitle className="text-2xl">{lead.name}</DialogTitle>
         </DialogHeader>
+        <span className="sr-only">Detalles del lead y opciones de gestión</span>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Información del Lead */}

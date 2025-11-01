@@ -43,7 +43,7 @@ serve(async (req) => {
       .from("meetings")
       .select(`
         *,
-        leads_b3ta (name, email),
+        leads_b3ta!fk_meetings_lead (name, email),
         customers (name, email)
       `)
       .eq("status", "scheduled")

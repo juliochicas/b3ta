@@ -87,6 +87,7 @@ export const CategoryModal = ({ category, onClose, onSuccess }: Props) => {
         <DialogHeader>
           <DialogTitle>{category ? "Editar Categoría" : "Nueva Categoría"}</DialogTitle>
         </DialogHeader>
+        <span className="sr-only">Formulario para crear o editar categorías de gastos</span>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
