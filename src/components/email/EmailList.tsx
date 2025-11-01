@@ -125,7 +125,7 @@ export const EmailList = ({ folder, onEmailSelect, selectedEmail, accountId }: E
               >
                 <Star
                   className={`h-4 w-4 ${
-                    email.is_starred ? "fill-yellow-500 text-yellow-500" : ""
+                    email.is_starred ? "fill-warning text-warning" : ""
                   }`}
                 />
               </Button>

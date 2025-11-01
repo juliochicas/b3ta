@@ -28,17 +28,17 @@ interface LeadCardProps {
 
 export const LeadCard = ({ lead, onClick }: LeadCardProps) => {
   const statusColors = {
-    new: "bg-blue-500",
-    contacted: "bg-orange-500",
-    qualified: "bg-green-500",
-    converted: "bg-purple-500",
-    lost: "bg-gray-500"
+    new: "bg-status-new",
+    contacted: "bg-status-contacted",
+    qualified: "bg-status-qualified",
+    converted: "bg-status-converted",
+    lost: "bg-status-lost"
   };
 
   const priorityColors = {
-    high: "border-red-500 bg-red-50",
-    medium: "border-orange-500 bg-orange-50",
-    low: "border-blue-500 bg-blue-50"
+    high: "border-priority-high bg-priority-high-bg",
+    medium: "border-priority-medium bg-priority-medium-bg",
+    low: "border-priority-low bg-priority-low-bg"
   };
 
   const serviceLabels: Record<string, string> = {
@@ -65,7 +65,7 @@ export const LeadCard = ({ lead, onClick }: LeadCardProps) => {
             </Badge>
             {lead.ai_score && (
               <Badge variant="outline" className="flex items-center gap-1">
-                <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                <Star className="h-3 w-3 fill-warning text-warning" />
                 {lead.ai_score}/100
               </Badge>
             )}
@@ -106,7 +106,7 @@ export const LeadCard = ({ lead, onClick }: LeadCardProps) => {
             {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true, locale: es })}
           </div>
           {lead.last_contact && (
-            <div className="text-xs text-green-600">
+            <div className="text-xs text-status-completed">
               Contactado
             </div>
           )}

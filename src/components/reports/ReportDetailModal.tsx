@@ -365,7 +365,7 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
     const statusConfig = {
       draft: { label: "Borrador", variant: "secondary" as const, class: "bg-secondary/50" },
       completed: { label: "Completado", variant: "default" as const, class: "bg-primary/10 text-primary" },
-      sent: { label: "Enviado", variant: "outline" as const, class: "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20" },
+      sent: { label: "Enviado", variant: "outline" as const, class: "bg-status-sent/10 text-status-sent border-status-sent/20" },
     };
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
     return <Badge variant={config.variant} className={config.class}>{config.label}</Badge>;

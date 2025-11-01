@@ -730,7 +730,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                         size="sm"
                         onClick={updateTrackingNumber}
                       >
-                        <Save className="h-3 w-3 text-green-600" />
+                        <Save className="h-3 w-3 text-success" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -792,7 +792,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                         size="sm"
                         onClick={updateTags}
                       >
-                        <Save className="h-3 w-3 text-green-600" />
+                        <Save className="h-3 w-3 text-success" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -1016,7 +1016,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
 
               {relatedInvoice ? (
                 <Button 
-                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  className="flex-1 bg-success hover:bg-success-hover"
                   onClick={() => setShowInvoice(true)}
                 >
                   <Receipt className="mr-2 h-4 w-4" />

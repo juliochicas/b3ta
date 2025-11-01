@@ -260,7 +260,7 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
                 </h3>
                 {lead.ai_score && (
                   <div className="flex items-center gap-2 mb-3">
-                    <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
+                    <Star className="h-5 w-5 fill-warning text-warning" />
                     <span className="font-bold text-lg">{lead.ai_score}/100</span>
                   </div>
                 )}

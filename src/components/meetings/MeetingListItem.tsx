@@ -31,10 +31,10 @@ interface MeetingListItemProps {
 
 const getStatusConfig = (status: string) => {
   const configs = {
-    scheduled: { label: "Programada", className: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800" },
-    completed: { label: "Completada", className: "bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800" },
-    cancelled: { label: "Cancelada", className: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800" },
-    no_show: { label: "No asistió", className: "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-800" },
+    scheduled: { label: "Programada", className: "bg-status-scheduled/10 text-status-scheduled border-status-scheduled/20" },
+    completed: { label: "Completada", className: "bg-status-completed/10 text-status-completed border-status-completed/20" },
+    cancelled: { label: "Cancelada", className: "bg-status-cancelled/10 text-status-cancelled border-status-cancelled/20" },
+    no_show: { label: "No asistió", className: "bg-status-no-show/10 text-status-no-show border-status-no-show/20" },
   };
   return configs[status as keyof typeof configs] || configs.scheduled;
 };

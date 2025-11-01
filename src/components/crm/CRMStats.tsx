@@ -75,25 +75,25 @@ export const CRMStats = () => {
       icon: Users,
       label: "Total Leads",
       value: stats.total,
-      color: "text-blue-600"
+      color: "text-info"
     },
     {
       icon: TrendingUp,
       label: "Nuevos (7 días)",
       value: stats.new,
-      color: "text-green-600"
+      color: "text-status-completed"
     },
     {
       icon: Clock,
       label: "Contactados",
       value: stats.contacted,
-      color: "text-orange-600"
+      color: "text-status-contacted"
     },
     {
       icon: Star,
       label: "Score Promedio",
       value: `${stats.avgScore}/100`,
-      color: "text-purple-600"
+      color: "text-warning"
     }
   ];
 

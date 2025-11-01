@@ -57,6 +57,39 @@ All colors MUST be HSL.
     --success: 145 70% 45%;  /* Success green */
     --success-hover: 145 70% 40%;
 
+    /* Status & State colors - using design system palette */
+    --status-new: 215 80% 55%;  /* Blue for new items */
+    --status-scheduled: 215 80% 55%;  /* Blue */
+    --status-contacted: 25 95% 53%;  /* Orange */
+    --status-completed: 145 70% 45%;  /* Green (success) */
+    --status-qualified: 145 70% 45%;  /* Green */
+    --status-converted: 270 70% 55%;  /* Purple */
+    --status-cancelled: 0 84% 60%;  /* Red (destructive) */
+    --status-pending: 45 93% 47%;  /* Yellow/warning */
+    --status-overdue: 0 84% 60%;  /* Red */
+    --status-paid: 145 70% 45%;  /* Green */
+    --status-sent: 145 70% 45%;  /* Green */
+    --status-lost: 215 15% 50%;  /* Gray */
+    --status-no-show: 215 15% 50%;  /* Gray */
+
+    /* Priority colors */
+    --priority-high: 0 84% 60%;  /* Red */
+    --priority-high-bg: 0 84% 97%;
+    --priority-medium: 25 95% 53%;  /* Orange */
+    --priority-medium-bg: 25 95% 97%;
+    --priority-low: 215 80% 55%;  /* Blue */
+    --priority-low-bg: 215 80% 97%;
+
+    /* Info & highlights */
+    --info: 215 80% 55%;  /* Blue */
+    --info-bg: 215 80% 97%;
+    --warning: 45 93% 47%;  /* Yellow */
+    --warning-bg: 45 93% 97%;
+    --error: 0 84% 60%;  /* Red */
+    --error-bg: 0 84% 97%;
+    --profit-positive: 145 70% 45%;  /* Green */
+    --profit-negative: 0 84% 60%;  /* Red */
+
     --radius: 0.75rem;
 
     /* Gradients */
@@ -119,6 +152,39 @@ All colors MUST be HSL.
     --overlay: 215 30% 8%;
     --success: 145 70% 55%;
     --success-hover: 145 70% 50%;
+
+    /* Status & State colors dark mode */
+    --status-new: 215 80% 65%;
+    --status-scheduled: 215 80% 65%;
+    --status-contacted: 25 95% 60%;
+    --status-completed: 145 70% 55%;
+    --status-qualified: 145 70% 55%;
+    --status-converted: 270 70% 65%;
+    --status-cancelled: 0 84% 70%;
+    --status-pending: 45 93% 60%;
+    --status-overdue: 0 84% 70%;
+    --status-paid: 145 70% 55%;
+    --status-sent: 145 70% 55%;
+    --status-lost: 215 15% 60%;
+    --status-no-show: 215 15% 60%;
+
+    /* Priority colors dark mode */
+    --priority-high: 0 84% 70%;
+    --priority-high-bg: 0 84% 15%;
+    --priority-medium: 25 95% 60%;
+    --priority-medium-bg: 25 95% 15%;
+    --priority-low: 215 80% 65%;
+    --priority-low-bg: 215 80% 15%;
+
+    /* Info & highlights dark mode */
+    --info: 215 80% 65%;
+    --info-bg: 215 80% 15%;
+    --warning: 45 93% 60%;
+    --warning-bg: 45 93% 15%;
+    --error: 0 84% 70%;
+    --error-bg: 0 84% 15%;
+    --profit-positive: 145 70% 55%;
+    --profit-negative: 0 84% 70%;
 
     --gradient-hero: linear-gradient(135deg, hsl(215 80% 25%), hsl(215 80% 15%));
     --gradient-card: linear-gradient(180deg, hsl(215 25% 12%), hsl(215 25% 15%));

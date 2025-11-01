@@ -214,7 +214,7 @@ export const EmailViewer = ({ email, onBack, onReply, onEmailChange }: EmailView
             <DropdownMenuSeparator />
             
             <DropdownMenuItem>
-              <Star className={`h-4 w-4 mr-2 ${email.is_starred ? "fill-yellow-500 text-yellow-500" : ""}`} />
+              <Star className={`h-4 w-4 mr-2 ${email.is_starred ? "fill-warning text-warning" : ""}`} />
               {email.is_starred ? "Quitar favorito" : "Marcar favorito"}
             </DropdownMenuItem>
             
@@ -298,7 +298,7 @@ export const EmailViewer = ({ email, onBack, onReply, onEmailChange }: EmailView
                                   </Badge>
                                 )}
                                 {isUnread && (
-                                  <Badge className="text-xs bg-blue-500">
+                                  <Badge className="text-xs bg-status-new">
                                     NUEVO
                                   </Badge>
                                 )}

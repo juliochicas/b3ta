@@ -325,9 +325,9 @@ export const InvoiceDetailModal = ({ invoice, onClose, onUpdate }: Props) => {
   const getStatusBadge = () => {
     switch (invoice.payment_status) {
       case 'paid':
-        return <Badge className="bg-green-500">Pagada</Badge>;
+        return <Badge className="bg-status-paid">Pagada</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-500">Pendiente</Badge>;
+        return <Badge className="bg-status-pending">Pendiente</Badge>;
       case 'overdue':
         return <Badge variant="destructive">Vencida</Badge>;
       default:
@@ -380,7 +380,7 @@ export const InvoiceDetailModal = ({ invoice, onClose, onUpdate }: Props) => {
               {invoice.payment_date && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Fecha de pago:</span>
-                  <span className="text-green-600 font-medium">
+                  <span className="text-status-paid font-medium">
                     {format(new Date(invoice.payment_date), "PPP", { locale: es })}
                   </span>
                 </div>

@@ -194,26 +194,26 @@ export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => 
 
       {/* Resumen Financiero */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="p-4 bg-blue-50 dark:bg-blue-950">
+        <Card className="p-4 bg-info-bg">
           <p className="text-sm text-muted-foreground">Ingresos Totales</p>
-          <p className="text-2xl font-bold text-blue-600">
+          <p className="text-2xl font-bold text-info">
             {currency} ${totalRevenue.toFixed(2)}
           </p>
         </Card>
 
-        <Card className="p-4 bg-red-50 dark:bg-red-950">
+        <Card className="p-4 bg-error-bg">
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <TrendingDown className="h-4 w-4" />
             Gastos Totales
           </p>
-          <p className="text-2xl font-bold text-red-600">
+          <p className="text-2xl font-bold text-error">
             {currency} ${totalExpenses.toFixed(2)}
           </p>
         </Card>
 
-        <Card className={`p-4 ${netProfit >= 0 ? 'bg-green-50 dark:bg-green-950' : 'bg-red-50 dark:bg-red-950'}`}>
+        <Card className={`p-4 ${netProfit >= 0 ? 'bg-success/10' : 'bg-destructive/10'}`}>
           <p className="text-sm text-muted-foreground">Utilidad Neta</p>
-          <p className={`text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <p className={`text-2xl font-bold ${netProfit >= 0 ? 'text-profit-positive' : 'text-profit-negative'}`}>
             {currency} ${netProfit.toFixed(2)}
           </p>
         </Card>

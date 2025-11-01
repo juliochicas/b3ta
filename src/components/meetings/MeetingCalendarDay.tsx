@@ -43,9 +43,9 @@ export const MeetingCalendarDay = ({
               key={idx}
               className={cn(
                 "w-1 h-1 rounded-full transition-all duration-200",
-                meeting.status === 'scheduled' && "bg-blue-500",
-                meeting.status === 'completed' && "bg-green-500",
-                meeting.status === 'cancelled' && "bg-red-500",
+                meeting.status === 'scheduled' && "bg-status-scheduled",
+                meeting.status === 'completed' && "bg-status-completed",
+                meeting.status === 'cancelled' && "bg-status-cancelled",
                 isSelected && "bg-primary-foreground",
                 "group-hover:w-1.5 group-hover:h-1.5"
               )}

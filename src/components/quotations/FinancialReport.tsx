@@ -315,12 +315,12 @@ export const FinancialReport = () => {
             </div>
           </Card>
 
-          <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
+           <Card className="p-4 bg-gradient-to-br from-success/10 to-success/20">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+              <CheckCircle className="h-6 w-6 text-status-paid" />
               <div>
                 <p className="text-xs text-muted-foreground">Pagadas</p>
-                <p className="text-xl font-bold text-green-600">
+                <p className="text-xl font-bold text-status-paid">
                   {reportStats.paidQuotations}
                 </p>
               </div>
@@ -369,42 +369,38 @@ export const FinancialReport = () => {
       {reportData.length > 0 && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
+            <Card className="p-6 bg-gradient-to-br from-info-bg to-info/10">
               <div className="flex items-center gap-3 mb-2">
-                <DollarSign className="h-8 w-8 text-blue-600" />
+                <DollarSign className="h-8 w-8 text-info" />
                 <div>
                   <p className="text-sm text-muted-foreground">Ingresos Totales</p>
-                  <p className="text-2xl font-bold text-blue-600">
+                  <p className="text-2xl font-bold text-info">
                     ${totalRevenue.toFixed(2)}
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {reportData.length} cotizaciones
-              </p>
+...
             </Card>
 
-            <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900">
+            <Card className="p-6 bg-gradient-to-br from-error-bg to-error/10">
               <div className="flex items-center gap-3 mb-2">
-                <TrendingDown className="h-8 w-8 text-red-600" />
+                <TrendingDown className="h-8 w-8 text-error" />
                 <div>
                   <p className="text-sm text-muted-foreground">Gastos Totales</p>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-2xl font-bold text-error">
                     ${totalExpenses.toFixed(2)}
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Todos los gastos registrados
-              </p>
+...
             </Card>
 
-            <Card className={`p-6 bg-gradient-to-br ${totalNetProfit >= 0 ? 'from-green-50 to-green-100 dark:from-green-950 dark:to-green-900' : 'from-red-50 to-red-100 dark:from-red-950 dark:to-red-900'}`}>
+            <Card className={`p-6 bg-gradient-to-br ${totalNetProfit >= 0 ? 'from-success/10 to-success/20' : 'from-destructive/10 to-destructive/20'}`}>
               <div className="flex items-center gap-3 mb-2">
-                <TrendingUp className={`h-8 w-8 ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`} />
+                <TrendingUp className={`h-8 w-8 ${totalNetProfit >= 0 ? 'text-profit-positive' : 'text-profit-negative'}`} />
                 <div>
                   <p className="text-sm text-muted-foreground">Utilidad Neta</p>
-                  <p className={`text-2xl font-bold ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className={`text-2xl font-bold ${totalNetProfit >= 0 ? 'text-profit-positive' : 'text-profit-negative'}`}>
                     ${totalNetProfit.toFixed(2)}
                   </p>
                 </div>
@@ -460,16 +456,16 @@ export const FinancialReport = () => {
                       </td>
                       <td className="p-3 text-sm font-medium">{item.quotation_number}</td>
                       <td className="p-3 text-sm">{item.customer_name}</td>
-                      <td className="p-3 text-sm text-right font-medium text-blue-600">
+                      <td className="p-3 text-sm text-right font-medium text-info">
                         {item.currency} ${item.total_revenue.toFixed(2)}
                       </td>
-                      <td className="p-3 text-sm text-right text-red-600">
+                      <td className="p-3 text-sm text-right text-error">
                         {item.currency} ${item.total_expenses.toFixed(2)}
                       </td>
-                      <td className={`p-3 text-sm text-right font-bold ${item.net_profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <td className={`p-3 text-sm text-right font-bold ${item.net_profit >= 0 ? 'text-profit-positive' : 'text-profit-negative'}`}>
                         {item.currency} ${item.net_profit.toFixed(2)}
                       </td>
-                      <td className={`p-3 text-sm text-right font-medium ${item.profit_margin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <td className={`p-3 text-sm text-right font-medium ${item.profit_margin >= 0 ? 'text-profit-positive' : 'text-profit-negative'}`}>
                         {item.profit_margin.toFixed(1)}%
                       </td>
                     </tr>
@@ -478,13 +474,13 @@ export const FinancialReport = () => {
                 <tfoot>
                   <tr className="border-t-2 font-bold">
                     <td colSpan={3} className="p-3 text-right">TOTALES:</td>
-                    <td className="p-3 text-right text-blue-600">
+                    <td className="p-3 text-right text-info">
                       ${totalRevenue.toFixed(2)}
                     </td>
-                    <td className="p-3 text-right text-red-600">
+                    <td className="p-3 text-right text-error">
                       ${totalExpenses.toFixed(2)}
                     </td>
-                    <td className={`p-3 text-right ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <td className={`p-3 text-right ${totalNetProfit >= 0 ? 'text-profit-positive' : 'text-profit-negative'}`}>
                       ${totalNetProfit.toFixed(2)}
                     </td>
                     <td className="p-3 text-right text-purple-600">
