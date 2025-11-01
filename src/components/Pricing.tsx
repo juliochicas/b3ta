@@ -104,7 +104,7 @@ export const Pricing = () => {
               )}
 
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6">
-                <plan.icon className="h-7 w-7 text-white" />
+                <plan.icon className="h-7 w-7 text-primary-foreground" />
               </div>
 
               <h3 className="text-2xl font-bold text-foreground mb-2">

@@ -60,7 +60,7 @@ export const Benefits = () => {
               className="p-8 hover:shadow-2xl transition-all duration-300 border-border bg-card group cursor-pointer hover:-translate-y-2"
             >
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <benefit.icon className="h-8 w-8 text-white" />
+                <benefit.icon className="h-8 w-8 text-primary-foreground" />
               </div>
 
               <h3 className="text-xl font-bold text-foreground mb-3">
@@ -79,7 +79,7 @@ export const Benefits = () => {
         </div>
 
         <div className="mt-16 max-w-4xl mx-auto">
-          <Card className="p-12 bg-gradient-to-r from-primary to-secondary text-white border-0 shadow-2xl">
+          <Card className="p-12 bg-gradient-to-r from-primary to-secondary text-primary-foreground border-0 shadow-2xl">
             <div className="text-center">
               <h3 className="text-3xl font-bold mb-4">Garantía Sin Riesgo</h3>
               <p className="text-xl opacity-90 mb-6">

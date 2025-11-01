@@ -406,7 +406,7 @@ export const ReportDetailModal = ({ report, onClose, onUpdate }: Props) => {
               <Button 
                 onClick={sendReport}
                 disabled={loading}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-success hover:bg-success-hover text-primary-foreground"
               >
                 <Mail className="mr-2 h-4 w-4" />
                 Enviar Informe

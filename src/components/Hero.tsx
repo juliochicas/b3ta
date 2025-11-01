@@ -17,10 +17,10 @@ export const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-10">
           <div className="inline-block mt-4 md:mt-6 px-5 py-2.5 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30">
-            <span className="text-sm font-semibold text-white">🚀 Soluciones Tech para LATAM</span>
+            <span className="text-sm font-semibold text-primary-foreground">🚀 Soluciones Tech para LATAM</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground leading-tight">
             Consultoría SAP,<br />
             E-commerce, Automatización<br />
             <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
@@ -28,7 +28,7 @@ export const Hero = () => {
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
             Transformamos empresas con tecnología de clase mundial. Implementación, optimización y escalamiento para organizaciones que buscan resultados reales.
           </p>
           
@@ -36,7 +36,7 @@ export const Hero = () => {
             <Button 
               onClick={scrollToContact}
               size="lg" 
-              className="bg-secondary hover:bg-secondary/90 text-white shadow-[0_0_30px_rgba(0,200,255,0.4)] hover:shadow-[0_0_50px_rgba(0,200,255,0.6)] transition-all duration-300 text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px] w-full sm:w-auto"
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-[0_0_30px_rgba(0,200,255,0.4)] hover:shadow-[0_0_50px_rgba(0,200,255,0.6)] transition-all duration-300 text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px] w-full sm:w-auto"
             >
               Agenda Consultoría Gratuita
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -46,7 +46,7 @@ export const Hero = () => {
               onClick={scrollToAI}
               size="lg" 
               variant="outline" 
-              className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px] w-full sm:w-auto"
+              className="bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 min-h-[48px] sm:min-h-[56px] w-full sm:w-auto"
             >
               Consulta con IA →
             </Button>
@@ -61,8 +61,8 @@ export const Hero = () => {
                 { label: "Uptime", value: "99.9%" }
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">{stat.value}</div>
-                  <div className="text-sm text-white/70">{stat.label}</div>
+                  <div className="text-3xl md:text-4xl font-bold text-primary-foreground mb-1">{stat.value}</div>
+                  <div className="text-sm text-primary-foreground/70">{stat.label}</div>
                 </div>
               ))}
             </div>

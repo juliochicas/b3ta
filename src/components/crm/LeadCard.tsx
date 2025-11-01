@@ -60,7 +60,7 @@ export const LeadCard = ({ lead, onClick }: LeadCardProps) => {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-bold">{lead.name}</h3>
-            <Badge className={`${statusColors[lead.status as keyof typeof statusColors]} text-white`}>
+            <Badge className={`${statusColors[lead.status as keyof typeof statusColors]} text-primary-foreground`}>
               {lead.status}
             </Badge>
             {lead.ai_score && (

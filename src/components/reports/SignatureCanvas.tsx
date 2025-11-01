@@ -166,7 +166,7 @@ export const SignatureCanvas = ({ signature, setSignature }: Props) => {
           <div className="relative">
             <canvas
               ref={canvasRef}
-              className="border border-border rounded w-full cursor-crosshair bg-white touch-none"
+              className="border border-border rounded w-full cursor-crosshair bg-background touch-none"
               style={{ height: '150px' }}
               onMouseDown={startDrawing}
               onMouseMove={draw}

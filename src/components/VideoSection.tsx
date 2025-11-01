@@ -41,16 +41,16 @@ export const VideoSection = () => {
 
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xl">
-                  <Play className="h-12 w-12 text-white ml-1" fill="white" />
+                  <Play className="h-12 w-12 text-primary-foreground ml-1" fill="currentColor" />
                 </div>
               </div>
 
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-primary-foreground">
                 <div className="max-w-2xl">
                   <h3 className="text-2xl font-bold mb-2">
                     De la Consulta al Go-Live: El Proceso B3TA
                   </h3>
-                  <p className="text-white/80 mb-4">
+                  <p className="text-primary-foreground/80 mb-4">
                     Descubre cómo transformamos empresas en LATAM con tecnología enterprise
                   </p>
                   <div className="flex gap-6 text-sm">

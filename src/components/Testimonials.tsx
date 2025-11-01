@@ -105,7 +105,7 @@ export const Testimonials = () => {
             loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent flex items-end">
-            <div className="p-8 text-white">
+            <div className="p-8 text-primary-foreground">
               <p className="text-3xl font-bold mb-2">+250 Proyectos Exitosos</p>
               <p className="text-lg opacity-90">En 12 países de LATAM y USA</p>
             </div>

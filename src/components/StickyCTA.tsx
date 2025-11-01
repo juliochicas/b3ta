@@ -36,7 +36,7 @@ export const StickyCTA = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 animate-in slide-in-from-bottom duration-300">
-      <div className="bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-2xl">
+      <div className="bg-gradient-to-r from-primary via-secondary to-primary text-primary-foreground shadow-2xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
@@ -52,7 +52,7 @@ export const StickyCTA = () => {
               <Button 
                 onClick={scrollToContact}
                 size="lg"
-                className="bg-white text-primary hover:bg-white/90 shadow-lg font-bold"
+                className="bg-background text-primary hover:bg-background/90 shadow-lg font-bold"
               >
                 Agendar Ahora
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -60,7 +60,7 @@ export const StickyCTA = () => {
 
               <button
                 onClick={handleDismiss}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-primary-foreground/20 rounded-lg transition-colors"
                 aria-label="Cerrar"
               >
                 <X className="h-5 w-5" />

@@ -212,7 +212,7 @@ export const ContactForm = () => {
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
                   }}
-                  className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white"
+                  className="w-full bg-whatsapp hover:bg-whatsapp-hover text-primary-foreground"
                   size="sm"
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />

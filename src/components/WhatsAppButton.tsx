@@ -41,9 +41,9 @@ export const WhatsAppButton = () => {
     >
       <Button
         size="lg"
-        className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-[#25D366] hover:bg-[#20BD5A] shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 p-0 animate-pulse"
+        className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-whatsapp hover:bg-whatsapp-hover shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 p-0 animate-pulse"
       >
-        <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-white" />
+        <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-primary-foreground" />
       </Button>
       
       {/* Tooltip */}

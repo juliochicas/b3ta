@@ -40,6 +40,23 @@ All colors MUST be HSL.
     --input: 215 15% 88%;
     --ring: 215 80% 35%;
 
+    /* Sidebar tokens */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 25% 15%;
+    --sidebar-primary: 215 80% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 15% 92%;
+    --sidebar-accent-foreground: 215 25% 15%;
+    --sidebar-border: 215 15% 88%;
+    --sidebar-ring: 215 80% 35%;
+
+    /* Special use colors */
+    --whatsapp: 145 70% 45%;  /* WhatsApp green using accent */
+    --whatsapp-hover: 145 70% 40%;
+    --overlay: 215 30% 8%;  /* Dark overlay */
+    --success: 145 70% 45%;  /* Success green */
+    --success-hover: 145 70% 40%;
+
     --radius: 0.75rem;
 
     /* Gradients */
@@ -85,6 +102,23 @@ All colors MUST be HSL.
     --border: 215 20% 18%;
     --input: 215 20% 18%;
     --ring: 215 80% 55%;
+
+    /* Sidebar tokens dark mode */
+    --sidebar-background: 215 25% 12%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 215 80% 55%;
+    --sidebar-primary-foreground: 215 30% 8%;
+    --sidebar-accent: 215 20% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 215 20% 18%;
+    --sidebar-ring: 215 80% 55%;
+
+    /* Special use colors dark mode */
+    --whatsapp: 145 70% 55%;
+    --whatsapp-hover: 145 70% 50%;
+    --overlay: 215 30% 8%;
+    --success: 145 70% 55%;
+    --success-hover: 145 70% 50%;
 
     --gradient-hero: linear-gradient(135deg, hsl(215 80% 25%), hsl(215 80% 15%));
     --gradient-card: linear-gradient(180deg, hsl(215 25% 12%), hsl(215 25% 15%));
