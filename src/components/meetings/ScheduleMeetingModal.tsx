@@ -73,6 +73,9 @@ export const ScheduleMeetingModal = ({
   const [selectedAttendeeId, setSelectedAttendeeId] = useState("");
   const [externalName, setExternalName] = useState("");
   const [externalEmail, setExternalEmail] = useState("");
+  
+  // Track original date/time for reschedule detection
+  const [originalScheduledAt, setOriginalScheduledAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (meetingToEdit) {
@@ -84,6 +87,7 @@ export const ScheduleMeetingModal = ({
       setSelectedLeadId(meetingToEdit.lead_id || "");
       setNotes(meetingToEdit.notes || "");
       setStatus(meetingToEdit.status);
+      setOriginalScheduledAt(meetingToEdit.scheduled_at);
     } else {
       setDate(preSelectedDate || undefined);
       setTime("");
@@ -93,6 +97,7 @@ export const ScheduleMeetingModal = ({
       setNotes("");
       setStatus("scheduled");
       setAttendees([]);
+      setOriginalScheduledAt(null);
     }
   }, [meetingToEdit, leadId, preSelectedDate]);
 
@@ -171,13 +176,44 @@ export const ScheduleMeetingModal = ({
       // duplicate addAttendee removed
 
       if (meetingToEdit) {
+        // Check if date/time changed for reschedule notification
+        const hasDateTimeChanged = originalScheduledAt && 
+          new Date(originalScheduledAt).getTime() !== scheduledAt.getTime();
+        
         const { error } = await supabase
           .from("meetings")
           .update(meetingData)
           .eq("id", meetingToEdit.id);
 
         if (error) throw error;
-        toast.success("Reunión actualizada");
+        
+        // Send reschedule notification if date/time changed
+        if (hasDateTimeChanged) {
+          try {
+            const oldDate = new Date(originalScheduledAt);
+            const oldTime = format(oldDate, "HH:mm");
+            
+            const { error: emailError } = await supabase.functions.invoke("send-meeting-reschedule", {
+              body: { 
+                meetingId: meetingToEdit.id,
+                oldDate: originalScheduledAt,
+                oldTime: oldTime
+              },
+            });
+            
+            if (emailError) {
+              console.error("Error sending reschedule email:", emailError);
+              toast.error("Reunión actualizada pero no se pudo enviar notificación");
+            } else {
+              toast.success("Reunión reprogramada y notificación enviada");
+            }
+          } catch (emailError) {
+            console.error("Error invoking reschedule function:", emailError);
+            toast.success("Reunión actualizada");
+          }
+        } else {
+          toast.success("Reunión actualizada");
+        }
       } else {
         const { data: newMeeting, error } = await supabase
           .from("meetings")

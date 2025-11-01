@@ -91,18 +91,34 @@ export const MeetingCalendar = () => {
   }).slice(0, 10);
 
   const handleDeleteMeeting = async (meetingId: string) => {
-    const { error } = await supabase
-      .from("meetings")
-      .delete()
-      .eq("id", meetingId);
+    try {
+      // Send cancellation email before deleting
+      const { error: emailError } = await supabase.functions.invoke("send-meeting-cancellation", {
+        body: { meetingId },
+      });
+      
+      if (emailError) {
+        console.error("Error sending cancellation email:", emailError);
+        toast.error("No se pudo enviar la notificación de cancelación");
+      }
 
-    if (error) {
-      toast.error("Error al eliminar la reunión");
-      return;
+      // Delete the meeting
+      const { error } = await supabase
+        .from("meetings")
+        .delete()
+        .eq("id", meetingId);
+
+      if (error) {
+        toast.error("Error al eliminar la reunión");
+        return;
+      }
+
+      toast.success("Reunión eliminada y notificación enviada");
+      refetch();
+    } catch (error) {
+      console.error("Error in handleDeleteMeeting:", error);
+      toast.error("Error al procesar la cancelación");
     }
-
-    toast.success("Reunión eliminada");
-    refetch();
   };
 
   const handleDayClick = (date: Date) => {

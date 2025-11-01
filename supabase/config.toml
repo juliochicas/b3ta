@@ -24,6 +24,12 @@ verify_jwt = false
 [functions.send-meeting-confirmation]
 verify_jwt = true
 
+[functions.send-meeting-cancellation]
+verify_jwt = true
+
+[functions.send-meeting-reschedule]
+verify_jwt = true
+
 [functions.send-email]
 verify_jwt = true
 
