@@ -164,40 +164,8 @@ export const ScheduleMeetingModal = ({
       };
 
 
-  const addAttendee = () => {
-    try {
-      if (newAttendeeType === 'external') {
-        if (!externalName || !externalEmail) return;
-        const exists = attendees.some(a => a.email.toLowerCase() === externalEmail.toLowerCase());
-        if (exists) {
-          toast.error('Este invitado ya fue añadido');
-          return;
-        }
-        setAttendees([...attendees, { type: 'external', name: externalName, email: externalEmail }]);
-        setExternalName("");
-        setExternalEmail("");
-      } else {
-        if (!selectedAttendeeId) return;
-        const list = newAttendeeType === 'lead' ? leads : customers;
-        const selected = list?.find((item: any) => item.id === selectedAttendeeId);
-        if (!selected) return;
-        const exists = attendees.some(a => a.email.toLowerCase() === selected.email.toLowerCase());
-        if (exists) {
-          toast.error('Este invitado ya fue añadido');
-          return;
-        }
-        setAttendees([...attendees, {
-          type: newAttendeeType,
-          id: selected.id,
-          name: selected.name,
-          email: selected.email,
-        }]);
-        setSelectedAttendeeId("");
-      }
-    } catch (e) {
-      console.error('addAttendee error', e);
-    }
-  };
+      // duplicate addAttendee removed
+
       if (meetingToEdit) {
         const { error } = await supabase
           .from("meetings")
@@ -235,14 +203,22 @@ export const ScheduleMeetingModal = ({
           }
         }
         
-        // Send confirmation email
+        // Send confirmation email to all attendees
         if (newMeeting) {
           try {
-            await supabase.functions.invoke("send-meeting-confirmation", {
+            const { data: fnData, error: fnError } = await supabase.functions.invoke("send-meeting-confirmation", {
               body: { meetingId: newMeeting.id },
             });
+            if (fnError) {
+              console.error("send-meeting-confirmation error", fnError);
+              toast.error("No se pudieron enviar las invitaciones");
+            } else {
+              const msg = (fnData as any)?.message || "Invitaciones enviadas";
+              toast.success(msg);
+            }
           } catch (emailError) {
-            console.error("Error sending confirmation email:", emailError);
+            console.error("Error invoking send-meeting-confirmation:", emailError);
+            toast.error("Error al enviar las invitaciones");
           }
         }
         
