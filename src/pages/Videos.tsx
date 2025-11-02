@@ -130,13 +130,7 @@ const Videos = () => {
 
           {videos.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-muted-foreground mb-4">No hay videos disponibles</p>
-              {canManageVideos && (
-                <Button onClick={() => setIsModalOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Agregar Primer Video
-                </Button>
-              )}
+              <p className="text-muted-foreground">No hay videos disponibles</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
