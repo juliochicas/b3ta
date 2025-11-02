@@ -1,30 +1,50 @@
 import { Card } from "@/components/ui/card";
 import { Database, ShoppingCart, Zap, Brain } from "lucide-react";
 
+import { TrendingUp, Globe, Package } from "lucide-react";
+
 const services = [
   {
     icon: Database,
     title: "SAP Consulting",
-    description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7",
-    features: ["SAP Business One for HANA Migration", "Custom Development", "Integration"]
+    description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7 para empresas en crecimiento",
+    features: ["Migración a HANA", "Desarrollo Custom", "Integración ERP"],
+    cta: "Consultar SAP"
   },
   {
     icon: ShoppingCart,
-    title: "E-commerce",
-    description: "Shopify (todos los planes) y Shopify Plus, arquitectura headless, optimización de conversión",
-    features: ["Shopify & Shopify Plus", "Headless Commerce", "CRO"]
+    title: "E-commerce & Marketing Digital",
+    description: "Shopify, Shopify Plus, estrategias de growth hacking y campañas de alto impacto para maximizar conversiones",
+    features: ["Shopify Plus", "Growth Hacking", "Marketing 360°"],
+    cta: "Impulsar Ventas"
   },
   {
     icon: Zap,
-    title: "Automatización",
-    description: "Workflows inteligentes con n8n, Make, Zapier y RPA",
-    features: ["n8n Workflows", "API Integration", "Process Mining"]
+    title: "Automatización Inteligente",
+    description: "Workflows con n8n, Make, Zapier y RPA para optimizar procesos y reducir costos operativos",
+    features: ["n8n & Make", "Integración API", "Process Mining"],
+    cta: "Automatizar Ahora"
   },
   {
     icon: Brain,
     title: "IA Corporativa",
-    description: "LLMs, RAG, agentes autónomos y copilots personalizados",
-    features: ["Custom LLMs", "RAG Systems", "AI Agents"]
+    description: "LLMs personalizados, RAG, agentes autónomos y copilots para transformar tu operación con inteligencia artificial",
+    features: ["Custom LLMs", "Sistemas RAG", "AI Agents"],
+    cta: "Explorar IA"
+  },
+  {
+    icon: Package,
+    title: "Importaciones China",
+    description: "Gestión integral de importaciones desde China: sourcing, logística, aduanas y calidad garantizada",
+    features: ["Sourcing Directo", "Logística Full", "Control Calidad"],
+    cta: "Importar con B3TA"
+  },
+  {
+    icon: Globe,
+    title: "Desarrollo Web",
+    description: "Aplicaciones web modernas, PWAs, plataformas SaaS y soluciones a medida con las últimas tecnologías",
+    features: ["Apps Web", "Plataformas SaaS", "PWA & Mobile"],
+    cta: "Desarrollar Proyecto"
   }
 ];
 
@@ -41,29 +61,40 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
-          {services.map((service) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+          {services.map((service, index) => (
             <Card 
               key={service.title}
-              className="p-6 sm:p-8 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card group cursor-pointer"
+              className="p-6 sm:p-8 hover:shadow-xl transition-all duration-300 border-border hover:border-primary/50 bg-card group cursor-pointer animate-fade-in"
+              style={{ animationDelay: `${index * 100}ms` }}
               role="article"
               aria-label={`Servicio de ${service.title}`}
             >
-              <div className="mb-6 w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <div className="mb-6 w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/10 transition-all">
                 <service.icon className="h-8 w-8 text-primary" aria-hidden="true" />
               </div>
               
               <h3 className="text-xl font-bold text-foreground mb-3">{service.title}</h3>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{service.description}</p>
               
-              <ul className="space-y-2" role="list">
+              <ul className="space-y-2 mb-6" role="list">
                 {service.features.map((feature) => (
                   <li key={feature} className="text-sm text-muted-foreground flex items-center">
-                    <span className="w-1.5 h-1.5 rounded-full bg-secondary mr-2" aria-hidden="true" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary mr-2" aria-hidden="true" />
                     {feature}
                   </li>
                 ))}
               </ul>
+
+              <button 
+                onClick={() => {
+                  const contactElement = document.getElementById('contact');
+                  contactElement?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full mt-auto py-2 px-4 border border-primary/20 rounded-lg text-primary hover:bg-primary/10 transition-colors text-sm font-medium"
+              >
+                {service.cta}
+              </button>
             </Card>
           ))}
         </div>

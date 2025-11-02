@@ -17,19 +17,18 @@ export const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-10">
           <div className="inline-block mt-4 md:mt-6 px-5 py-2.5 bg-secondary/20 backdrop-blur-sm rounded-full border border-secondary/30">
-            <span className="text-sm font-semibold text-primary-foreground">🚀 Soluciones Tech para LATAM</span>
+            <span className="text-sm font-semibold text-primary-foreground">🚀 Transformación Digital Integral para LATAM</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground leading-tight">
-            Consultoría SAP,<br />
-            E-commerce, Automatización<br />
+            De SAP a Shopify,<br />
             <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
-              e Inteligencia Artificial
+              de China a tu Almacén
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            Transformamos empresas con tecnología de clase mundial. Implementación, optimización y escalamiento para organizaciones que buscan resultados reales.
+            Consultoría + Tecnología + Crecimiento. Soluciones end-to-end para empresas que buscan transformación digital real con resultados medibles.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8">

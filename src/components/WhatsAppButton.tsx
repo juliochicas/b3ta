@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
 export const WhatsAppButton = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBottomBannerVisible, setIsBottomBannerVisible] = useState(false);
-  const phoneNumber = "14355348065";
-  const message = "Hola, me interesa una consultoria con B3TA";
+  const phoneNumber = "50241571786"; // Guatemala
+  const message = "Hola! Me interesa saber más sobre los servicios de B3TA";
 
   useEffect(() => {
     const handleScroll = () => {
