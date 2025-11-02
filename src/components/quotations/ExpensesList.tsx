@@ -8,6 +8,7 @@ import { Plus, Edit, Trash2, TrendingDown, Calendar, FileSpreadsheet } from "luc
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { ExpenseModal } from "./ExpenseModal";
+import { formatCurrencyDisplay } from "@/lib/currency";
 
 interface Expense {
   id: string;
@@ -197,7 +198,7 @@ export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => 
         <Card className="p-4 bg-info-bg">
           <p className="text-sm text-muted-foreground">Ingresos Totales</p>
           <p className="text-2xl font-bold text-info">
-            {currency} ${totalRevenue.toFixed(2)}
+            {formatCurrencyDisplay(totalRevenue, currency)}
           </p>
         </Card>
 
@@ -207,14 +208,14 @@ export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => 
             Gastos Totales
           </p>
           <p className="text-2xl font-bold text-error">
-            {currency} ${totalExpenses.toFixed(2)}
+            {formatCurrencyDisplay(totalExpenses, currency)}
           </p>
         </Card>
 
         <Card className={`p-4 ${netProfit >= 0 ? 'bg-success/10' : 'bg-destructive/10'}`}>
           <p className="text-sm text-muted-foreground">Utilidad Neta</p>
           <p className={`text-2xl font-bold ${netProfit >= 0 ? 'text-profit-positive' : 'text-profit-negative'}`}>
-            {currency} ${netProfit.toFixed(2)}
+            {formatCurrencyDisplay(netProfit, currency)}
           </p>
         </Card>
 
@@ -253,7 +254,7 @@ export const ExpensesList = ({ quotationId, currency, totalRevenue }: Props) => 
                       {format(new Date(expense.expense_date), 'PPP', { locale: es })}
                     </span>
                     <span className="text-lg font-bold text-destructive">
-                      -{currency} ${parseFloat(expense.amount.toString()).toFixed(2)}
+                      -{formatCurrencyDisplay(parseFloat(expense.amount.toString()), currency)}
                     </span>
                   </div>
                   {expense.notes && (

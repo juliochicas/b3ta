@@ -9,6 +9,7 @@ import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, Chevron
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { QuotationDetailModal } from "./QuotationDetailModal";
+import { formatCurrencyDisplay } from "@/lib/currency";
 
 interface Quotation {
   id: string;
@@ -185,7 +186,7 @@ export const QuotationsList = () => {
 
                   <div className="text-right">
                     <div className="text-2xl font-bold text-primary mb-4">
-                      {quotation.currency} ${quotation.total.toFixed(2)}
+                      {formatCurrencyDisplay(quotation.total, quotation.currency)}
                     </div>
                     <Button
                       size="sm"

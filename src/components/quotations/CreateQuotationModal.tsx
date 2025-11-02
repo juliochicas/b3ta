@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Search } from "lucide-react";
+import { formatCurrencyDisplay } from "@/lib/currency";
 
 interface ProductService {
   id: string;
@@ -506,7 +507,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                 <div className="flex justify-end space-y-2 flex-col items-end">
                   <div className="flex justify-between w-80">
                     <span>Subtotal:</span>
-                    <span className="font-semibold">{formData.currency} ${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">{formatCurrencyDisplay(subtotal, formData.currency)}</span>
                   </div>
                   <div className="flex justify-between w-80 items-center gap-2">
                     <span>Descuento Global:</span>
@@ -520,11 +521,11 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                       className="w-20 text-right"
                     />
                     <span>%</span>
-                    <span className="font-semibold text-destructive">-{formData.currency} ${globalDiscount.toFixed(2)}</span>
+                    <span className="font-semibold text-destructive">-{formatCurrencyDisplay(globalDiscount, formData.currency)}</span>
                   </div>
                   <div className="flex justify-between w-80">
                     <span>Subtotal con Descuento:</span>
-                    <span className="font-semibold">{formData.currency} ${subtotalAfterDiscount.toFixed(2)}</span>
+                    <span className="font-semibold">{formatCurrencyDisplay(subtotalAfterDiscount, formData.currency)}</span>
                   </div>
                   <div className="flex justify-between w-80 items-center gap-2">
                     <span>IVA:</span>
@@ -536,11 +537,11 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                       className="w-20 text-right"
                     />
                     <span>%</span>
-                    <span className="font-semibold">{formData.currency} ${taxAmount.toFixed(2)}</span>
+                    <span className="font-semibold">{formatCurrencyDisplay(taxAmount, formData.currency)}</span>
                   </div>
                   <div className="flex justify-between w-80 text-lg font-bold">
                     <span>Total:</span>
-                    <span className="text-primary">{formData.currency} ${total.toFixed(2)}</span>
+                    <span className="text-primary">{formatCurrencyDisplay(total, formData.currency)}</span>
                   </div>
                 </div>
               </div>

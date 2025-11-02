@@ -84,7 +84,9 @@ export const useCurrencyConverter = () => {
 
   const convertPrice = (usdPrice: number): string => {
     const converted = usdPrice * currencyData.rate;
-    return converted.toLocaleString('es-ES', {
+    // Use appropriate locale based on country
+    const locale = currencyData.countryCode === 'GT' ? 'es-GT' : 'en-US';
+    return converted.toLocaleString(locale, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     });
