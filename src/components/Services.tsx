@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Database, ShoppingCart, Zap, Brain } from "lucide-react";
-
-import { TrendingUp, Globe, Package } from "lucide-react";
+import { Database, ShoppingCart, Zap, Brain, Globe, Package } from "lucide-react";
+import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
 
 const services = [
   {
@@ -9,46 +8,48 @@ const services = [
     title: "Desarrollo Web",
     description: "Sitios web profesionales, landing pages y portales corporativos. Perfecto para comenzar tu presencia digital",
     features: ["Landing Pages", "Sitios Corporativos", "PWA & Mobile"],
-    cta: "Desde $2,000"
+    priceUSD: 100
   },
   {
     icon: ShoppingCart,
     title: "E-commerce & Marketing Digital",
     description: "Shopify, Shopify Plus, estrategias de growth hacking y campañas de alto impacto para maximizar conversiones",
     features: ["Shopify Plus", "Growth Hacking", "Marketing 360°"],
-    cta: "Desde $5,000"
+    priceUSD: 500
   },
   {
     icon: Package,
     title: "Importaciones China",
     description: "Gestión integral de importaciones desde China: sourcing, logística, aduanas y calidad garantizada",
     features: ["Sourcing Directo", "Logística Full", "Control Calidad"],
-    cta: "Sin Inversión Inicial"
+    priceUSD: null
   },
   {
     icon: Zap,
     title: "Automatización Inteligente",
     description: "Workflows con n8n, Make, Zapier y RPA para optimizar procesos y reducir costos operativos",
     features: ["n8n & Make", "Integración API", "Process Mining"],
-    cta: "Desde $8,000"
+    priceUSD: 500
   },
   {
     icon: Brain,
     title: "IA Corporativa",
     description: "LLMs personalizados, RAG, agentes autónomos y copilots para transformar tu operación con inteligencia artificial",
     features: ["Custom LLMs", "Sistemas RAG", "AI Agents"],
-    cta: "Desde $15,000"
+    priceUSD: 500
   },
   {
     icon: Database,
     title: "SAP Business One",
     description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7 para empresas en crecimiento",
     features: ["Migración a HANA", "Desarrollo Custom", "Integración ERP"],
-    cta: "Desde $50,000"
+    priceUSD: 15000
   }
 ];
 
 export const Services = () => {
+  const { formatPrice, loading } = useCurrencyConverter();
+  
   return (
     <section className="py-28 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6">
@@ -93,7 +94,12 @@ export const Services = () => {
                 }}
                 className="w-full mt-auto py-2 px-4 bg-primary/10 hover:bg-primary/20 rounded-lg text-primary transition-colors text-sm font-bold"
               >
-                {service.cta}
+                {service.priceUSD === null 
+                  ? "Sin Inversión Inicial"
+                  : loading 
+                    ? "..." 
+                    : `Desde ${formatPrice(service.priceUSD)}`
+                }
               </button>
             </Card>
           ))}

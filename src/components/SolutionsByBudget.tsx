@@ -1,12 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Rocket, Zap, Building2, Check } from "lucide-react";
+import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
 
 const tiers = [
   {
     icon: Rocket,
     name: "Emprendedor",
-    budget: "Desde $2,000",
+    budgetFromUSD: 100,
+    budgetToUSD: null,
     tagline: "Perfecto para iniciar",
     color: "from-green-500/20 to-emerald-500/5",
     solutions: [
@@ -32,7 +34,8 @@ const tiers = [
   {
     icon: Zap,
     name: "Crecimiento",
-    budget: "$8,000 - $25,000",
+    budgetFromUSD: 500,
+    budgetToUSD: 15000,
     tagline: "Para empresas en expansión",
     color: "from-cyan-500/20 to-blue-500/5",
     solutions: [
@@ -63,7 +66,8 @@ const tiers = [
   {
     icon: Building2,
     name: "Enterprise",
-    budget: "$50,000+",
+    budgetFromUSD: 15000,
+    budgetToUSD: null,
     tagline: "Transformación completa",
     color: "from-purple-500/20 to-indigo-500/5",
     solutions: [
@@ -94,8 +98,18 @@ const tiers = [
 ];
 
 export const SolutionsByBudget = () => {
+  const { formatPrice, loading } = useCurrencyConverter();
+  
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const formatBudgetRange = (fromUSD: number, toUSD: number | null) => {
+    if (loading) return "...";
+    if (toUSD === null) {
+      return `Desde ${formatPrice(fromUSD)}`;
+    }
+    return `${formatPrice(fromUSD)} - ${formatPrice(toUSD)}`;
   };
 
   return (
@@ -134,7 +148,9 @@ export const SolutionsByBudget = () => {
               <p className="text-sm text-muted-foreground mb-4">{tier.tagline}</p>
               
               <div className="mb-6 pb-6 border-b border-border">
-                <p className="text-3xl font-bold text-primary">{tier.budget}</p>
+                <p className="text-3xl font-bold text-primary">
+                  {formatBudgetRange(tier.budgetFromUSD, tier.budgetToUSD)}
+                </p>
               </div>
 
               <div className="space-y-4 mb-8">
