@@ -5,46 +5,46 @@ import { TrendingUp, Globe, Package } from "lucide-react";
 
 const services = [
   {
-    icon: Database,
-    title: "SAP Consulting",
-    description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7 para empresas en crecimiento",
-    features: ["Migración a HANA", "Desarrollo Custom", "Integración ERP"],
-    cta: "Consultar SAP"
+    icon: Globe,
+    title: "Desarrollo Web",
+    description: "Sitios web profesionales, landing pages y portales corporativos. Perfecto para comenzar tu presencia digital",
+    features: ["Landing Pages", "Sitios Corporativos", "PWA & Mobile"],
+    cta: "Desde $2,000"
   },
   {
     icon: ShoppingCart,
     title: "E-commerce & Marketing Digital",
     description: "Shopify, Shopify Plus, estrategias de growth hacking y campañas de alto impacto para maximizar conversiones",
     features: ["Shopify Plus", "Growth Hacking", "Marketing 360°"],
-    cta: "Impulsar Ventas"
-  },
-  {
-    icon: Zap,
-    title: "Automatización Inteligente",
-    description: "Workflows con n8n, Make, Zapier y RPA para optimizar procesos y reducir costos operativos",
-    features: ["n8n & Make", "Integración API", "Process Mining"],
-    cta: "Automatizar Ahora"
-  },
-  {
-    icon: Brain,
-    title: "IA Corporativa",
-    description: "LLMs personalizados, RAG, agentes autónomos y copilots para transformar tu operación con inteligencia artificial",
-    features: ["Custom LLMs", "Sistemas RAG", "AI Agents"],
-    cta: "Explorar IA"
+    cta: "Desde $5,000"
   },
   {
     icon: Package,
     title: "Importaciones China",
     description: "Gestión integral de importaciones desde China: sourcing, logística, aduanas y calidad garantizada",
     features: ["Sourcing Directo", "Logística Full", "Control Calidad"],
-    cta: "Importar con B3TA"
+    cta: "Sin Inversión Inicial"
   },
   {
-    icon: Globe,
-    title: "Desarrollo Web",
-    description: "Aplicaciones web modernas, PWAs, plataformas SaaS y soluciones a medida con las últimas tecnologías",
-    features: ["Apps Web", "Plataformas SaaS", "PWA & Mobile"],
-    cta: "Desarrollar Proyecto"
+    icon: Zap,
+    title: "Automatización Inteligente",
+    description: "Workflows con n8n, Make, Zapier y RPA para optimizar procesos y reducir costos operativos",
+    features: ["n8n & Make", "Integración API", "Process Mining"],
+    cta: "Desde $8,000"
+  },
+  {
+    icon: Brain,
+    title: "IA Corporativa",
+    description: "LLMs personalizados, RAG, agentes autónomos y copilots para transformar tu operación con inteligencia artificial",
+    features: ["Custom LLMs", "Sistemas RAG", "AI Agents"],
+    cta: "Desde $15,000"
+  },
+  {
+    icon: Database,
+    title: "SAP Business One",
+    description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7 para empresas en crecimiento",
+    features: ["Migración a HANA", "Desarrollo Custom", "Integración ERP"],
+    cta: "Desde $50,000"
   }
 ];
 
@@ -91,7 +91,7 @@ export const Services = () => {
                   const contactElement = document.getElementById('contact');
                   contactElement?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="w-full mt-auto py-2 px-4 border border-primary/20 rounded-lg text-primary hover:bg-primary/10 transition-colors text-sm font-medium"
+                className="w-full mt-auto py-2 px-4 bg-primary/10 hover:bg-primary/20 rounded-lg text-primary transition-colors text-sm font-bold"
               >
                 {service.cta}
               </button>

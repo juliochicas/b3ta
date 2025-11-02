@@ -29,14 +29,14 @@ export const Hero = () => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground leading-tight">
-            De SAP a Shopify,<br />
+            Tecnología Accesible,<br />
             <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
-              de China a tu Almacén
+              Resultados Enterprise
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            Consultoría + Tecnología + Crecimiento. Soluciones end-to-end para empresas que buscan transformación digital real con resultados medibles.
+            Desde un sitio web profesional hasta SAP Business One. Soluciones tecnológicas reales para cada etapa de tu negocio, sin importar tu presupuesto.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8">

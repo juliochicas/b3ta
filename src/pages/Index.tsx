@@ -3,6 +3,7 @@ import { Services } from "@/components/Services";
 import { Benefits } from "@/components/Benefits";
 import { CaseStudies } from "@/components/CaseStudies";
 import { Industries } from "@/components/Industries";
+import { SolutionsByBudget } from "@/components/SolutionsByBudget";
 import { PartnersSection } from "@/components/PartnersSection";
 import { ProcessSteps } from "@/components/ProcessSteps";
 import { BeforeAfter } from "@/components/BeforeAfter";
@@ -34,6 +35,12 @@ const Index = () => {
             <a href="#services" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a servicios">
               Servicios
             </a>
+            <a href="#soluciones" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a soluciones por presupuesto">
+              Soluciones
+            </a>
+            <a href="#videos" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a videos">
+              Videos
+            </a>
             <a href="#ai-consultant" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a consultor IA">
               Consultor IA
             </a>
@@ -54,6 +61,9 @@ const Index = () => {
         <div id="services">
           <Services />
         </div>
+        <div id="soluciones">
+          <SolutionsByBudget />
+        </div>
         <Benefits />
         <div id="casos">
           <CaseStudies />
@@ -61,7 +71,9 @@ const Index = () => {
         <div id="industrias">
           <Industries />
         </div>
-        <VideoSection />
+        <div id="videos">
+          <VideoSection />
+        </div>
         <BeforeAfter />
         <ProcessSteps />
         <PartnersSection />
