@@ -166,11 +166,26 @@ serve(async (req) => {
                 meeting.timezone
               }</p>
               ${
+                meeting.meeting_link
+                  ? `<p style="margin: 8px 0;"><strong>🎥 Link de Video:</strong> <a href="${meeting.meeting_link}" style="color: #2563eb; text-decoration: underline;">${meeting.meeting_link}</a></p>`
+                  : ""
+              }
+              ${
                 meeting.notes
                   ? `<p style="margin: 8px 0;"><strong>📝 Notas:</strong> ${meeting.notes}</p>`
                   : ""
               }
             </div>
+            
+            ${
+              meeting.meeting_link
+                ? `<div style="text-align: center; margin: 30px 0;">
+                    <a href="${meeting.meeting_link}" style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                      🎥 Unirse a la Reunión Virtual
+                    </a>
+                  </div>`
+                : ""
+            }
             
             <p style="color: #6b7280; font-size: 14px;">Recibirás un recordatorio 15 minutos antes de la reunión.</p>
             <p>¡Nos vemos pronto!</p>

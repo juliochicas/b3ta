@@ -162,6 +162,10 @@ export const ScheduleMeetingModal = ({
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("No user found");
 
+      // Generate unique Jitsi Meet link
+      const roomName = `b3ta-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const meetingLink = `https://meet.jit.si/${roomName}`;
+
       const meetingData = {
         lead_id: selectedLeadId && selectedLeadId !== "none" ? selectedLeadId : null,
         scheduled_at: scheduledAt.toISOString(),
@@ -170,6 +174,7 @@ export const ScheduleMeetingModal = ({
         notes,
         status,
         created_by: userData.user.id,
+        meeting_link: meetingToEdit ? undefined : meetingLink, // Only set on creation
       };
 
 

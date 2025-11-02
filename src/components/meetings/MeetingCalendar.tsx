@@ -21,6 +21,7 @@ interface Meeting {
   status: string;
   meeting_type: string;
   notes?: string;
+  meeting_link?: string;
   lead_id?: string;
   customer_id?: string;
   leads_b3ta?: {
