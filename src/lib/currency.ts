@@ -1,19 +1,18 @@
 /**
  * Format currency amounts with proper locale formatting
- * For GTQ (Guatemala), uses comma for thousands and period for decimals
- * Example: GTQ 1,234.56
+ * All currencies use comma for thousands, period for decimals (en-US format)
+ * Example: 1,234.56
  */
 export const formatCurrency = (amount: number, currency: string = 'USD'): string => {
-  const locale = currency === 'GTQ' ? 'en-US' : 'en-US'; // en-US uses comma for thousands, period for decimals
-  
-  return amount.toLocaleString(locale, {
+  return amount.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 };
 
 /**
- * Format currency with symbol
+ * Format currency with symbol only
+ * Example: $ 1,234.56 or Q 1,234.56
  */
 export const formatCurrencyWithSymbol = (amount: number, currency: string = 'USD'): string => {
   const formatted = formatCurrency(amount, currency);
@@ -21,7 +20,12 @@ export const formatCurrencyWithSymbol = (amount: number, currency: string = 'USD
     'USD': '$',
     'GTQ': 'Q',
     'MXN': '$',
-    'EUR': '€'
+    'EUR': '€',
+    'COP': '$',
+    'ARS': '$',
+    'CLP': '$',
+    'PEN': 'S/',
+    'BRL': 'R$'
   };
   
   const symbol = symbols[currency] || '$';
@@ -29,9 +33,28 @@ export const formatCurrencyWithSymbol = (amount: number, currency: string = 'USD
 };
 
 /**
- * Format currency display with currency code
+ * Format currency display with currency code (for UI)
+ * Example: GTQ $1,234.56 or USD $1,234.56
  */
 export const formatCurrencyDisplay = (amount: number, currency: string = 'USD'): string => {
   const formatted = formatCurrency(amount, currency);
   return `${currency} $${formatted}`;
+};
+
+/**
+ * Format currency for PDFs (jsPDF compatible)
+ * Example: $1,234.56
+ */
+export const formatCurrencyForPDF = (amount: number, currency: string = 'USD'): string => {
+  const formatted = formatCurrency(amount, currency);
+  return `$${formatted}`;
+};
+
+/**
+ * Format currency for emails (HTML compatible)
+ * Example: $1,234.56
+ */
+export const formatCurrencyForEmail = (amount: number, currency: string = 'USD'): string => {
+  const formatted = formatCurrency(amount, currency);
+  return `$${formatted}`;
 };

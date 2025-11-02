@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { formatCurrencyForEmail, formatCurrencyDisplay } from "../_shared/currency.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -62,8 +63,8 @@ serve(async (req) => {
             ${item.description ? `<br/><small style="color: #666;">${item.description}</small>` : ''}
           </td>
           <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${quotation.currency} $${item.unit_price.toFixed(2)}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;"><strong>${quotation.currency} $${item.total.toFixed(2)}</strong></td>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${formatCurrencyDisplay(item.unit_price, quotation.currency)}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;"><strong>${formatCurrencyDisplay(item.total, quotation.currency)}</strong></td>
         </tr>
       `)
       .join('');
@@ -110,15 +111,15 @@ serve(async (req) => {
           <div style="text-align: right; padding: 16px; background: #f8f9fa; border-radius: 8px;">
             <div style="margin-bottom: 8px;">
               <span style="color: #666;">Subtotal:</span>
-              <strong style="margin-left: 16px;">${quotation.currency} $${quotation.subtotal.toFixed(2)}</strong>
+              <strong style="margin-left: 16px;">${formatCurrencyDisplay(quotation.subtotal, quotation.currency)}</strong>
             </div>
             <div style="margin-bottom: 8px; color: #666;">
               <span>IVA (${quotation.tax_rate}%):</span>
-              <span style="margin-left: 16px;">${quotation.currency} $${quotation.tax_amount.toFixed(2)}</span>
+              <span style="margin-left: 16px;">${formatCurrencyDisplay(quotation.tax_amount, quotation.currency)}</span>
             </div>
             <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6; font-size: 20px;">
               <span>Total:</span>
-              <strong style="margin-left: 16px; color: #6366f1;">${quotation.currency} $${quotation.total.toFixed(2)}</strong>
+              <strong style="margin-left: 16px; color: #6366f1;">${formatCurrencyDisplay(quotation.total, quotation.currency)}</strong>
             </div>
           </div>
 

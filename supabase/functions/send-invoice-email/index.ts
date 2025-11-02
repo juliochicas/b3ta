@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { formatCurrencyForEmail, formatCurrencyDisplay } from "../_shared/currency.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -65,8 +66,8 @@ serve(async (req) => {
         <tr style="border-bottom: 1px solid #eee;">
           <td style="padding: 12px 8px;">${item.item_name}</td>
           <td style="padding: 12px 8px; text-align: center;">${item.quantity}</td>
-          <td style="padding: 12px 8px; text-align: right;">$${Number(item.unit_price).toFixed(2)}</td>
-          <td style="padding: 12px 8px; text-align: right; font-weight: bold;">$${Number(item.total).toFixed(2)}</td>
+          <td style="padding: 12px 8px; text-align: right;">${formatCurrencyForEmail(Number(item.unit_price))}</td>
+          <td style="padding: 12px 8px; text-align: right; font-weight: bold;">${formatCurrencyForEmail(Number(item.total))}</td>
         </tr>
       `
       )
@@ -114,10 +115,10 @@ serve(async (req) => {
             </table>
 
             <div style="text-align: right; margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee;">
-              <p style="margin: 5px 0;">Subtotal: <strong>$${Number(invoice.subtotal).toFixed(2)}</strong></p>
-              <p style="margin: 5px 0; color: #666;">IVA (${invoice.tax_rate}%): <strong>$${Number(invoice.tax_amount).toFixed(2)}</strong></p>
+              <p style="margin: 5px 0;">Subtotal: <strong>${formatCurrencyForEmail(Number(invoice.subtotal))}</strong></p>
+              <p style="margin: 5px 0; color: #666;">IVA (${invoice.tax_rate}%): <strong>${formatCurrencyForEmail(Number(invoice.tax_amount))}</strong></p>
               <p style="margin: 15px 0 0 0; font-size: 20px; color: #6366f1;">
-                <strong>Total: $${Number(invoice.total).toFixed(2)} ${invoice.currency}</strong>
+                <strong>Total: ${formatCurrencyForEmail(Number(invoice.total))} ${invoice.currency}</strong>
               </p>
             </div>
           </div>
