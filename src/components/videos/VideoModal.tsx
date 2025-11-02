@@ -51,8 +51,8 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
     }
   }, [video]);
 
-  const handleAIImprove = async (field: 'description' | 'meta_description', action: 'improve' | 'persuasive' | 'seo') => {
-    const textToImprove = field === 'description' ? formData.description : formData.meta_description || '';
+  const handleAIImprove = async (field: 'title' | 'description' | 'meta_description', action: 'improve' | 'persuasive' | 'seo') => {
+    const textToImprove = field === 'title' ? formData.title : field === 'description' ? formData.description : formData.meta_description || '';
     
     if (!textToImprove.trim()) {
       toast.error("No hay texto para mejorar");
@@ -133,7 +133,19 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <Label htmlFor="title">Título del Video *</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="title">Título del Video *</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAIImprove('title', 'seo')}
+                  disabled={aiLoading}
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Mejorar Título
+                </Button>
+              </div>
               <Input
                 id="title"
                 value={formData.title}
