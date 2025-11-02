@@ -34,9 +34,9 @@ const benefits = [
   },
   {
     icon: Award,
-    title: "Garantía de Calidad",
-    description: "Si no estás satisfecho en los primeros 30 días, devolvemos el 100% de tu inversión.",
-    metric: "100% garantía"
+    title: "Metodología Probada",
+    description: "Proceso estructurado con fases de validación y aprobación en cada etapa del desarrollo.",
+    metric: "Calidad garantizada"
   }
 ];
 
@@ -81,14 +81,16 @@ export const Benefits = () => {
         <div className="mt-16 max-w-4xl mx-auto">
           <Card className="p-12 bg-gradient-to-r from-primary to-secondary text-primary-foreground border-0 shadow-2xl">
             <div className="text-center">
-              <h3 className="text-3xl font-bold mb-4">Garantía Sin Riesgo</h3>
+              <h3 className="text-3xl font-bold mb-4">Proceso Profesional Sin Sorpresas</h3>
               <p className="text-xl opacity-90 mb-6">
-                Si en los primeros 30 días no ves valor en nuestro trabajo, te devolvemos el 100% de tu inversión. Sin preguntas.
+                Minimizamos riesgos a través de nuestro proceso estructurado: análisis detallado, ingeniería planificada, 
+                desarrollo evolutivo y fases de aprobación en cada etapa del proyecto.
               </p>
-              <div className="flex items-center justify-center gap-8 text-sm">
-                <div>✓ Sin letra pequeña</div>
-                <div>✓ Reembolso completo</div>
-                <div>✓ Sin penalizaciones</div>
+              <div className="flex items-center justify-center gap-8 text-sm flex-wrap">
+                <div>✓ Análisis previo completo</div>
+                <div>✓ Fases de aprobación</div>
+                <div>✓ Validación continua</div>
+                <div>✓ Desarrollo iterativo</div>
               </div>
             </div>
           </Card>
