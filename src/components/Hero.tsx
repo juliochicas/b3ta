@@ -29,14 +29,14 @@ export const Hero = () => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground leading-tight">
-            Tecnología Accesible,<br />
+            Tu Socio Tecnológico<br />
             <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
-              Resultados Enterprise
+              de $100 a $50,000+
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            Desde un sitio web profesional hasta SAP Business One. Soluciones tecnológicas reales para cada etapa de tu negocio, sin importar tu presupuesto.
+            Desde sitios web profesionales ($100+) hasta implementaciones SAP Business One completas ($50,000+). Tecnología empresarial real para cada etapa y presupuesto de tu negocio.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8">

@@ -54,41 +54,64 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content - Flujo Narrativo Optimizado */}
       <main className="pt-16">
+        {/* 1. GANCHO INICIAL - Propuesta de valor y credibilidad */}
         <Hero />
         <TrustBadges />
+        
+        {/* 2. OFERTA - Qué hacemos y para quién */}
         <div id="services">
           <Services />
         </div>
         <div id="soluciones">
           <SolutionsByBudget />
         </div>
+        
+        {/* 3. VALOR - Por qué somos diferentes */}
         <Benefits />
+        
+        {/* 4. PRUEBA SOCIAL - Casos de éxito e industrias */}
         <div id="casos">
           <CaseStudies />
         </div>
         <div id="industrias">
           <Industries />
         </div>
+        
+        {/* 5. PROCESO - Cómo trabajamos */}
+        <ProcessSteps />
+        <BeforeAfter />
+        
+        {/* 6. CREDIBILIDAD - Partners y testimonios */}
+        <PartnersSection />
+        <Testimonials />
+        
+        {/* 7. CONTENIDO EDUCATIVO - Videos */}
         <div id="videos">
           <VideoSection />
         </div>
-        <BeforeAfter />
-        <ProcessSteps />
-        <PartnersSection />
-        <Testimonials />
-        <UrgencyBanner />
+        
+        {/* 8. PRECIOS - Planes claros */}
         <Pricing />
+        
+        {/* 9. RESPUESTAS - FAQ */}
         <div id="faq">
           <FAQ />
         </div>
+        
+        {/* 10. HERRAMIENTA INTERACTIVA - Consultor IA */}
         <div id="ai-consultant">
           <AIConsultant />
         </div>
+        
+        {/* 11. URGENCIA Y LLAMADO A LA ACCIÓN FINAL */}
+        <UrgencyBanner />
         <div id="contact">
           <ContactForm />
         </div>
+        
+        {/* Elementos flotantes */}
         <StickyCTA />
         <WhatsAppButton />
       </main>
