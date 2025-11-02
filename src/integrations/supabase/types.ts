@@ -1079,6 +1079,60 @@ export type Database = {
           },
         ]
       }
+      showcase_videos: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string
+          display_order: number | null
+          duration: string | null
+          id: string
+          is_featured: boolean | null
+          meta_description: string | null
+          seo_keywords: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string
+          views_count: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          display_order?: number | null
+          duration?: string | null
+          id?: string
+          is_featured?: boolean | null
+          meta_description?: string | null
+          seo_keywords?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+          views_count?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          display_order?: number | null
+          duration?: string | null
+          id?: string
+          is_featured?: boolean | null
+          meta_description?: string | null
+          seo_keywords?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
       user_availability: {
         Row: {
           created_at: string
