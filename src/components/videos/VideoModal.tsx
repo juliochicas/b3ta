@@ -209,13 +209,13 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="video_url">URL del Video (YouTube/Vimeo) *</Label>
+              <Label htmlFor="video_url">URL del Video (YouTube/Loom/Vimeo) *</Label>
               <Input
                 id="video_url"
                 value={formData.video_url}
                 onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
                 required
-                placeholder="https://youtube.com/watch?v=..."
+                placeholder="https://youtube.com/watch?v=... o https://loom.com/share/..."
               />
             </div>
 
