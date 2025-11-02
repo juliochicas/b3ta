@@ -16,7 +16,6 @@ import { UrgencyBanner } from "@/components/UrgencyBanner";
 import { AIConsultant } from "@/components/AIConsultant";
 import { ContactForm } from "@/components/ContactForm";
 import { StickyCTA } from "@/components/StickyCTA";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 const Index = () => {
   return (
@@ -113,7 +112,6 @@ const Index = () => {
         
         {/* Elementos flotantes */}
         <StickyCTA />
-        <WhatsAppButton />
       </main>
 
       {/* Footer */}
