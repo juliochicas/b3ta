@@ -42,7 +42,7 @@ export const VideoSection = () => {
         .from('showcase_videos')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(3);
+        .limit(2);
 
       setRecentVideos(recent || []);
     } catch (error) {
@@ -59,7 +59,7 @@ export const VideoSection = () => {
   }
 
   const displayVideo = featuredVideo || recentVideos[0];
-  const additionalVideos = featuredVideo ? recentVideos.slice(0, 3) : recentVideos.slice(1, 4);
+  const additionalVideos = featuredVideo ? recentVideos.slice(0, 2) : recentVideos.slice(1, 3);
 
   return (
     <section className="py-28 bg-gradient-to-b from-muted/30 to-background">
@@ -124,7 +124,7 @@ export const VideoSection = () => {
           </Card>
 
           {additionalVideos.length > 0 && (
-            <div className="grid md:grid-cols-3 gap-8 mt-12">
+            <div className="grid md:grid-cols-2 gap-8 mt-12 max-w-4xl mx-auto">
               {additionalVideos.map((video) => (
                 <Card 
                   key={video.id} 

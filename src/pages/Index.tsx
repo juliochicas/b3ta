@@ -1,15 +1,14 @@
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
-import { Benefits } from "@/components/Benefits";
-import { CaseStudies } from "@/components/CaseStudies";
-import { Industries } from "@/components/Industries";
 import { SolutionsByBudget } from "@/components/SolutionsByBudget";
-import { PartnersSection } from "@/components/PartnersSection";
+import { Pricing } from "@/components/Pricing";
+import { StrategicCTA } from "@/components/StrategicCTA";
+import { Benefits } from "@/components/Benefits";
+import { CaseStudiesIndustries } from "@/components/CaseStudiesIndustries";
 import { ProcessSteps } from "@/components/ProcessSteps";
-import { BeforeAfter } from "@/components/BeforeAfter";
+import { PartnersSection } from "@/components/PartnersSection";
 import { Testimonials } from "@/components/Testimonials";
 import { VideoSection } from "@/components/VideoSection";
-import { Pricing } from "@/components/Pricing";
 import { FAQ } from "@/components/FAQ";
 import { TrustBadges } from "@/components/TrustBadges";
 import { UrgencyBanner } from "@/components/UrgencyBanner";
@@ -53,13 +52,13 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Main Content - Flujo Narrativo Optimizado */}
+      {/* Main Content - Arquitectura Optimizada para Conversión */}
       <main className="pt-16">
-        {/* 1. GANCHO INICIAL - Propuesta de valor y credibilidad */}
+        {/* 1. GANCHO INICIAL - Hero + Credibilidad */}
         <Hero />
         <TrustBadges />
         
-        {/* 2. OFERTA - Qué hacemos y para quién */}
+        {/* 2. OFERTA CLARA - Qué hacemos y para quién */}
         <div id="services">
           <Services />
         </div>
@@ -67,32 +66,55 @@ const Index = () => {
           <SolutionsByBudget />
         </div>
         
-        {/* 3. VALOR - Por qué somos diferentes */}
+        {/* 🎯 CTA #1 - Después de mostrar servicios */}
+        <StrategicCTA 
+          variant="primary"
+          title="¿Listo para Transformar tu Negocio?"
+          description="Agenda una consultoría gratuita y descubre cómo podemos ayudarte"
+          ctaText="Agendar Consultoría Gratuita"
+          icon="calendar"
+        />
+        
+        {/* 3. PRECIOS VISIBLES TEMPRANO */}
+        <Pricing />
+        
+        {/* 4. VALOR - Por qué somos diferentes */}
         <Benefits />
         
-        {/* 4. PRUEBA SOCIAL - Casos de éxito e industrias */}
+        {/* 🎯 CTA #2 - Después de valor y precios */}
+        <StrategicCTA 
+          variant="secondary"
+          title="Hablemos de Tu Proyecto"
+          description="Sin compromiso, sin letra pequeña. Solo soluciones reales."
+          ctaText="Contactar Ahora"
+          icon="message"
+        />
+        
+        {/* 5. PRUEBA SOCIAL - Casos + Industrias fusionados */}
         <div id="casos">
-          <CaseStudies />
-        </div>
-        <div id="industrias">
-          <Industries />
+          <CaseStudiesIndustries />
         </div>
         
-        {/* 5. PROCESO - Cómo trabajamos */}
+        {/* 6. PROCESO - Cómo trabajamos */}
         <ProcessSteps />
-        <BeforeAfter />
         
-        {/* 6. CREDIBILIDAD - Partners y testimonios */}
+        {/* 🎯 CTA #3 - Después del proceso */}
+        <StrategicCTA 
+          variant="consultation"
+          title="Empieza Tu Transformación Digital Hoy"
+          description="El primer paso es una conversación. Sin presión, sin ventas forzadas."
+          ctaText="Comenzar Ahora"
+          icon="arrow"
+        />
+        
+        {/* 7. CREDIBILIDAD - Partners y Testimonios */}
         <PartnersSection />
         <Testimonials />
         
-        {/* 7. CONTENIDO EDUCATIVO - Videos */}
+        {/* 8. CONTENIDO EDUCATIVO - Videos (reducidos) */}
         <div id="videos">
           <VideoSection />
         </div>
-        
-        {/* 8. PRECIOS - Planes claros */}
-        <Pricing />
         
         {/* 9. RESPUESTAS - FAQ */}
         <div id="faq">
@@ -104,7 +126,7 @@ const Index = () => {
           <AIConsultant />
         </div>
         
-        {/* 11. URGENCIA Y LLAMADO A LA ACCIÓN FINAL */}
+        {/* 11. CIERRE CON URGENCIA */}
         <UrgencyBanner />
         <div id="contact">
           <ContactForm />
@@ -153,12 +175,12 @@ const Index = () => {
             <div>
               <h4 className="font-bold mb-4 text-lg">Industrias</h4>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="#industrias" className="hover:text-cyan-400 transition-colors">Manufactura</a></li>
-                <li><a href="#industrias" className="hover:text-cyan-400 transition-colors">Retail & E-commerce</a></li>
-                <li><a href="#industrias" className="hover:text-cyan-400 transition-colors">Distribución</a></li>
-                <li><a href="#industrias" className="hover:text-cyan-400 transition-colors">Construcción</a></li>
-                <li><a href="#industrias" className="hover:text-cyan-400 transition-colors">Salud</a></li>
-                <li><a href="#industrias" className="hover:text-cyan-400 transition-colors">Educación</a></li>
+                <li><a href="#casos" className="hover:text-cyan-400 transition-colors">Manufactura</a></li>
+                <li><a href="#casos" className="hover:text-cyan-400 transition-colors">Retail & E-commerce</a></li>
+                <li><a href="#casos" className="hover:text-cyan-400 transition-colors">Distribución</a></li>
+                <li><a href="#casos" className="hover:text-cyan-400 transition-colors">Construcción</a></li>
+                <li><a href="#casos" className="hover:text-cyan-400 transition-colors">Salud</a></li>
+                <li><a href="#casos" className="hover:text-cyan-400 transition-colors">Educación</a></li>
               </ul>
             </div>
             
