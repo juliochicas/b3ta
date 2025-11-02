@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, Clock, Target } from "lucide-react";
+import caseStudiesBg from "@/assets/case-studies-bg.jpg";
 
 const cases = [
   {
@@ -46,8 +47,15 @@ const cases = [
 
 export const CaseStudies = () => {
   return (
-    <section className="py-28 bg-gradient-to-b from-background to-muted/30">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-28 relative">
+      {/* Background Image with Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+        style={{ backgroundImage: `url(${caseStudiesBg})` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-background to-muted/30" />
+      
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-20">
           <Badge className="mb-4" variant="outline">Casos de Éxito</Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">

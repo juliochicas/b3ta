@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Award, Shield, Zap } from "lucide-react";
+import partnersBg from "@/assets/partners-bg.jpg";
 
 const partners = [
   { name: "SAP", type: "Technology Partner", logo: "SAP" },
@@ -36,8 +37,15 @@ const certifications = [
 
 export const PartnersSection = () => {
   return (
-    <section className="py-28 bg-background">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-28 relative">
+      {/* Background Image with Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
+        style={{ backgroundImage: `url(${partnersBg})` }}
+      />
+      <div className="absolute inset-0 bg-background" />
+      
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Partners */}
         <div className="mb-20">
           <div className="text-center mb-12">
