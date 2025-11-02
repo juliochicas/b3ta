@@ -18,7 +18,7 @@ const getCorsHeaders = (origin: string | null) => {
 
 interface RequestBody {
   text: string;
-  action: 'correct' | 'improve' | 'persuasive' | 'seo';
+  action: 'correct' | 'improve' | 'persuasive' | 'seo' | 'keywords';
   videoTitle?: string;
   category?: string;
 }
@@ -65,7 +65,21 @@ Requisitos:
 - Incluye llamada a la acción sutil
 
 Texto original:
-${text}`
+${text}`,
+
+      keywords: `Genera 8-12 keywords SEO relevantes para este video de consultoría tecnológica.
+
+${text}
+
+Requisitos:
+- Keywords en español enfocadas en ${category || 'tecnología'}
+- Incluye términos técnicos y comerciales
+- Mezcla keywords generales y específicas (long-tail)
+- Separa por comas sin numeración
+- Relevantes para búsquedas de clientes potenciales en México/LATAM
+
+FORMATO DE RESPUESTA: Solo las keywords separadas por comas, sin explicaciones ni numeración.
+Ejemplo: implementación erp, consultoría sap, automatización procesos, transformación digital`
     };
 
     const systemPrompt = `Eres un experto en marketing digital y copywriting para empresas de consultoría tecnológica. Tu especialidad es crear contenido persuasivo y optimizado para SEO que genere conversiones.

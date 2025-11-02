@@ -51,8 +51,15 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
     }
   }, [video]);
 
-  const handleAIImprove = async (field: 'title' | 'description' | 'meta_description', action: 'improve' | 'persuasive' | 'seo') => {
-    const textToImprove = field === 'title' ? formData.title : field === 'description' ? formData.description : formData.meta_description || '';
+  const handleAIImprove = async (field: 'title' | 'description' | 'meta_description' | 'seo_keywords', action: 'improve' | 'persuasive' | 'seo' | 'keywords') => {
+    let textToImprove = '';
+    
+    if (field === 'seo_keywords') {
+      // Para keywords, enviamos el título y descripción como contexto
+      textToImprove = `Título: ${formData.title}\nDescripción: ${formData.description}`;
+    } else {
+      textToImprove = field === 'title' ? formData.title : field === 'description' ? formData.description : formData.meta_description || '';
+    }
     
     if (!textToImprove.trim()) {
       toast.error("No hay texto para mejorar");
@@ -72,10 +79,22 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
 
       if (error) throw error;
       
-      setFormData(prev => ({
-        ...prev,
-        [field]: data.improvedText
-      }));
+      if (field === 'seo_keywords') {
+        // Para keywords, convertimos el texto mejorado en array
+        const keywordsArray = data.improvedText
+          .split(',')
+          .map((k: string) => k.trim())
+          .filter((k: string) => k);
+        setFormData(prev => ({
+          ...prev,
+          seo_keywords: keywordsArray
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [field]: data.improvedText
+        }));
+      }
       
       toast.success("Texto mejorado con IA");
     } catch (error: any) {
@@ -269,7 +288,19 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="seo_keywords">Keywords SEO (separadas por coma)</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="seo_keywords">Keywords SEO (separadas por coma)</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAIImprove('seo_keywords', 'keywords')}
+                  disabled={aiLoading || !formData.title}
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Generar Keywords
+                </Button>
+              </div>
               <Input
                 id="seo_keywords"
                 value={formData.seo_keywords?.join(', ') || ''}
