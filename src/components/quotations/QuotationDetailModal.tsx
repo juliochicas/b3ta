@@ -64,6 +64,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingPaymentLink, setIsCreatingPaymentLink] = useState(false);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+  const [isDownloadingFinancialPDF, setIsDownloadingFinancialPDF] = useState(false);
   const [isEditingTracking, setIsEditingTracking] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState(quotation.tracking_number || "");
   const [isEditingTags, setIsEditingTags] = useState(false);
@@ -279,22 +280,6 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const downloadPDF = async () => {
     setIsDownloadingPDF(true);
     try {
-      // Cargar gastos con categorías
-      const { data: expensesData } = await supabase
-        .from('quotation_expenses')
-        .select(`
-          *,
-          expense_categories (
-            name
-          )
-        `)
-        .eq('quotation_id', quotation.id)
-        .order('expense_date', { ascending: false });
-      
-      const expenses = expensesData || [];
-      const totalExpenses = expenses.reduce((sum, exp) => sum + parseFloat(exp.amount.toString()), 0);
-      const netProfit = quotation.total - totalExpenses;
-
       // Generación 100% en el navegador con jsPDF (sin llamar funciones backend)
       const { jsPDF } = await import('jspdf');
 
@@ -528,80 +513,6 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         }
       }
 
-      // Sección de Gastos (si existen)
-      if (expenses.length > 0) {
-        yPos += 15;
-        if (yPos > 250) {
-          doc.addPage();
-          yPos = 20;
-        }
-
-        doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
-        doc.setTextColor(0, 0, 0);
-        doc.text('ANÁLISIS FINANCIERO', margin, yPos);
-        yPos += 10;
-
-        // Resumen financiero
-        doc.setFillColor(248, 249, 250);
-        doc.rect(margin, yPos - 5, contentWidth, 30, 'F');
-        
-        doc.setFontSize(10);
-        doc.text('Ingresos Totales:', margin + 2, yPos);
-        doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, margin + contentWidth * 0.7, yPos, { align: 'right' });
-        yPos += 7;
-
-        doc.setTextColor(220, 38, 38);
-        doc.text('Gastos Totales:', margin + 2, yPos);
-        doc.text(`${quotation.currency} $${totalExpenses.toFixed(2)}`, margin + contentWidth * 0.7, yPos, { align: 'right' });
-        yPos += 7;
-
-        doc.setDrawColor(99, 102, 241);
-        doc.line(margin + 2, yPos - 2, margin + contentWidth * 0.7, yPos - 2);
-        yPos += 2;
-
-        doc.setTextColor(netProfit >= 0 ? 34 : 220, netProfit >= 0 ? 197 : 38, netProfit >= 0 ? 94 : 38);
-        doc.setFont(undefined, 'bold');
-        doc.setFontSize(12);
-        doc.text('Utilidad Neta:', margin + 2, yPos);
-        doc.text(`${quotation.currency} $${netProfit.toFixed(2)}`, margin + contentWidth * 0.7, yPos, { align: 'right' });
-        yPos += 7;
-
-        const profitMargin = quotation.total > 0 ? (netProfit / quotation.total) * 100 : 0;
-        doc.setFontSize(9);
-        doc.setTextColor(99, 102, 241);
-        doc.text(`Margen: ${profitMargin.toFixed(1)}%`, margin + 2, yPos);
-        yPos += 10;
-
-        // Lista de gastos
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
-        doc.text('DETALLE DE GASTOS:', margin, yPos);
-        yPos += 7;
-
-        doc.setFontSize(8);
-        doc.setFillColor(248, 249, 250);
-        doc.rect(margin, yPos - 5, contentWidth, 6, 'F');
-        doc.text('Fecha', margin + 2, yPos);
-        doc.text('Descripción', margin + contentWidth * 0.2, yPos);
-        doc.text('Monto', margin + contentWidth * 0.85, yPos);
-        yPos += 6;
-
-        doc.setFont(undefined, 'normal');
-        expenses.forEach((expense) => {
-          if (yPos > 270) {
-            doc.addPage();
-            yPos = 20;
-          }
-
-          doc.text(format(new Date(expense.expense_date), 'dd/MM/yyyy'), margin + 2, yPos);
-          const descText = expense.description.substring(0, 50);
-          doc.text(descText, margin + contentWidth * 0.2, yPos);
-          doc.text(`$${parseFloat(expense.amount.toString()).toFixed(2)}`, margin + contentWidth * 0.85, yPos);
-          yPos += 5;
-        });
-      }
 
       // Footer con información de la empresa
       const pageCount = doc.getNumberOfPages();
@@ -646,6 +557,214 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       });
     } finally {
       setIsDownloadingPDF(false);
+    }
+  };
+
+  const downloadFinancialAnalysisPDF = async () => {
+    setIsDownloadingFinancialPDF(true);
+    try {
+      // Cargar gastos con categorías
+      const { data: expensesData } = await supabase
+        .from('quotation_expenses')
+        .select(`
+          *,
+          expense_categories (
+            name
+          )
+        `)
+        .eq('quotation_id', quotation.id)
+        .order('expense_date', { ascending: false });
+      
+      const expenses = expensesData || [];
+      const totalExpenses = expenses.reduce((sum, exp) => sum + parseFloat(exp.amount.toString()), 0);
+      const netProfit = quotation.total - totalExpenses;
+
+      // Generación del PDF de análisis financiero
+      const { jsPDF } = await import('jspdf');
+
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = pageWidth - margin * 2;
+      let yPos = 20;
+
+      // Encabezado
+      doc.setFillColor(255, 255, 255);
+      doc.rect(0, 0, pageWidth, 45, 'F');
+      
+      doc.setTextColor(99, 102, 241);
+      doc.setFontSize(20);
+      doc.setFont(undefined, 'bold');
+      doc.text('B3TA', margin, 15);
+      
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(24);
+      doc.text('Análisis Financiero', margin, 28);
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Cotización: ${quotation.quotation_number}`, margin, 36);
+      doc.text(`Fecha: ${format(new Date(), 'PPP', { locale: es })}`, margin, 41);
+      
+      yPos = 60;
+
+      // Cliente
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text('CLIENTE', margin, yPos);
+      yPos += 7;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text(quotation.customers.name, margin, yPos);
+      yPos += 5;
+      if (quotation.customers.company) {
+        doc.text(quotation.customers.company, margin, yPos);
+        yPos += 5;
+      }
+      yPos += 10;
+
+      // Resumen financiero destacado
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.setTextColor(99, 102, 241);
+      doc.text('RESUMEN FINANCIERO', margin, yPos);
+      yPos += 10;
+
+      doc.setFillColor(248, 249, 250);
+      doc.rect(margin, yPos - 5, contentWidth, 35, 'F');
+      
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(11);
+      doc.text('Ingresos Totales:', margin + 2, yPos);
+      doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+      yPos += 8;
+
+      doc.setTextColor(220, 38, 38);
+      doc.text('Gastos Totales:', margin + 2, yPos);
+      doc.text(`${quotation.currency} $${totalExpenses.toFixed(2)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+      yPos += 8;
+
+      doc.setDrawColor(99, 102, 241);
+      doc.setLineWidth(0.5);
+      doc.line(margin + 2, yPos - 2, margin + contentWidth * 0.75, yPos - 2);
+      yPos += 4;
+
+      doc.setTextColor(netProfit >= 0 ? 34 : 220, netProfit >= 0 ? 197 : 38, netProfit >= 0 ? 94 : 38);
+      doc.setFont(undefined, 'bold');
+      doc.setFontSize(13);
+      doc.text('Utilidad Neta:', margin + 2, yPos);
+      doc.text(`${quotation.currency} $${netProfit.toFixed(2)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+      yPos += 7;
+
+      const profitMargin = quotation.total > 0 ? (netProfit / quotation.total) * 100 : 0;
+      doc.setFontSize(10);
+      doc.setTextColor(99, 102, 241);
+      doc.text(`Margen de Utilidad: ${profitMargin.toFixed(1)}%`, margin + 2, yPos);
+      yPos += 15;
+
+      // Detalle de gastos
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text('DETALLE DE GASTOS', margin, yPos);
+      yPos += 8;
+
+      if (expenses.length === 0) {
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text('No hay gastos registrados para esta cotización', margin, yPos);
+      } else {
+        // Header de tabla
+        doc.setFontSize(9);
+        doc.setFillColor(240, 240, 240);
+        doc.rect(margin, yPos - 5, contentWidth, 7, 'F');
+        doc.setFont(undefined, 'bold');
+        doc.text('Fecha', margin + 2, yPos);
+        doc.text('Categoría', margin + contentWidth * 0.15, yPos);
+        doc.text('Descripción', margin + contentWidth * 0.35, yPos);
+        doc.text('Monto', margin + contentWidth * 0.87, yPos);
+        yPos += 8;
+
+        // Filas
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(8);
+        expenses.forEach((expense, index) => {
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+
+          // Fondo alternado
+          if (index % 2 === 0) {
+            doc.setFillColor(252, 252, 252);
+            doc.rect(margin, yPos - 4, contentWidth, 6, 'F');
+          }
+
+          doc.setTextColor(0, 0, 0);
+          doc.text(format(new Date(expense.expense_date), 'dd/MM/yyyy'), margin + 2, yPos);
+          
+          const categoryName = expense.expense_categories?.name || 'Sin categoría';
+          doc.text(categoryName.substring(0, 20), margin + contentWidth * 0.15, yPos);
+          
+          const descText = expense.description.substring(0, 40);
+          doc.text(descText, margin + contentWidth * 0.35, yPos);
+          
+          doc.text(`$${parseFloat(expense.amount.toString()).toFixed(2)}`, margin + contentWidth * 0.87, yPos);
+          yPos += 6;
+        });
+
+        // Total de gastos
+        yPos += 5;
+        doc.setDrawColor(200, 200, 200);
+        doc.line(margin, yPos - 2, margin + contentWidth, yPos - 2);
+        yPos += 5;
+        doc.setFont(undefined, 'bold');
+        doc.setFontSize(10);
+        doc.text('Total de Gastos:', margin + contentWidth * 0.7, yPos);
+        doc.text(`$${totalExpenses.toFixed(2)}`, margin + contentWidth * 0.87, yPos);
+      }
+
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        
+        doc.setDrawColor(200, 200, 200);
+        doc.line(margin, pageHeight - 30, pageWidth - margin, pageHeight - 30);
+        
+        doc.setFontSize(8);
+        doc.setTextColor(80, 80, 80);
+        doc.setFont(undefined, 'bold');
+        doc.text('B3TA', margin, pageHeight - 23);
+        
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 100, 100);
+        doc.text('consulting@b3ta.us | b3ta.us | +1 435 534 8065', margin, pageHeight - 18);
+        doc.text('Consultoría en infraestructura, automatización y soluciones digitales', margin, pageHeight - 14);
+        
+        doc.setTextColor(150, 150, 150);
+        doc.text('Documento confidencial', pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+      }
+
+      doc.save(`Analisis-Financiero-${quotation.quotation_number}.pdf`);
+
+      toast({
+        title: 'PDF descargado',
+        description: 'El análisis financiero se ha descargado exitosamente',
+      });
+    } catch (error) {
+      console.error('Error downloading financial analysis PDF:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo descargar el análisis financiero',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDownloadingFinancialPDF(false);
     }
   };
 
@@ -1014,6 +1133,18 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                 {isDownloadingPDF ? 'Generando PDF...' : 'Descargar PDF'}
               </Button>
 
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={downloadFinancialAnalysisPDF}
+                disabled={isDownloadingFinancialPDF}
+              >
+                <TrendingDown className="mr-2 h-4 w-4" />
+                {isDownloadingFinancialPDF ? 'Generando...' : 'Análisis Financiero'}
+              </Button>
+            </div>
+
+            <div className="flex gap-3">
               {relatedInvoice ? (
                 <Button 
                   className="flex-1 bg-success hover:bg-success-hover"
