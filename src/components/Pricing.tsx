@@ -151,12 +151,18 @@ export const Pricing = () => {
 
               <div className="mb-6">
                 <div className="flex flex-col gap-1">
-                  <span className="text-4xl font-bold text-primary">
-                    {loading ? "..." : `Desde ${formatPrice(plan.priceUSD)}`}
-                  </span>
-                  {currencyData.currency !== 'USD' && !loading && (
-                    <span className="text-xs text-muted-foreground">
-                      ≈ ${plan.priceUSD.toLocaleString()} USD
+                  {currencyData.currency !== 'USD' && !loading ? (
+                    <>
+                      <span className="text-4xl font-bold text-primary">
+                        Desde {currencyData.currency} {formatPrice(plan.priceUSD)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        Precio base: ${plan.priceUSD.toLocaleString()} USD
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-4xl font-bold text-primary">
+                      {loading ? "..." : `Desde $${plan.priceUSD.toLocaleString()} USD`}
                     </span>
                   )}
                 </div>
@@ -204,7 +210,7 @@ export const Pricing = () => {
         <div className="mt-16 text-center">
           <Card className="inline-block p-8 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
             <p className="text-lg text-foreground mb-4">
-              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos soluciones desde {loading ? "..." : formatPrice(100)} hasta {loading ? "..." : formatPrice(15000)}+ según tus requerimientos. Los precios se ajustan a la dimensión y complejidad de tu proyecto.
+              <span className="font-bold">¿Necesitas algo específico?</span> Ofrecemos soluciones desde {loading ? "..." : currencyData.currency !== 'USD' ? `${currencyData.currency} ${formatPrice(100)}` : `$${(100).toLocaleString()} USD`} hasta {loading ? "..." : currencyData.currency !== 'USD' ? `${currencyData.currency} ${formatPrice(15000)}+` : `$${(15000).toLocaleString()}+ USD`} según tus requerimientos. Los precios se ajustan a la dimensión y complejidad de tu proyecto.
               {currencyData.currency !== 'USD' && !loading && (
                 <span className="block mt-2 text-sm text-muted-foreground">
                   Precios de referencia en {currencyData.currency}. Facturación en USD.
