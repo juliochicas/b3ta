@@ -1,12 +1,13 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-// CORS seguro - configurar dominios permitidos
-const ALLOWED_ORIGINS = [
-  'https://sap.b3ta.us',
-  'https://b3ta.us',
-  'http://localhost:8080', // Solo para desarrollo
-];
+// CORS configuration
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
+};
 
 // Rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -28,20 +29,7 @@ function checkRateLimit(ip: string, limit = 20, windowMs = 60000): boolean {
   return true;
 }
 
-const getCorsHeaders = (origin: string | null) => {
-  const isAllowed = origin && ALLOWED_ORIGINS.includes(origin);
-  return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Max-Age': '86400',
-  };
-};
-
 serve(async (req) => {
-  const origin = req.headers.get('origin');
-  const corsHeaders = getCorsHeaders(origin);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -157,8 +145,6 @@ Mantén respuestas concisas (máx 4 líneas) salvo que el cliente pida detalle t
     });
     
   } catch (error) {
-    const origin = req.headers.get('origin');
-    const corsHeaders = getCorsHeaders(origin);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Error interno" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
