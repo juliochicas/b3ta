@@ -1,7 +1,6 @@
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
 import { SolutionsByBudget } from "@/components/SolutionsByBudget";
-import { Pricing } from "@/components/Pricing";
 import { StrategicCTA } from "@/components/StrategicCTA";
 import { Benefits } from "@/components/Benefits";
 import { CaseStudiesIndustries } from "@/components/CaseStudiesIndustries";
@@ -58,7 +57,7 @@ const Index = () => {
         <Hero />
         <TrustBadges />
         
-        {/* 2. OFERTA CLARA - Qué hacemos y para quién */}
+        {/* 2. OFERTA CLARA - Servicios y Soluciones por Presupuesto */}
         <div id="services">
           <Services />
         </div>
@@ -66,7 +65,7 @@ const Index = () => {
           <SolutionsByBudget />
         </div>
         
-        {/* 🎯 CTA #1 - Después de mostrar servicios */}
+        {/* 🎯 CTA #1 - Después de mostrar soluciones */}
         <StrategicCTA 
           variant="primary"
           title="¿Listo para Transformar tu Negocio?"
@@ -75,13 +74,10 @@ const Index = () => {
           icon="calendar"
         />
         
-        {/* 3. PRECIOS VISIBLES TEMPRANO */}
-        <Pricing />
-        
-        {/* 4. VALOR - Por qué somos diferentes */}
+        {/* 3. VALOR - Por qué somos diferentes */}
         <Benefits />
         
-        {/* 🎯 CTA #2 - Después de valor y precios */}
+        {/* 🎯 CTA #2 - Después de valor */}
         <StrategicCTA 
           variant="secondary"
           title="Hablemos de Tu Proyecto"
@@ -90,12 +86,12 @@ const Index = () => {
           icon="message"
         />
         
-        {/* 5. PRUEBA SOCIAL - Casos + Industrias fusionados */}
+        {/* 4. PRUEBA SOCIAL - Casos + Industrias fusionados */}
         <div id="casos">
           <CaseStudiesIndustries />
         </div>
         
-        {/* 6. PROCESO - Cómo trabajamos */}
+        {/* 5. PROCESO - Cómo trabajamos */}
         <ProcessSteps />
         
         {/* 🎯 CTA #3 - Después del proceso */}
@@ -107,26 +103,26 @@ const Index = () => {
           icon="arrow"
         />
         
-        {/* 7. CREDIBILIDAD - Partners y Testimonios */}
+        {/* 6. CREDIBILIDAD - Partners y Testimonios */}
         <PartnersSection />
         <Testimonials />
         
-        {/* 8. CONTENIDO EDUCATIVO - Videos (reducidos) */}
+        {/* 7. CONTENIDO EDUCATIVO - Videos */}
         <div id="videos">
           <VideoSection />
         </div>
         
-        {/* 9. RESPUESTAS - FAQ */}
+        {/* 8. RESPUESTAS - FAQ */}
         <div id="faq">
           <FAQ />
         </div>
         
-        {/* 10. HERRAMIENTA INTERACTIVA - Consultor IA */}
+        {/* 9. HERRAMIENTA INTERACTIVA - Consultor IA */}
         <div id="ai-consultant">
           <AIConsultant />
         </div>
         
-        {/* 11. CIERRE CON URGENCIA */}
+        {/* 10. CIERRE CON URGENCIA */}
         <UrgencyBanner />
         <div id="contact">
           <ContactForm />
