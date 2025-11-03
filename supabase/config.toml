@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.poll-emails-imap]
 verify_jwt = true
+
+[functions.create-payment]
+verify_jwt = true

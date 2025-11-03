@@ -2,6 +2,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Zap, Rocket, Building2 } from "lucide-react";
 import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useState } from "react";
 
 const plans = [
   {
@@ -9,6 +12,7 @@ const plans = [
     name: "Starter",
     tagline: "Para pequeños negocios",
     priceUSD: 100,
+    priceId: "price_1SPDBvGieFVM4oRCXFzPnjFc",
     duration: "1-4 semanas",
     description: "Páginas web, landing pages y automatizaciones básicas",
     features: [
@@ -29,6 +33,7 @@ const plans = [
     name: "Professional",
     tagline: "Para empresas en crecimiento",
     priceUSD: 500,
+    priceId: "price_1SPDC8GieFVM4oRCJjk1aUYg",
     duration: "4-8 semanas",
     description: "Automatizaciones avanzadas, consultoría de infraestructura y aplicaciones web",
     features: [
@@ -50,6 +55,7 @@ const plans = [
     name: "Enterprise",
     tagline: "Para corporativos",
     priceUSD: 15000,
+    priceId: "price_1SPDCLGieFVM4oRChJN4uBRW",
     duration: "8-24 semanas",
     description: "Integraciones SAP, transformación digital completa y soluciones enterprise",
     features: [
@@ -72,9 +78,40 @@ const plans = [
 
 export const Pricing = () => {
   const { formatPrice, currencyData, loading } = useCurrencyConverter();
+  const [processingPayment, setProcessingPayment] = useState<string | null>(null);
   
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handlePayment = async (priceId: string, planName: string) => {
+    setProcessingPayment(priceId);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error("Debes iniciar sesión para proceder con el pago");
+        window.location.href = "/auth";
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: { priceId, planName }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success("Redirigiendo a Stripe...");
+      }
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast.error(error.message || "Error al procesar el pago");
+    } finally {
+      setProcessingPayment(null);
+    }
   };
 
   return (
@@ -141,14 +178,25 @@ export const Pricing = () => {
                 ))}
               </ul>
 
-              <Button 
-                onClick={scrollToContact}
-                variant={plan.popular ? "default" : "outline"}
-                className={`w-full ${plan.popular ? 'bg-primary hover:bg-primary/90' : ''}`}
-                size="lg"
-              >
-                {plan.cta}
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  onClick={() => handlePayment(plan.priceId, plan.name)}
+                  disabled={processingPayment === plan.priceId}
+                  variant={plan.popular ? "default" : "outline"}
+                  className={`w-full ${plan.popular ? 'bg-primary hover:bg-primary/90' : ''}`}
+                  size="lg"
+                >
+                  {processingPayment === plan.priceId ? "Procesando..." : "Pagar Ahora"}
+                </Button>
+                <Button 
+                  onClick={scrollToContact}
+                  variant="ghost"
+                  className="w-full text-sm"
+                  size="sm"
+                >
+                  o Solicitar Cotización
+                </Button>
+              </div>
             </Card>
           ))}
         </div>
