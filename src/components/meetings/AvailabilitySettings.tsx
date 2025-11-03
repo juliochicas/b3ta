@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -14,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Trash2, Calendar } from "lucide-react";
 
 const DAYS_OF_WEEK = [
   { value: 0, label: "Domingo" },
@@ -35,7 +36,7 @@ const TIMEZONES = [
 ];
 
 export const AvailabilitySettings = () => {
-  const [dayOfWeek, setDayOfWeek] = useState("1");
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
   const [timezone, setTimezone] = useState("America/Mexico_City");
@@ -54,25 +55,57 @@ export const AvailabilitySettings = () => {
     },
   });
 
+  const handleToggleDay = (day: number) => {
+    setSelectedDays(prev => 
+      prev.includes(day) 
+        ? prev.filter(d => d !== day)
+        : [...prev, day]
+    );
+  };
+
+  const handleSelectPreset = (preset: string) => {
+    switch (preset) {
+      case "weekdays":
+        setSelectedDays([1, 2, 3, 4, 5]); // Lunes a Viernes
+        break;
+      case "weekend":
+        setSelectedDays([0, 6]); // Domingo y Sábado
+        break;
+      case "all":
+        setSelectedDays([0, 1, 2, 3, 4, 5, 6]); // Toda la semana
+        break;
+      case "none":
+        setSelectedDays([]);
+        break;
+    }
+  };
+
   const handleAddSlot = async () => {
+    if (selectedDays.length === 0) {
+      toast.error("Selecciona al menos un día");
+      return;
+    }
+
     try {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("No user found");
 
-      const { error } = await supabase.from("user_availability").insert([
-        {
-          user_id: userData.user.id,
-          day_of_week: parseInt(dayOfWeek),
-          start_time: startTime,
-          end_time: endTime,
-          timezone,
-          is_active: true,
-        },
-      ]);
+      // Crear un slot para cada día seleccionado
+      const slots = selectedDays.map(day => ({
+        user_id: userData.user.id,
+        day_of_week: day,
+        start_time: startTime,
+        end_time: endTime,
+        timezone,
+        is_active: true,
+      }));
+
+      const { error } = await supabase.from("user_availability").insert(slots);
 
       if (error) throw error;
 
-      toast.success("Disponibilidad añadida");
+      toast.success(`Disponibilidad añadida para ${selectedDays.length} día(s)`);
+      setSelectedDays([]);
       refetch();
     } catch (error: any) {
       toast.error(error.message || "Error al añadir disponibilidad");
@@ -118,38 +151,86 @@ export const AvailabilitySettings = () => {
           <CardTitle>Añadir Disponibilidad</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Día de la semana</Label>
-              <Select value={dayOfWeek} onValueChange={setDayOfWeek}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {DAYS_OF_WEEK.map((day) => (
-                    <SelectItem key={day.value} value={day.value.toString()}>
-                      {day.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div>
+            <Label className="mb-3 block">Días de la semana</Label>
+            
+            {/* Botones de acceso rápido */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleSelectPreset("weekdays")}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Lunes a Viernes
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleSelectPreset("weekend")}
+              >
+                Fin de Semana
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleSelectPreset("all")}
+              >
+                Toda la Semana
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => handleSelectPreset("none")}
+              >
+                Limpiar
+              </Button>
             </div>
 
-            <div>
-              <Label>Zona Horaria</Label>
-              <Select value={timezone} onValueChange={setTimezone}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TIMEZONES.map((tz) => (
-                    <SelectItem key={tz.value} value={tz.value}>
-                      {tz.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Checkboxes para días individuales */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {DAYS_OF_WEEK.map((day) => (
+                <div key={day.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`day-${day.value}`}
+                    checked={selectedDays.includes(day.value)}
+                    onCheckedChange={() => handleToggleDay(day.value)}
+                  />
+                  <label
+                    htmlFor={`day-${day.value}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    {day.label}
+                  </label>
+                </div>
+              ))}
             </div>
+
+            {selectedDays.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                {selectedDays.length} día(s) seleccionado(s)
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label>Zona Horaria</Label>
+            <Select value={timezone} onValueChange={setTimezone}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TIMEZONES.map((tz) => (
+                  <SelectItem key={tz.value} value={tz.value}>
+                    {tz.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -172,8 +253,14 @@ export const AvailabilitySettings = () => {
             </div>
           </div>
 
-          <Button onClick={handleAddSlot} className="w-full">
-            Añadir Horario
+          <Button 
+            onClick={handleAddSlot} 
+            className="w-full"
+            disabled={selectedDays.length === 0}
+          >
+            {selectedDays.length === 0 
+              ? "Selecciona días para continuar" 
+              : `Añadir Horario para ${selectedDays.length} día(s)`}
           </Button>
         </CardContent>
       </Card>
