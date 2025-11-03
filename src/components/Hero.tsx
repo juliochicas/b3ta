@@ -29,14 +29,18 @@ export const Hero = () => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground leading-tight">
-            Tu Socio Tecnológico<br />
+            ¿Tu Tecnología Te Limita<br />
             <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
-              de $100 a $50,000+
+              o Te Impulsa?
             </span>
           </h1>
           
+          <h2 className="text-3xl md:text-4xl font-semibold text-primary-foreground/95 mt-6">
+            Transformamos Tu Negocio con Tecnología Real
+          </h2>
+          
           <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            Desde sitios web profesionales ($100+) hasta implementaciones SAP Business One completas ($50,000+). Tecnología empresarial real para cada etapa y presupuesto de tu negocio.
+            Desde sitios web y automatizaciones hasta implementaciones SAP completas. Soluciones escalables para cada etapa de crecimiento de tu empresa en LATAM.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8">
