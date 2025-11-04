@@ -65,7 +65,14 @@ export default defineConfig(({ mode }) => ({
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-    exclude: ['@supabase/supabase-js'],
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      '@supabase/supabase-js',
+      '@supabase/postgrest-js',
+      '@supabase/realtime-js',
+      '@supabase/storage-js',
+    ],
   },
 }));
