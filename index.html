@@ -44,8 +44,21 @@
     
     <!-- Performance & Security -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    
+    <!-- Critical Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.exchangerate-api.com" />
+    <link rel="dns-prefetch" href="https://ipapi.co" />
+    <link rel="dns-prefetch" href="https://storage.googleapis.com" />
+    
+    <!-- Preload Critical Assets -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    <link rel="preload" href="/src/assets/hero-banner.jpg" as="image" type="image/jpeg" fetchpriority="high" />
+    
+    <!-- Optimize Font Loading -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
     
     <!-- Structured Data - Organization -->
     <script type="application/ld+json">

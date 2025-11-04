@@ -61,6 +61,8 @@ export const VideoCard = ({ video, canManage, onEdit, onDelete }: VideoCardProps
             <img
               src={video.thumbnail_url}
               alt={video.title}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
