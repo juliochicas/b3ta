@@ -18,7 +18,7 @@ export const LazySection = ({ children, fallback = null, rootMargin = '200px' }:
           observer.disconnect();
         }
       },
-      { rootMargin }
+      { rootMargin, threshold: 0.01 }
     );
 
     if (ref.current) {
@@ -28,5 +28,9 @@ export const LazySection = ({ children, fallback = null, rootMargin = '200px' }:
     return () => observer.disconnect();
   }, [rootMargin]);
 
-  return <div ref={ref}>{isVisible ? children : fallback}</div>;
+  return (
+    <div ref={ref} style={{ minHeight: isVisible ? 'auto' : '200px' }}>
+      {isVisible ? children : fallback}
+    </div>
+  );
 };

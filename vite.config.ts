@@ -18,14 +18,54 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-          'query-vendor': ['@tanstack/react-query'],
+        manualChunks: (id) => {
+          // React core
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-vendor';
+          }
+          // React Router
+          if (id.includes('node_modules/react-router-dom')) {
+            return 'router-vendor';
+          }
+          // Radix UI components
+          if (id.includes('node_modules/@radix-ui')) {
+            return 'ui-vendor';
+          }
+          // TanStack Query
+          if (id.includes('node_modules/@tanstack')) {
+            return 'query-vendor';
+          }
+          // Supabase
+          if (id.includes('node_modules/@supabase')) {
+            return 'supabase-vendor';
+          }
+          // Lucide icons
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons-vendor';
+          }
+          // Other heavy libraries
+          if (id.includes('node_modules/')) {
+            return 'vendor';
+          }
         },
+        // Optimize chunk sizes
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
       },
     },
     cssCodeSplit: true,
+    cssMinify: true,
     minify: 'esbuild',
+    target: 'es2015',
+    // Reduce chunk size warnings
+    chunkSizeWarningLimit: 1000,
+    // Enable source maps only for production debugging
+    sourcemap: false,
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['@supabase/supabase-js'],
   },
 }));
