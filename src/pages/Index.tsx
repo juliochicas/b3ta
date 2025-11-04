@@ -14,6 +14,7 @@ import { UrgencyBanner } from "@/components/UrgencyBanner";
 import { AIConsultant } from "@/components/AIConsultant";
 import { ContactForm } from "@/components/ContactForm";
 import { StickyCTA } from "@/components/StickyCTA";
+import { LazySection } from "@/components/LazySection";
 
 const Index = () => {
   return (
@@ -104,22 +105,32 @@ const Index = () => {
         />
         
         {/* 6. CREDIBILIDAD - Partners y Testimonios */}
-        <PartnersSection />
-        <Testimonials />
+        <LazySection fallback={<div className="py-28 bg-muted/30" />}>
+          <PartnersSection />
+        </LazySection>
+        <LazySection fallback={<div className="py-28" />}>
+          <Testimonials />
+        </LazySection>
         
         {/* 7. CONTENIDO EDUCATIVO - Videos */}
         <div id="videos">
-          <VideoSection />
+          <LazySection fallback={<div className="py-28 bg-muted/30" />}>
+            <VideoSection />
+          </LazySection>
         </div>
         
         {/* 8. RESPUESTAS - FAQ */}
         <div id="faq">
-          <FAQ />
+          <LazySection fallback={<div className="py-28" />}>
+            <FAQ />
+          </LazySection>
         </div>
         
         {/* 9. HERRAMIENTA INTERACTIVA - Consultor IA */}
         <div id="ai-consultant">
-          <AIConsultant />
+          <LazySection fallback={<div className="py-28 bg-gradient-to-b from-muted/30 to-background" />}>
+            <AIConsultant />
+          </LazySection>
         </div>
         
         {/* 10. CIERRE CON URGENCIA */}

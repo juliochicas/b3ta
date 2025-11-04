@@ -21,6 +21,9 @@ const CURRENCY_MAP: Record<string, { currency: string; symbol: string }> = {
   // Add more countries as needed
 };
 
+const CACHE_KEY = 'b3ta_currency_cache';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
 export const useCurrencyConverter = () => {
   const [currencyData, setCurrencyData] = useState<CurrencyData>({
     currency: 'USD',
@@ -28,13 +31,37 @@ export const useCurrencyConverter = () => {
     rate: 1,
     countryCode: 'US'
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Check cache first
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      try {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+          setCurrencyData(data);
+          return; // Use cached data, don't make API calls
+        }
+      } catch (e) {
+        // Invalid cache, continue to fetch
+      }
+    }
+
+    // Fetch in background without blocking render
     const fetchCurrencyData = async () => {
       try {
-        // Get user's country
-        const geoResponse = await fetch('https://ipapi.co/json/');
+        setLoading(true);
+        
+        // Get user's country with timeout
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        
+        const geoResponse = await fetch('https://ipapi.co/json/', {
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        
         const geoData = await geoResponse.json();
         const countryCode = geoData.country_code || 'US';
         
@@ -42,44 +69,51 @@ export const useCurrencyConverter = () => {
         
         // If currency is USD, no need to convert
         if (currencyInfo.currency === 'USD') {
-          setCurrencyData({
+          const data = {
             currency: 'USD',
             symbol: '$',
             rate: 1,
             countryCode
-          });
+          };
+          setCurrencyData(data);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
           setLoading(false);
           return;
         }
 
-        // Get exchange rate
+        // Get exchange rate with timeout
+        const rateController = new AbortController();
+        const rateTimeout = setTimeout(() => rateController.abort(), 3000);
+        
         const rateResponse = await fetch(
-          `https://api.exchangerate-api.com/v4/latest/USD`
+          `https://api.exchangerate-api.com/v4/latest/USD`,
+          { signal: rateController.signal }
         );
+        clearTimeout(rateTimeout);
+        
         const rateData = await rateResponse.json();
         const rate = rateData.rates[currencyInfo.currency] || 1;
 
-        setCurrencyData({
+        const data = {
           currency: currencyInfo.currency,
           symbol: currencyInfo.symbol,
           rate,
           countryCode
-        });
+        };
+        
+        setCurrencyData(data);
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
       } catch (error) {
         console.error('Error fetching currency data:', error);
-        // Fallback to USD
-        setCurrencyData({
-          currency: 'USD',
-          symbol: '$',
-          rate: 1,
-          countryCode: 'US'
-        });
+        // Keep USD fallback
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCurrencyData();
+    // Fetch after a short delay to not block initial render
+    const timer = setTimeout(fetchCurrencyData, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const convertPrice = (usdPrice: number): string => {
