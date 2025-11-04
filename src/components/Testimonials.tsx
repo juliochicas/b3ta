@@ -3,6 +3,7 @@ import { Star, Quote } from "lucide-react";
 import testimonial1 from "@/assets/testimonial-1.jpg";
 import testimonial2 from "@/assets/testimonial-2.jpg";
 import testimonial3 from "@/assets/testimonial-3.jpg";
+import { OptimizedImage } from "./OptimizedImage";
 
 const testimonials = [
   {
@@ -68,11 +69,9 @@ export const Testimonials = () => {
               <Quote className="h-10 w-10 text-primary/20 absolute top-6 right-6" />
               
               <div className="flex items-center gap-4 mb-6">
-                <img 
-                  src={testimonial.image} 
+                <OptimizedImage
+                  src={testimonial.image}
                   alt={testimonial.name}
-                  loading="lazy"
-                  decoding="async"
                   className="w-16 h-16 rounded-full object-cover"
                 />
                 <div>
@@ -100,11 +99,10 @@ export const Testimonials = () => {
         </div>
 
         <div className="relative rounded-3xl overflow-hidden max-w-4xl mx-auto">
-          <img 
-            src={testimonial2} 
+          <OptimizedImage
+            src={testimonial2}
             alt="Clientes satisfechos con soluciones B3TA en LATAM"
             className="w-full h-80 object-cover"
-            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent flex items-end">
             <div className="p-8 text-primary-foreground">

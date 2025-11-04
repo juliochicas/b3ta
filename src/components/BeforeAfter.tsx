@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { X, Check, TrendingUp } from "lucide-react";
 import beforeAfter from "@/assets/before-after.jpg";
+import { OptimizedImage } from "./OptimizedImage";
 
 const comparisons = [
   {
@@ -101,11 +102,10 @@ export const BeforeAfter = () => {
           <Card className="overflow-hidden border-0 shadow-2xl">
             <div className="grid md:grid-cols-2">
               <div className="relative h-80 md:h-auto">
-                <img 
-                  src={beforeAfter} 
+                <OptimizedImage
+                  src={beforeAfter}
                   alt="Caso de éxito: transformación digital empresarial con B3TA"
                   className="w-full h-full object-cover"
-                  loading="lazy"
                 />
               </div>
 

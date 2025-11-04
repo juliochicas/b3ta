@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
+import { OptimizedImage } from "./OptimizedImage";
 
 export const Hero = () => {
   const scrollToContact = () => {
@@ -15,12 +16,11 @@ export const Hero = () => {
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay - Optimized for LCP */}
       <div className="absolute inset-0">
-        <img 
-          src={heroBanner} 
+        <OptimizedImage
+          src={heroBanner}
           alt="B3TA Transformación Digital LATAM"
           className="absolute inset-0 w-full h-full object-cover"
-          fetchPriority="high"
-          loading="eager"
+          priority={true}
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary-glow/90 to-primary/95" />
       </div>
