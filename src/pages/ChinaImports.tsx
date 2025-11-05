@@ -24,6 +24,8 @@ import {
   Phone
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import chinaImportsHero from "@/assets/china-imports-hero.jpg";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 const ChinaImports = () => {
   const navigate = useNavigate();
@@ -219,24 +221,33 @@ const ChinaImports = () => {
 
       <main className="pt-16">
         {/* Hero Section */}
-        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-glow to-primary">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiLz48L2c+PC9zdmc+')] opacity-20" />
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0">
+            <OptimizedImage 
+              src={chinaImportsHero}
+              alt="Importaciones de China - Puerto con contenedores y logística internacional"
+              className="w-full h-full object-cover"
+              priority={true}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/75" />
+          </div>
           
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
             <div className="max-w-5xl mx-auto text-center space-y-8">
-              <Badge className="bg-secondary/20 text-primary-foreground border-secondary/30">
+              <Badge className="bg-primary/20 backdrop-blur-sm text-foreground border-primary/30">
                 🇨🇳 Oficina Propia en China • 10+ Años de Experiencia
               </Badge>
               
-              <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground leading-tight">
+              <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-tight">
                 Importaciones de China
                 <br />
-                <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                   Sin Complicaciones
                 </span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-foreground/90 max-w-3xl mx-auto leading-relaxed">
                 De la fábrica china a tu almacén en LATAM. Sourcing, negociación, inspección, logística y aduanas. Todo en uno.
               </p>
               
@@ -244,7 +255,7 @@ const ChinaImports = () => {
                 <Button 
                   onClick={scrollToContact}
                   size="lg" 
-                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-[0_0_30px_rgba(0,200,255,0.4)] hover:shadow-[0_0_50px_rgba(0,200,255,0.6)] transition-all duration-300 text-lg px-10 py-7 w-full sm:w-auto"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_30px_rgba(0,150,255,0.4)] hover:shadow-[0_0_50px_rgba(0,150,255,0.6)] transition-all duration-300 text-lg px-10 py-7 w-full sm:w-auto"
                 >
                   Cotizar Mi Importación
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -254,7 +265,7 @@ const ChinaImports = () => {
                   onClick={() => window.open('https://wa.me/50241571786', '_blank')}
                   size="lg" 
                   variant="outline"
-                  className="bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30 backdrop-blur-sm text-lg px-10 py-7 w-full sm:w-auto"
+                  className="bg-background/80 hover:bg-background backdrop-blur-sm text-foreground border-border text-lg px-10 py-7 w-full sm:w-auto"
                 >
                   <Phone className="mr-2 h-5 w-5" />
                   WhatsApp Directo
@@ -264,10 +275,10 @@ const ChinaImports = () => {
               {/* Stats */}
               <div className="pt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
                 {stats.map((stat) => (
-                  <div key={stat.label} className="text-center">
-                    <stat.icon className="h-8 w-8 text-secondary mx-auto mb-2" />
-                    <div className="text-4xl font-bold text-primary-foreground mb-1">{stat.value}</div>
-                    <div className="text-sm text-primary-foreground/70">{stat.label}</div>
+                  <div key={stat.label} className="text-center bg-background/80 backdrop-blur-sm rounded-lg p-4 border border-border">
+                    <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
+                    <div className="text-4xl font-bold text-foreground mb-1">{stat.value}</div>
+                    <div className="text-sm text-muted-foreground">{stat.label}</div>
                   </div>
                 ))}
               </div>
