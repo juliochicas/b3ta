@@ -1,5 +1,4 @@
 import { Hero } from "@/components/Hero";
-import { Services } from "@/components/Services";
 import { SolutionsByBudget } from "@/components/SolutionsByBudget";
 import { StrategicCTA } from "@/components/StrategicCTA";
 import { Benefits } from "@/components/Benefits";
@@ -30,10 +29,7 @@ const Index = () => {
           </div>
           
           <nav className="hidden md:flex items-center gap-12" role="navigation" aria-label="Navegación principal">
-            <a href="#services" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a servicios">
-              Servicios
-            </a>
-            <a href="#soluciones" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a soluciones por presupuesto">
+            <a href="#soluciones" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a soluciones">
               Soluciones
             </a>
             <a href="#videos" className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 px-3" aria-label="Ir a videos">
@@ -58,10 +54,7 @@ const Index = () => {
         <Hero />
         <TrustBadges />
         
-        {/* 2. OFERTA CLARA - Servicios y Soluciones por Presupuesto */}
-        <div id="services">
-          <Services />
-        </div>
+        {/* 2. OFERTA CLARA - Soluciones por Presupuesto */}
         <div id="soluciones">
           <SolutionsByBudget />
         </div>
@@ -168,14 +161,14 @@ const Index = () => {
             </div>
             
             <div>
-              <h4 className="font-bold mb-4 text-lg">Servicios</h4>
+              <h4 className="font-bold mb-4 text-lg">Soluciones</h4>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="#services" className="hover:text-cyan-400 transition-colors">SAP Consulting</a></li>
-                <li><a href="#services" className="hover:text-cyan-400 transition-colors">E-commerce & Marketing</a></li>
-                <li><a href="#services" className="hover:text-cyan-400 transition-colors">Automatización</a></li>
-                <li><a href="#services" className="hover:text-cyan-400 transition-colors">IA Corporativa</a></li>
-                <li><a href="#services" className="hover:text-cyan-400 transition-colors">Importaciones China</a></li>
-                <li><a href="#services" className="hover:text-cyan-400 transition-colors">Desarrollo Web</a></li>
+                <li><a href="#soluciones" className="hover:text-cyan-400 transition-colors">Emprendedor</a></li>
+                <li><a href="#soluciones" className="hover:text-cyan-400 transition-colors">Crecimiento</a></li>
+                <li><a href="#soluciones" className="hover:text-cyan-400 transition-colors">Enterprise</a></li>
+                <li><a href="#soluciones" className="hover:text-cyan-400 transition-colors">SAP Business One</a></li>
+                <li><a href="#soluciones" className="hover:text-cyan-400 transition-colors">Importaciones China</a></li>
+                <li><a href="#soluciones" className="hover:text-cyan-400 transition-colors">E-commerce</a></li>
               </ul>
             </div>
             
