@@ -18,36 +18,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // React core
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-vendor';
-          }
-          // React Router
-          if (id.includes('node_modules/react-router-dom')) {
-            return 'router-vendor';
-          }
-          // Radix UI components
-          if (id.includes('node_modules/@radix-ui')) {
-            return 'ui-vendor';
-          }
-          // TanStack Query
-          if (id.includes('node_modules/@tanstack')) {
-            return 'query-vendor';
-          }
-          // Supabase
-          if (id.includes('node_modules/@supabase')) {
-            return 'supabase-vendor';
-          }
-          // Lucide icons
-          if (id.includes('node_modules/lucide-react')) {
-            return 'icons-vendor';
-          }
-          // Other heavy libraries
-          if (id.includes('node_modules/')) {
-            return 'vendor';
-          }
-        },
+        // Removed custom manualChunks to avoid potential circular/init issues in vendor bundles
+        // Let Rollup handle chunking automatically for stability
         // Optimize chunk sizes
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
