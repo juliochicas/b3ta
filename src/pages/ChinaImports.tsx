@@ -125,6 +125,13 @@ const ChinaImports = () => {
       scope: "Desde 1 muestra"
     },
     {
+      icon: DollarSign,
+      title: "Gestión de Pagos",
+      description: "Facilitamos pagos a proveedores chinos cuando tu empresa no puede transferir directamente.",
+      scope: "USD, HKD y RMB",
+      highlight: true
+    },
+    {
       icon: Plane,
       title: "Envíos Aéreos",
       description: "Rapidez para pedidos urgentes con seguimiento completo.",
@@ -413,9 +420,14 @@ const ChinaImports = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
               {shippingServices.map((service) => (
-                <Card key={service.title} className="p-6 hover:shadow-xl transition-all border-border hover:border-primary/50">
+                <Card key={service.title} className={`p-6 hover:shadow-xl transition-all ${service.highlight ? 'border-2 border-accent bg-accent/5' : 'border-border hover:border-primary/50'}`}>
+                  {service.highlight && (
+                    <Badge className="mb-3 bg-accent text-accent-foreground">
+                      Servicio Exclusivo
+                    </Badge>
+                  )}
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
                     <service.icon className="h-7 w-7 text-primary" />
                   </div>
