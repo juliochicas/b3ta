@@ -12,6 +12,7 @@ import PublicReport from "./pages/PublicReport";
 import Meetings from "./pages/Meetings";
 import Email from "./pages/Email";
 import Videos from "./pages/Videos";
+import ChinaImports from "./pages/ChinaImports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/meetings" element={<Meetings />} />
           <Route path="/email" element={<Email />} />
           <Route path="/videos" element={<Videos />} />
+          <Route path="/importaciones-china" element={<ChinaImports />} />
           <Route path="/informe/:slug" element={<PublicReport />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

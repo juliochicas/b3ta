@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Database, ShoppingCart, Zap, Brain, Globe, Package } from "lucide-react";
 import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
+import { useNavigate } from "react-router-dom";
 
 const services = [
   {
@@ -49,6 +50,7 @@ const services = [
 
 export const Services = () => {
   const { formatPrice, loading } = useCurrencyConverter();
+  const navigate = useNavigate();
   
   return (
     <section className="py-28 bg-muted/30">
@@ -89,16 +91,22 @@ export const Services = () => {
 
               <button 
                 onClick={() => {
-                  const contactElement = document.getElementById('contact');
-                  contactElement?.scrollIntoView({ behavior: 'smooth' });
+                  if (service.title === "Importaciones China") {
+                    navigate('/importaciones-china');
+                  } else {
+                    const contactElement = document.getElementById('contact');
+                    contactElement?.scrollIntoView({ behavior: 'smooth' });
+                  }
                 }}
                 className="w-full mt-auto py-2 px-4 bg-primary/10 hover:bg-primary/20 rounded-lg text-primary transition-colors text-sm font-bold"
               >
-                {service.priceUSD === null 
-                  ? "Sin Inversión Inicial"
-                  : loading 
-                    ? "..." 
-                    : `Desde ${formatPrice(service.priceUSD)}`
+                {service.title === "Importaciones China"
+                  ? "Ver Servicios Completos →"
+                  : service.priceUSD === null 
+                    ? "Sin Inversión Inicial"
+                    : loading 
+                      ? "..." 
+                      : `Desde ${formatPrice(service.priceUSD)}`
                 }
               </button>
             </Card>
