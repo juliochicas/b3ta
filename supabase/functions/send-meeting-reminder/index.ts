@@ -27,6 +27,23 @@ serve(async (req) => {
   }
 
   try {
+    // Validate cron secret for scheduled task authentication
+    const cronSecret = Deno.env.get('CRON_SECRET');
+    if (cronSecret) {
+      const authHeader = req.headers.get('Authorization');
+      const providedSecret = authHeader?.replace('Bearer ', '');
+      
+      if (providedSecret !== cronSecret) {
+        console.error('Unauthorized: Invalid CRON_SECRET');
+        return new Response(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    } else {
+      console.warn('WARNING: CRON_SECRET not configured - function is not authenticated!');
+    }
+    
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const resendApiKey = Deno.env.get("RESEND_API_KEY")!;

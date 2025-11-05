@@ -34,11 +34,26 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Rate limiting check
+  // Enhanced rate limiting - stricter for anonymous users
   const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
-  if (!checkRateLimit(clientIp, 20, 60000)) {
+  const sessionId = req.headers.get('x-session-id') || clientIp;
+  
+  // Track session-based limits to prevent abuse through IP rotation
+  const sessionKey = `session:${sessionId}`;
+  const sessionData = rateLimitMap.get(sessionKey) || { count: 0, resetTime: 0 };
+  
+  // Stricter limits for public endpoint: 10 requests per 5 minutes per session
+  if (!checkRateLimit(sessionKey, 10, 300000)) {
     return new Response(
       JSON.stringify({ error: "Demasiadas solicitudes, intenta más tarde" }),
+      { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+  
+  // Additional IP-based limit to prevent distributed attacks
+  if (!checkRateLimit(clientIp, 15, 300000)) {
+    return new Response(
+      JSON.stringify({ error: "Límite de uso excedido" }),
       { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

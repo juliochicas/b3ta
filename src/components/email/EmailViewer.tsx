@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import DOMPurify from "dompurify";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -338,7 +339,17 @@ export const EmailViewer = ({ email, onBack, onReply, onEmailChange }: EmailView
                       <CardContent className="pt-4">
                         <div className="prose max-w-none text-sm">
                           {threadEmail.body_html ? (
-                            <div dangerouslySetInnerHTML={{ __html: threadEmail.body_html }} />
+                            <div 
+                              dangerouslySetInnerHTML={{ 
+                                __html: DOMPurify.sanitize(threadEmail.body_html, {
+                                  ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'img', 'ul', 'ol', 'li', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr', 'td', 'th', 'thead', 'tbody'],
+                                  ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'style', 'class'],
+                                  ALLOW_DATA_ATTR: false,
+                                  FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input', 'button'],
+                                  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
+                                })
+                              }} 
+                            />
                           ) : (
                             <p className="whitespace-pre-wrap">{threadEmail.body_text}</p>
                           )}
@@ -399,7 +410,17 @@ export const EmailViewer = ({ email, onBack, onReply, onEmailChange }: EmailView
 
               <div className="prose max-w-none">
                 {email.body_html ? (
-                  <div dangerouslySetInnerHTML={{ __html: email.body_html }} />
+                  <div 
+                    dangerouslySetInnerHTML={{ 
+                      __html: DOMPurify.sanitize(email.body_html, {
+                        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'img', 'ul', 'ol', 'li', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr', 'td', 'th', 'thead', 'tbody'],
+                        ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'style', 'class'],
+                        ALLOW_DATA_ATTR: false,
+                        FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input', 'button'],
+                        FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
+                      })
+                    }} 
+                  />
                 ) : (
                   <p className="whitespace-pre-wrap">{email.body_text}</p>
                 )}

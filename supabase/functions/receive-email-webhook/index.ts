@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createHmac } from "https://deno.land/std@0.177.0/node/crypto.ts";
 
 const ALLOWED_ORIGINS = [
   'https://sap.b3ta.us',
@@ -11,11 +12,102 @@ const getCorsHeaders = (origin: string | null) => {
   const isAllowed = origin && ALLOWED_ORIGINS.includes(origin);
   return {
     'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-signature, x-webhook-timestamp',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Max-Age': '86400',
   };
 };
+
+async function processEmailWebhook(supabase: any, emailData: any, corsHeaders: any) {
+  console.log("Received email webhook:", emailData);
+
+  // Parse incoming email
+  const {
+    from,
+    to,
+    cc,
+    bcc,
+    subject,
+    body_text,
+    body_html,
+    message_id,
+    thread_id,
+    in_reply_to,
+    references,
+    has_attachments,
+    received_at,
+  } = emailData;
+
+  // Try to find linked lead or customer
+  let leadId = null;
+  let customerId = null;
+
+  // Try to find a lead by email
+  const { data: lead } = await supabase
+    .from("leads_b3ta")
+    .select("id")
+    .eq("email", from)
+    .single();
+
+  if (lead) {
+    leadId = lead.id;
+  }
+
+  // Try to find a customer by email
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("id")
+    .eq("email", from)
+    .single();
+
+  if (customer) {
+    customerId = customer.id;
+  }
+
+  // Save email to database
+  const { data: savedEmail, error } = await supabase
+    .from("emails")
+    .insert([
+      {
+        message_id,
+        from_email: from,
+        to_email: Array.isArray(to) ? to : [to],
+        cc_email: cc || null,
+        bcc_email: bcc || null,
+        subject: subject || "(Sin asunto)",
+        body_text: body_text || "",
+        body_html: body_html || body_text || "",
+        thread_id,
+        in_reply_to,
+        email_references: references || null,
+        has_attachments: has_attachments || false,
+        is_read: false,
+        folder: "inbox",
+        lead_id: leadId,
+        customer_id: customerId,
+        received_at: received_at || new Date().toISOString(),
+      },
+    ])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error saving email:", error);
+    throw error;
+  }
+
+  console.log("Email saved successfully:", savedEmail.id);
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      emailId: savedEmail.id,
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    }
+  );
+}
 
 serve(async (req) => {
   const origin = req.headers.get('origin');
@@ -28,100 +120,56 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const webhookSecret = Deno.env.get("WEBHOOK_SECRET");
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Webhook para recibir correos de Hostinger
-    const emailData = await req.json();
-    
-    console.log("Received email webhook:", emailData);
-
-    // Parsear el correo entrante
-    const {
-      from,
-      to,
-      cc,
-      bcc,
-      subject,
-      body_text,
-      body_html,
-      message_id,
-      thread_id,
-      in_reply_to,
-      references,
-      has_attachments,
-      received_at,
-    } = emailData;
-
-    // Buscar si el correo está vinculado a un lead o customer
-    let leadId = null;
-    let customerId = null;
-
-    // Intentar encontrar un lead por email
-    const { data: lead } = await supabase
-      .from("leads_b3ta")
-      .select("id")
-      .eq("email", from)
-      .single();
-
-    if (lead) {
-      leadId = lead.id;
-    }
-
-    // Intentar encontrar un customer por email
-    const { data: customer } = await supabase
-      .from("customers")
-      .select("id")
-      .eq("email", from)
-      .single();
-
-    if (customer) {
-      customerId = customer.id;
-    }
-
-    // Guardar el correo en la base de datos
-    const { data: savedEmail, error } = await supabase
-      .from("emails")
-      .insert([
-        {
-          message_id,
-          from_email: from,
-          to_email: Array.isArray(to) ? to : [to],
-          cc_email: cc || null,
-          bcc_email: bcc || null,
-          subject: subject || "(Sin asunto)",
-          body_text: body_text || "",
-          body_html: body_html || body_text || "",
-          thread_id,
-          in_reply_to,
-          email_references: references || null,
-          has_attachments: has_attachments || false,
-          is_read: false,
-          folder: "inbox",
-          lead_id: leadId,
-          customer_id: customerId,
-          received_at: received_at || new Date().toISOString(),
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error saving email:", error);
-      throw error;
-    }
-
-    console.log("Email saved successfully:", savedEmail.id);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        emailId: savedEmail.id,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Validate webhook signature if secret is configured
+    if (webhookSecret) {
+      const signature = req.headers.get('X-Webhook-Signature');
+      const timestamp = req.headers.get('X-Webhook-Timestamp');
+      
+      if (!signature || !timestamp) {
+        console.error('Missing webhook signature or timestamp');
+        return new Response(
+          JSON.stringify({ error: 'Unauthorized - missing signature' }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
-    );
+      
+      const body = await req.text();
+      const expectedSignature = createHmac('sha256', webhookSecret)
+        .update(timestamp + body)
+        .digest('hex');
+      
+      if (signature !== expectedSignature) {
+        console.error('Invalid webhook signature');
+        return new Response(
+          JSON.stringify({ error: 'Forbidden - invalid signature' }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      // Prevent replay attacks (5 minute window)
+      const requestTime = parseInt(timestamp);
+      const now = Date.now();
+      if (Math.abs(now - requestTime) > 300000) {
+        console.error('Request timestamp expired');
+        return new Response(
+          JSON.stringify({ error: 'Forbidden - request expired' }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      const emailData = JSON.parse(body);
+      return await processEmailWebhook(supabase, emailData, corsHeaders);
+    } else {
+      // If no secret configured, fall back to original behavior (not recommended)
+      console.warn('WARNING: WEBHOOK_SECRET not configured - webhook is not authenticated!');
+      
+      const emailData = await req.json();
+      return await processEmailWebhook(supabase, emailData, corsHeaders);
+    }
   } catch (error: any) {
     console.error("Error in receive-email-webhook:", error);
     return new Response(
