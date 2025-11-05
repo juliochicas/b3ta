@@ -165,6 +165,7 @@ export const ContactForm = () => {
                     <SelectItem value="ecommerce">E-commerce</SelectItem>
                     <SelectItem value="automation">Automatización</SelectItem>
                     <SelectItem value="ia">IA Corporativa</SelectItem>
+                    <SelectItem value="china-imports">Importaciones de China</SelectItem>
                     <SelectItem value="multiple">Varios servicios</SelectItem>
                   </SelectContent>
                 </Select>
