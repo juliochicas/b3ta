@@ -32,7 +32,7 @@ export const VideoSection = () => {
         .eq('is_featured', true)
         .order('display_order', { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (featured) {
         setFeaturedVideo(featured);
