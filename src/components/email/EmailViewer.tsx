@@ -126,20 +126,20 @@ export const EmailViewer = ({ email, onBack, onReply, onEmailChange }: EmailView
     
     setIsDeleting(true);
     try {
-      const { error } = await supabase
-        .from("emails")
-        .delete()
-        .eq("id", email.id);
+      // Llamar a la función de edge para eliminar del servidor IMAP y DB
+      const { error } = await supabase.functions.invoke("delete-email-imap", {
+        body: { emailId: email.id }
+      });
 
       if (error) throw error;
 
-      toast.success("Correo eliminado permanentemente");
+      toast.success("Correo eliminado permanentemente del servidor y base de datos");
       onEmailChange?.();
       setShowDeleteDialog(false);
       onBack();
     } catch (error: any) {
       console.error("Error deleting permanently:", error);
-      toast.error("Error al eliminar. Es posible que no tengas permisos.");
+      toast.error("Error al eliminar. " + (error.message || "Intenta de nuevo."));
     } finally {
       setIsDeleting(false);
     }

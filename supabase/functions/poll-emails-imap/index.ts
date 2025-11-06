@@ -17,6 +17,51 @@ const getCorsHeaders = (origin: string | null) => {
   };
 };
 
+// Función para parsear fecha RFC 2822 a ISO
+function parseEmailDate(dateStr: string | null): string {
+  if (!dateStr) return new Date().toISOString();
+  
+  try {
+    // Limpiar formato (UTC) y otros sufijos problemáticos
+    const cleanDate = dateStr
+      .replace(/\s*\([^)]*\)/g, '') // Quitar (UTC), (GMT), etc.
+      .trim();
+    
+    const date = new Date(cleanDate);
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date format: ${dateStr}, using current date`);
+      return new Date().toISOString();
+    }
+    return date.toISOString();
+  } catch (error) {
+    console.warn(`Error parsing date: ${dateStr}, using current date`);
+    return new Date().toISOString();
+  }
+}
+
+// Función para decodificar headers MIME encoded-word (=?charset?encoding?text?=)
+function decodeMimeHeader(text: string): string {
+  if (!text) return text;
+  
+  // Decodificar =?UTF-8?B?...?= y =?UTF-8?Q?...?=
+  return text.replace(/=\?([^?]+)\?([BQ])\?([^?]+)\?=/gi, (match, charset, encoding, encoded) => {
+    try {
+      if (encoding.toUpperCase() === 'B') {
+        // Base64
+        return atob(encoded);
+      } else if (encoding.toUpperCase() === 'Q') {
+        // Quoted-printable
+        return encoded
+          .replace(/_/g, ' ')
+          .replace(/=([0-9A-F]{2})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+      }
+    } catch (e) {
+      console.warn(`Failed to decode MIME header: ${match}`);
+    }
+    return match;
+  });
+}
+
 // Función auxiliar para conectar via IMAP
 async function fetchEmailsViaIMAP(account: any) {
   try {
@@ -103,22 +148,31 @@ async function fetchEmailsViaIMAP(account: any) {
         const bodyMatch = fetchResponse.match(/BODY\[TEXT\]\s*(?:\{[\d]+\})?\r?\n([\s\S]+?)(?:\r?\n\)|$)/);
         const bodyText = bodyMatch?.[1]?.trim() || "";
         
-        const from = fromMatch?.[1]?.replace(/\s+/g, ' ').trim() || "";
-        const subject = subjectMatch?.[1]?.replace(/\s+/g, ' ').trim() || "(Sin asunto)";
-        const messageId = messageIdMatch?.[1]?.trim() || null;
+        const rawFrom = fromMatch?.[1]?.replace(/\s+/g, ' ').trim() || "";
+        const rawSubject = subjectMatch?.[1]?.replace(/\s+/g, ' ').trim() || "(Sin asunto)";
+        const rawDate = dateMatch?.[1]?.trim() || null;
+        
+        // Decodificar headers MIME
+        const from = decodeMimeHeader(rawFrom);
+        const subject = decodeMimeHeader(rawSubject);
+        const messageId = messageIdMatch?.[1]?.trim() || `${id}@${account.imap_host}`;
         const inReplyTo = inReplyToMatch?.[1]?.trim() || null;
+        
+        // Parsear fecha correctamente
+        const received_at = parseEmailDate(rawDate);
         
         console.log(`Email ${id}: From=${from}, Subject=${subject}, MessageID=${messageId}, InReplyTo=${inReplyTo}`);
         
         emails.push({
           from,
-          to: toMatch?.[1]?.split(",").map(e => e.trim()) || [],
+          to: toMatch?.[1]?.split(",").map(e => decodeMimeHeader(e.trim())) || [account.email],
           subject,
           body_text: bodyText,
           message_id: messageId,
           in_reply_to: inReplyTo,
           references: referencesMatch?.[1]?.split(/\s+/).map(r => r.replace(/[<>]/g, '').trim()).filter(r => r) || null,
-          received_at: dateMatch?.[1] || new Date().toISOString(),
+          received_at,
+          imap_uid: id, // Guardar el UID del IMAP para poder eliminarlo después
         });
 
         // NO marcar como leído para permitir sincronizaciones futuras
@@ -264,6 +318,7 @@ serve(async (req) => {
             customer_id: customerId,
             account_id: accountId,
             received_at: email.received_at,
+            imap_uid: email.imap_uid,
           },
         ])
         .select()
