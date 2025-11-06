@@ -63,7 +63,7 @@ export default defineConfig(({ mode }) => ({
       'react-dom', 
       'react-router-dom',
       'lucide-react',
+      '@supabase/supabase-js',
     ],
-    exclude: ['@supabase/supabase-js']
   },
 }));
