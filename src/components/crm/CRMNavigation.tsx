@@ -78,8 +78,10 @@ export const CRMNavigation = ({ userEmail, userRole }: CRMNavigationProps) => {
                 size="sm"
                 onClick={() => handleNavigation(item.path)}
                 className={cn(
-                  "gap-2",
-                  isActive(item.path) && "shadow-sm"
+                  "gap-2 transition-all duration-200",
+                  isActive(item.path) 
+                    ? "bg-primary text-primary-foreground shadow-sm" 
+                    : "hover:bg-primary/10 hover:text-primary"
                 )}
               >
                 {item.icon}
@@ -127,8 +129,10 @@ export const CRMNavigation = ({ userEmail, userRole }: CRMNavigationProps) => {
                       key={item.path}
                       variant={isActive(item.path) ? "default" : "ghost"}
                       className={cn(
-                        "w-full justify-start gap-3",
-                        isActive(item.path) && "shadow-sm"
+                        "w-full justify-start gap-3 transition-all duration-200",
+                        isActive(item.path) 
+                          ? "bg-primary text-primary-foreground shadow-sm" 
+                          : "hover:bg-primary/10 hover:text-primary"
                       )}
                       onClick={() => handleNavigation(item.path)}
                     >
