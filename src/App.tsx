@@ -17,6 +17,7 @@ import MVPDevelopment from "./pages/MVPDevelopment";
 import SolutionsByBudget from "./pages/SolutionsByBudget";
 import SAPBusinessOne from "./pages/SAPBusinessOne";
 import ECommerce from "./pages/ECommerce";
+import Industries from "./pages/Industries";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/soluciones-por-presupuesto" element={<SolutionsByBudget />} />
           <Route path="/sap-business-one" element={<SAPBusinessOne />} />
           <Route path="/e-commerce" element={<ECommerce />} />
+          <Route path="/industrias" element={<Industries />} />
           <Route path="/informe/:slug" element={<PublicReport />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -26,6 +26,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import videoThumbnailAi from "@/assets/video-thumbnail-ai.jpg";
+import { Footer } from "@/components/Footer";
 
 const MVPDevelopment = () => {
   const navigate = useNavigate();
@@ -596,6 +597,8 @@ const MVPDevelopment = () => {
           </div>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 };
