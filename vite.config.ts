@@ -62,14 +62,13 @@ export default defineConfig(({ mode }) => ({
   // Optimize dependencies
   optimizeDeps: {
     include: [
-      'react', 
-      'react-dom', 
+      'react',
+      'react-dom',
       'react-router-dom',
       'lucide-react',
+      '@supabase/supabase-js',
+      '@supabase/postgrest-js',
     ],
-    exclude: ['@supabase/supabase-js', '@supabase/postgrest-js'],
-    esbuildOptions: {
-      mainFields: ['module', 'jsnext:main', 'browser']
-    }
+    force: true,
   },
 }));
