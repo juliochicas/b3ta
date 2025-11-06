@@ -98,13 +98,17 @@ Responde en formato JSON con:
     }
 
     const aiData = await response.json();
-    const aiContent = aiData.choices[0].message.content;
+    let aiContent = aiData.choices[0].message.content;
+    
+    // Limpiar markdown code blocks si existen
+    aiContent = aiContent.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     
     // Parsear respuesta JSON de IA
     let analysisData;
     try {
       analysisData = JSON.parse(aiContent);
     } catch (e) {
+      console.error("Error parsing AI response:", e, "Content:", aiContent);
       // Si no es JSON válido, extraer manualmente
       analysisData = {
         score: 50,
@@ -114,13 +118,13 @@ Responde en formato JSON con:
       };
     }
 
-    // Actualizar lead con análisis de IA
+    // Actualizar lead con análisis de IA - guardar como JSON
     const { error: updateError } = await supabase
       .from('leads_b3ta')
       .update({
         ai_score: analysisData.score,
         priority: analysisData.priority,
-        ai_summary: `${analysisData.summary}\n\nPróximos pasos: ${analysisData.next_steps}`
+        ai_summary: JSON.stringify(analysisData)
       })
       .eq('id', leadId);
 
