@@ -119,14 +119,15 @@ const Email = () => {
     <div className="min-h-screen bg-muted/30">
       <CRMNavigation userEmail={user?.email} userRole={userRole} />
 
-      <main className="container mx-auto px-4 py-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Correo Electrónico</h1>
-          <p className="text-muted-foreground">Gestiona tus correos electrónicos</p>
+      <main className="container mx-auto px-4 py-6 max-w-[1600px]">
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Correo Electrónico</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Gestiona tus correos electrónicos</p>
         </div>
-        <div className="grid grid-cols-12 gap-6 h-[calc(100vh-180px)]">
+        
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-6 min-h-[calc(100vh-200px)]">
           {/* Sidebar */}
-          <div className="col-span-3 space-y-4 overflow-y-auto">
+          <div className="lg:col-span-3 space-y-4 overflow-y-auto max-h-[calc(100vh-200px)]">
             <Button 
               onClick={() => setShowComposer(true)} 
               className="w-full"
@@ -153,14 +154,14 @@ const Email = () => {
                   <Button
                     key={folder.id}
                     variant={selectedFolder === folder.id ? "secondary" : "ghost"}
-                    className="w-full justify-start"
+                    className="w-full justify-start text-sm"
                     onClick={() => {
                       setSelectedFolder(folder.id);
                       setSelectedEmail(null);
                     }}
                   >
-                    <folder.icon className="mr-2 h-4 w-4" />
-                    {folder.label}
+                    <folder.icon className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{folder.label}</span>
                   </Button>
                 ))}
               </div>
@@ -182,13 +183,13 @@ const Email = () => {
               onClick={() => setShowSetupGuide(true)}
             >
               <HelpCircle className="mr-2 h-4 w-4" />
-              Guía de Configuración
+              <span className="truncate">Guía de Configuración</span>
             </Button>
           </div>
 
           {/* Email List */}
-          <div className="col-span-4 border-r">
-            <div className="mb-4">
+          <div className="lg:col-span-4 lg:border-r flex flex-col min-h-[400px] lg:min-h-0">
+            <div className="mb-4 flex-shrink-0">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -200,7 +201,7 @@ const Email = () => {
               </div>
             </div>
 
-            <div className="overflow-y-auto h-[calc(100%-60px)]">
+            <div className="flex-1 overflow-y-auto">
               <EmailList
                 folder={selectedFolder}
                 onEmailSelect={setSelectedEmail}
@@ -211,7 +212,7 @@ const Email = () => {
           </div>
 
           {/* Email Viewer */}
-          <div className="col-span-5 border-l">
+          <div className="lg:col-span-5 lg:border-l flex flex-col min-h-[400px] lg:min-h-0">
             <EmailViewer
               email={selectedEmail}
               onBack={() => setSelectedEmail(null)}
