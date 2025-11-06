@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import partnersBg from "@/assets/partners-bg.jpg";
+import { OptimizedImage } from "./OptimizedImage";
 
 const partners = [
   { name: "SAP", type: "Technology Partner", logo: "SAP" },
@@ -14,11 +15,14 @@ const partners = [
 export const PartnersSection = () => {
   return (
     <section className="py-28 relative">
-      {/* Background Image with Overlay */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
-        style={{ backgroundImage: `url(${partnersBg})` }}
-      />
+      {/* Background Image with Overlay - Optimized */}
+      <div className="absolute inset-0">
+        <OptimizedImage
+          src={partnersBg}
+          alt=""
+          className="w-full h-full object-cover opacity-5"
+        />
+      </div>
       <div className="absolute inset-0 bg-background" />
       
       <div className="container mx-auto px-4 sm:px-6 relative z-10">

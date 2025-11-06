@@ -18,21 +18,42 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        // Removed custom manualChunks to avoid potential circular/init issues in vendor bundles
-        // Let Rollup handle chunking automatically for stability
         // Optimize chunk sizes
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+        // Manual chunks for better caching
+        manualChunks(id) {
+          // Vendor chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'radix-vendor';
+            }
+            if (id.includes('@supabase')) {
+              return 'supabase-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons-vendor';
+            }
+            return 'vendor';
+          }
+          // Split large components
+          if (id.includes('src/components')) {
+            if (id.includes('crm') || id.includes('quotations') || id.includes('reports')) {
+              return 'crm-features';
+            }
+          }
+        }
       },
     },
     cssCodeSplit: true,
-    cssMinify: true,
+    cssMinify: 'lightningcss',
     minify: 'esbuild',
-    target: 'es2015',
-    // Reduce chunk size warnings
+    target: 'es2020',
     chunkSizeWarningLimit: 1000,
-    // Enable source maps only for production debugging
     sourcemap: false,
   },
   // Optimize dependencies
@@ -41,10 +62,8 @@ export default defineConfig(({ mode }) => ({
       'react', 
       'react-dom', 
       'react-router-dom',
-      '@supabase/supabase-js',
-      '@supabase/postgrest-js',
-      '@supabase/realtime-js',
-      '@supabase/storage-js',
+      'lucide-react',
     ],
+    exclude: ['@supabase/supabase-js']
   },
 }));

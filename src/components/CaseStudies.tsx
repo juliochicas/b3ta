@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, Clock, Target } from "lucide-react";
 import caseStudiesBg from "@/assets/case-studies-bg.jpg";
+import { OptimizedImage } from "./OptimizedImage";
 
 const cases = [
   {
@@ -48,11 +49,14 @@ const cases = [
 export const CaseStudies = () => {
   return (
     <section className="py-28 relative">
-      {/* Background Image with Overlay */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-        style={{ backgroundImage: `url(${caseStudiesBg})` }}
-      />
+      {/* Background Image with Overlay - Optimized */}
+      <div className="absolute inset-0">
+        <OptimizedImage
+          src={caseStudiesBg}
+          alt=""
+          className="w-full h-full object-cover opacity-10"
+        />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-b from-background to-muted/30" />
       
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
