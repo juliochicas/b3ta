@@ -253,21 +253,53 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
               </Card>
             )}
 
-            {lead.ai_summary && (
-              <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50">
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
-                  Análisis de IA
-                </h3>
-                {lead.ai_score && (
-                  <div className="flex items-center gap-2 mb-3">
-                    <Star className="h-5 w-5 fill-warning text-warning" />
-                    <span className="font-bold text-lg">{lead.ai_score}/100</span>
-                  </div>
-                )}
-                <p className="text-sm whitespace-pre-wrap">{lead.ai_summary}</p>
-              </Card>
-            )}
+            {lead.ai_summary && (() => {
+              try {
+                const analysis = JSON.parse(lead.ai_summary);
+                return (
+                  <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-purple-600" />
+                      Análisis de IA
+                    </h3>
+                    {lead.ai_score && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <Star className="h-5 w-5 fill-warning text-warning" />
+                        <span className="font-bold text-lg">{lead.ai_score}/100</span>
+                      </div>
+                    )}
+                    {analysis.summary && (
+                      <div className="mb-3">
+                        <p className="text-sm font-medium mb-1">Resumen:</p>
+                        <p className="text-sm text-muted-foreground">{analysis.summary}</p>
+                      </div>
+                    )}
+                    {analysis.next_steps && (
+                      <div>
+                        <p className="text-sm font-medium mb-1">Próximos pasos:</p>
+                        <p className="text-sm text-muted-foreground">{analysis.next_steps}</p>
+                      </div>
+                    )}
+                  </Card>
+                );
+              } catch (e) {
+                return (
+                  <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-purple-600" />
+                      Análisis de IA
+                    </h3>
+                    {lead.ai_score && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <Star className="h-5 w-5 fill-warning text-warning" />
+                        <span className="font-bold text-lg">{lead.ai_score}/100</span>
+                      </div>
+                    )}
+                    <p className="text-sm whitespace-pre-wrap">{lead.ai_summary}</p>
+                  </Card>
+                );
+              }
+            })()}
           </div>
 
           {/* Gestión del Lead */}

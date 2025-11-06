@@ -113,13 +113,26 @@ export const LeadCard = ({ lead, onClick }: LeadCardProps) => {
         </div>
       </div>
 
-      {lead.ai_summary && (
-        <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {lead.ai_summary}
-          </p>
-        </div>
-      )}
+      {lead.ai_summary && (() => {
+        try {
+          const analysis = JSON.parse(lead.ai_summary);
+          return (
+            <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {analysis.summary || lead.ai_summary}
+              </p>
+            </div>
+          );
+        } catch (e) {
+          return (
+            <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {lead.ai_summary}
+              </p>
+            </div>
+          );
+        }
+      })()}
     </Card>
   );
 };
