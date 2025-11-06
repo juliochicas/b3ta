@@ -16,29 +16,12 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    rollupOptions: {
-      output: {
-        // File naming for better caching without risky manual chunking
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
-      },
-    },
-    cssCodeSplit: true,
     minify: 'esbuild',
     target: 'es2020',
-    chunkSizeWarningLimit: 1000,
     sourcemap: false,
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      'lucide-react',
-      '@supabase/supabase-js',
-      '@supabase/postgrest-js',
-    ],
+    include: ['react', 'react-dom', 'react-router-dom'],
   },
 }));
