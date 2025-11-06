@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { LogOut, Users, TrendingUp, Clock, Star, FileText, Mail } from "lucide-react";
+import { LogOut, Users, TrendingUp, Clock, Star, FileText, Mail, Video } from "lucide-react";
 import { LeadsList } from "@/components/crm/LeadsList";
 import { CRMStats } from "@/components/crm/CRMStats";
 import { useToast } from "@/hooks/use-toast";
@@ -125,6 +125,14 @@ export default function CRM() {
               >
                 <Mail className="mr-2 h-4 w-4" />
                 Correo
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/videos')}
+              >
+                <Video className="mr-2 h-4 w-4" />
+                Videos
               </Button>
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium">{user?.email}</p>
