@@ -224,6 +224,8 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
                   <SelectItem value="sap">SAP Business One</SelectItem>
                   <SelectItem value="automation">Automatización</SelectItem>
                   <SelectItem value="ai">Inteligencia Artificial</SelectItem>
+                  <SelectItem value="landing-pages">Landing Pages</SelectItem>
+                  <SelectItem value="websites">Sitios Web</SelectItem>
                   <SelectItem value="other">Otro</SelectItem>
                 </SelectContent>
               </Select>
