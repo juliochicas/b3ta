@@ -32,9 +32,6 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('@radix-ui')) {
               return 'radix-vendor';
             }
-            if (id.includes('@supabase')) {
-              return 'supabase-vendor';
-            }
             if (id.includes('lucide-react')) {
               return 'icons-vendor';
             }
@@ -50,14 +47,10 @@ export default defineConfig(({ mode }) => ({
       },
     },
     cssCodeSplit: true,
-    cssMinify: 'lightningcss',
     minify: 'esbuild',
     target: 'es2020',
     chunkSizeWarningLimit: 1000,
     sourcemap: false,
-    commonjsOptions: {
-      transformMixedEsModules: true
-    }
   },
   // Optimize dependencies
   optimizeDeps: {
@@ -66,9 +59,6 @@ export default defineConfig(({ mode }) => ({
       'react-dom',
       'react-router-dom',
       'lucide-react',
-      '@supabase/supabase-js',
-      '@supabase/postgrest-js',
     ],
-    force: true,
   },
 }));
