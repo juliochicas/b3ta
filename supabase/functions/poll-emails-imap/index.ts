@@ -137,22 +137,59 @@ async function fetchEmailsViaIMAP(account: any) {
           continue;
         }
         
-        const emailContent = literalMatch[2];
+        const literalSize = parseInt(literalMatch[1]);
+        let emailContent = literalMatch[2];
         
-        // Separar headers y body usando la línea en blanco estándar
-        const parts = emailContent.split(/\r?\n\r?\n/);
-        const headersPart = parts[0] || "";
-        const bodyPart = parts.slice(1).join('\n\n').trim();
+        // Limpiar la respuesta IMAP - remover la parte final (e.g., "a103 OK FETCH completed")
+        // El contenido real del email es exactamente literalSize bytes
+        emailContent = emailContent.substring(0, literalSize);
+        
+        // Separar headers y body buscando la primera línea en blanco doble
+        // Esto es estándar RFC 2822: headers, luego \r\n\r\n, luego body
+        const headerBodySeparator = emailContent.indexOf('\r\n\r\n');
+        let headersPart = "";
+        let bodyPart = "";
+        
+        if (headerBodySeparator !== -1) {
+          headersPart = emailContent.substring(0, headerBodySeparator);
+          bodyPart = emailContent.substring(headerBodySeparator + 4); // +4 para saltar \r\n\r\n
+        } else {
+          // Intentar con solo \n\n si no hay \r\n\r\n
+          const altSeparator = emailContent.indexOf('\n\n');
+          if (altSeparator !== -1) {
+            headersPart = emailContent.substring(0, altSeparator);
+            bodyPart = emailContent.substring(altSeparator + 2);
+          } else {
+            // Si no hay separador, todo son headers
+            headersPart = emailContent;
+          }
+        }
         
         console.log(`Headers length: ${headersPart.length}, Body length: ${bodyPart.length}`);
         console.log(`First 300 chars of headers:\n${headersPart.substring(0, 300)}`);
         
         // Parsear headers con regex más robustos que manejen continuaciones
         const parseHeader = (headerName: string): string => {
-          // Buscar el header y capturar incluyendo líneas de continuación (que empiezan con espacios)
-          const regex = new RegExp(`^${headerName}:\\s*(.+?)(?=\\r?\\n(?:[A-Za-z-]+:|$))`, 'ims');
+          // Buscar el header y capturar incluyendo líneas de continuación (que empiezan con espacios o tabs)
+          const regex = new RegExp(`^${headerName}:\\s*(.*)(?:\\r?\\n(?:[ \\t].*))*`, 'im');
           const match = headersPart.match(regex);
-          return match?.[1]?.replace(/\r?\n\s+/g, ' ').trim() || "";
+          if (!match) return "";
+          
+          // Capturar el valor inicial y todas las líneas de continuación
+          const lines = match[0].split(/\r?\n/);
+          const value = lines
+            .map((line, idx) => {
+              if (idx === 0) {
+                // Primera línea: quitar el nombre del header
+                return line.substring(headerName.length + 1).trim();
+              }
+              // Líneas de continuación: quitar espacios iniciales
+              return line.trim();
+            })
+            .join(' ')
+            .trim();
+          
+          return value;
         };
         
         const rawFrom = parseHeader('From');
