@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Database, ShoppingCart, Zap, Brain, Globe, Package } from "lucide-react";
+import { Database, ShoppingCart, Zap, Brain, Globe, Package, Lightbulb } from "lucide-react";
 import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +10,13 @@ const services = [
     description: "Sitios web profesionales, landing pages y portales corporativos. Perfecto para comenzar tu presencia digital",
     features: ["Landing Pages", "Sitios Corporativos", "PWA & Mobile"],
     priceUSD: 100
+  },
+  {
+    icon: Lightbulb,
+    title: "MVP & Desarrollo de Producto",
+    description: "Transforma tu idea en producto funcional. Prototipado, validación con usuarios reales y lanzamiento ágil en 4-8 semanas",
+    features: ["Prototipo Funcional", "Validación MVP", "Product-Market Fit"],
+    priceUSD: 500
   },
   {
     icon: ShoppingCart,

@@ -40,6 +40,11 @@ const tiers = [
     color: "from-cyan-500/20 to-blue-500/5",
     solutions: [
       {
+        name: "MVP & Desarrollo de Producto",
+        description: "Prototipo funcional + validación + iteración",
+        time: "4-8 semanas"
+      },
+      {
         name: "Shopify Plus",
         description: "E-commerce enterprise + automatizaciones",
         time: "6-8 semanas"

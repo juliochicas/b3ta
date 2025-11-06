@@ -162,6 +162,7 @@ export const ContactForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sap">SAP Consulting</SelectItem>
+                    <SelectItem value="mvp">MVP & Desarrollo de Producto</SelectItem>
                     <SelectItem value="ecommerce">E-commerce</SelectItem>
                     <SelectItem value="automation">Automatización</SelectItem>
                     <SelectItem value="ia">IA Corporativa</SelectItem>
