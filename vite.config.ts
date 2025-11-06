@@ -18,32 +18,10 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        // Optimize chunk sizes
+        // File naming for better caching without risky manual chunking
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
-        // Manual chunks for better caching
-        manualChunks(id) {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'radix-vendor';
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons-vendor';
-            }
-            return 'vendor';
-          }
-          // Split large components
-          if (id.includes('src/components')) {
-            if (id.includes('crm') || id.includes('quotations') || id.includes('reports')) {
-              return 'crm-features';
-            }
-          }
-        }
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
       },
     },
     cssCodeSplit: true,
