@@ -19,6 +19,29 @@ export default defineConfig(({ mode }) => ({
     minify: 'esbuild',
     target: 'es2020',
     sourcemap: false,
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // Vendor chunks for better caching
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@supabase')) {
+              return 'supabase-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons-vendor';
+            }
+            return 'vendor';
+          }
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
+    },
   },
   // Optimize dependencies
   optimizeDeps: {
