@@ -44,7 +44,7 @@ export const OptimizedImage = ({
         height={height}
         loading={priority ? 'eager' : 'lazy'}
         decoding={priority ? 'sync' : 'async'}
-        fetchPriority={priority ? 'high' : 'auto'}
+        {...{ fetchpriority: priority ? 'high' : 'auto' }}
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
         className={`
