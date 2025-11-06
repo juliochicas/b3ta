@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { InvoiceDetailModal } from "./InvoiceDetailModal";
@@ -72,6 +72,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(quotation.notes || "");
   const [isEditingTerms, setIsEditingTerms] = useState(false);
+  const [isImprovingTerms, setIsImprovingTerms] = useState(false);
   const [termsConditions, setTermsConditions] = useState(quotation.terms_conditions || "");
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
@@ -260,6 +261,47 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         description: "No se pudieron actualizar los términos y condiciones",
         variant: "destructive",
       });
+    }
+  };
+
+  const improveTermsWithAI = async () => {
+    if (!termsConditions.trim()) {
+      toast({
+        title: "Error",
+        description: "Ingrese términos y condiciones antes de mejorar",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsImprovingTerms(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('improve-terms-text', {
+        body: { text: termsConditions }
+      });
+
+      if (error) throw error;
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      if (data?.improvedText) {
+        setTermsConditions(data.improvedText);
+        toast({
+          title: "Texto mejorado",
+          description: "Los términos y condiciones han sido mejorados con IA",
+        });
+      }
+    } catch (error) {
+      console.error('Error improving terms:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "No se pudo mejorar el texto",
+        variant: "destructive",
+      });
+    } finally {
+      setIsImprovingTerms(false);
     }
   };
 
@@ -1130,6 +1172,15 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                       placeholder="Ingrese los términos y condiciones..."
                     />
                     <div className="flex gap-2">
+                      <Button
+                        onClick={improveTermsWithAI}
+                        variant="outline"
+                        size="sm"
+                        disabled={isImprovingTerms || !termsConditions.trim()}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {isImprovingTerms ? "Mejorando..." : "Mejorar con IA"}
+                      </Button>
                       <Button onClick={updateTermsConditions} size="sm">
                         <Save className="h-4 w-4 mr-2" />
                         Guardar
