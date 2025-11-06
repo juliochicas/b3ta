@@ -30,7 +30,7 @@ export const TermsAIAssistant = ({ currentText, onTextImproved, disabled }: Term
     setOpen(false);
 
     try {
-      const { data, error } = await supabase.functions.invoke('improve-email-text', {
+      const { data, error } = await supabase.functions.invoke('improve-terms-text', {
         body: {
           text: currentText,
           action: action,
