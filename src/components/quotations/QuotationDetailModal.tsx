@@ -74,12 +74,17 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
+  const [stripePaymentLink, setStripePaymentLink] = useState(quotation.stripe_payment_link);
   const { toast } = useToast();
 
   useEffect(() => {
     loadItems();
     loadRelatedInvoice();
   }, [quotation.id]);
+
+  useEffect(() => {
+    setStripePaymentLink(quotation.stripe_payment_link);
+  }, [quotation.stripe_payment_link]);
 
   const loadItems = async () => {
     try {
@@ -124,6 +129,11 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       });
 
       if (error) throw error;
+
+      // Actualizar el estado local inmediatamente con el nuevo link
+      if (data?.url) {
+        setStripePaymentLink(data.url);
+      }
 
       toast({
         title: "Link de pago creado",
@@ -1092,11 +1102,11 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           {/* Acciones */}
           <div className="space-y-3">
             <div className="flex gap-3">
-              {quotation.stripe_payment_link ? (
+              {stripePaymentLink ? (
                 <>
                   <Button
                     className="flex-1"
-                    onClick={() => window.open(quotation.stripe_payment_link!, '_blank')}
+                    onClick={() => window.open(stripePaymentLink, '_blank')}
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Ver Link de Pago
