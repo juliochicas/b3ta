@@ -61,7 +61,7 @@ serve(async (req) => {
       .select(`
         *,
         leads_b3ta!fk_meetings_lead (name, email),
-        customers (name, email)
+        customers!fk_meetings_customer (name, email)
       `)
       .eq("status", "scheduled")
       .eq("reminder_sent", false)
