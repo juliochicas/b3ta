@@ -3,6 +3,7 @@ import { Clock, User, Edit, Trash2, Users, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Meeting {
   id: string;
@@ -109,17 +110,40 @@ export const MeetingListItem = ({ meeting, onEdit, onDelete }: MeetingListItemPr
 
       {/* Video Link */}
       {meeting.meeting_link && (
-        <div className="mb-3">
+        <div className="mb-3 space-y-2 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-medium text-primary">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Videollamada
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs hover:bg-primary/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(meeting.meeting_link!);
+                toast.success("Link copiado");
+              }}
+            >
+              Copiar link
+            </Button>
+          </div>
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
-            className="w-full h-8 gap-2 bg-primary/5 hover:bg-primary/10 border-primary/20 text-primary"
-            onClick={() => window.open(meeting.meeting_link, '_blank')}
+            className="w-full h-9 gap-2 bg-primary hover:bg-primary/90"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(meeting.meeting_link, '_blank');
+            }}
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
-            Unirse a Reunión Virtual
+            Unirse a Reunión
           </Button>
         </div>
       )}

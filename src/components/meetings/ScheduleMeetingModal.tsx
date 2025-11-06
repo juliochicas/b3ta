@@ -267,7 +267,39 @@ export const ScheduleMeetingModal = ({
           }
         }
         
-        toast.success("Reunión agendada con " + attendees.length + " invitado(s)");
+        // Show success with meeting link
+        if (newMeeting?.meeting_link) {
+          toast.success(
+            <div className="space-y-2">
+              <div className="font-semibold">Reunión agendada con {attendees.length} invitado(s)</div>
+              <div className="text-sm space-y-1">
+                <div className="font-medium">Link de videollamada:</div>
+                <div className="flex items-center gap-2">
+                  <a 
+                    href={newMeeting.meeting_link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline truncate max-w-xs"
+                  >
+                    {newMeeting.meeting_link}
+                  </a>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(newMeeting.meeting_link);
+                      toast.success("Link copiado al portapapeles");
+                    }}
+                    className="text-xs px-2 py-1 bg-primary/10 hover:bg-primary/20 rounded"
+                  >
+                    Copiar
+                  </button>
+                </div>
+              </div>
+            </div>,
+            { duration: 8000 }
+          );
+        } else {
+          toast.success("Reunión agendada con " + attendees.length + " invitado(s)");
+        }
       }
 
       onSuccess();
