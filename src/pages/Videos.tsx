@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { VideoModal } from "@/components/videos/VideoModal";
+import { VideoPlayerModal } from "@/components/videos/VideoPlayerModal";
 import { VideoCard } from "@/components/videos/VideoCard";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -28,6 +29,7 @@ const Videos = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [playingVideo, setPlayingVideo] = useState<Video | null>(null);
   const { role } = useUserRole();
 
   const canManageVideos = role === 'admin';
@@ -79,6 +81,10 @@ const Videos = () => {
     setIsModalOpen(false);
     setSelectedVideo(null);
     fetchVideos();
+  };
+
+  const handlePlayVideo = (video: Video) => {
+    setPlayingVideo(video);
   };
 
   if (loading) {
@@ -141,6 +147,7 @@ const Videos = () => {
                   canManage={canManageVideos}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onPlay={handlePlayVideo}
                 />
               ))}
             </div>
@@ -154,6 +161,11 @@ const Videos = () => {
           onClose={handleModalClose}
         />
       )}
+
+      <VideoPlayerModal
+        video={playingVideo}
+        onClose={() => setPlayingVideo(null)}
+      />
     </div>
   );
 };

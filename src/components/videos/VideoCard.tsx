@@ -22,6 +22,7 @@ interface VideoCardProps {
   canManage: boolean;
   onEdit: (video: Video) => void;
   onDelete: (videoId: string) => void;
+  onPlay: (video: Video) => void;
 }
 
 const getCategoryLabel = (category: string) => {
@@ -30,6 +31,8 @@ const getCategoryLabel = (category: string) => {
     sap: 'SAP',
     automation: 'Automatización',
     ai: 'IA',
+    'landing-pages': 'Landing Pages',
+    websites: 'Sitios Web',
     other: 'Otro'
   };
   return labels[category] || category;
@@ -41,16 +44,18 @@ const getCategoryColor = (category: string) => {
     sap: 'bg-blue-500',
     automation: 'bg-purple-500',
     ai: 'bg-orange-500',
+    'landing-pages': 'bg-cyan-500',
+    websites: 'bg-indigo-500',
     other: 'bg-gray-500'
   };
   return colors[category] || 'bg-gray-500';
 };
 
-export const VideoCard = ({ video, canManage, onEdit, onDelete }: VideoCardProps) => {
+export const VideoCard = ({ video, canManage, onEdit, onDelete, onPlay }: VideoCardProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handlePlayVideo = () => {
-    window.open(video.video_url, '_blank');
+    onPlay(video);
   };
 
   return (
