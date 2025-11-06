@@ -100,6 +100,8 @@ export const Services = () => {
                 onClick={() => {
                   if (service.title === "Importaciones China") {
                     navigate('/importaciones-china');
+                  } else if (service.title === "MVP & Desarrollo de Producto") {
+                    navigate('/mvp-desarrollo-producto');
                   } else {
                     const contactElement = document.getElementById('contact');
                     contactElement?.scrollIntoView({ behavior: 'smooth' });
@@ -109,11 +111,13 @@ export const Services = () => {
               >
                 {service.title === "Importaciones China"
                   ? "Ver Servicios Completos →"
-                  : service.priceUSD === null 
-                    ? "Sin Inversión Inicial"
-                    : loading 
-                      ? "..." 
-                      : `Desde ${formatPrice(service.priceUSD)}`
+                  : service.title === "MVP & Desarrollo de Producto"
+                    ? "Ver Metodología Completa →"
+                    : service.priceUSD === null 
+                      ? "Sin Inversión Inicial"
+                      : loading 
+                        ? "..." 
+                        : `Desde ${formatPrice(service.priceUSD)}`
                 }
               </button>
             </Card>

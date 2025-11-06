@@ -13,6 +13,7 @@ import Meetings from "./pages/Meetings";
 import Email from "./pages/Email";
 import Videos from "./pages/Videos";
 import ChinaImports from "./pages/ChinaImports";
+import MVPDevelopment from "./pages/MVPDevelopment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/email" element={<Email />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/importaciones-china" element={<ChinaImports />} />
+          <Route path="/mvp-desarrollo-producto" element={<MVPDevelopment />} />
           <Route path="/informe/:slug" element={<PublicReport />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
