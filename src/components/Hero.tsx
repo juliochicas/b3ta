@@ -18,9 +18,11 @@ export const Hero = () => {
       <div className="absolute inset-0">
         <OptimizedImage
           src={heroBanner}
-          alt="B3TA Transformación Digital LATAM"
+          alt="B3TA Transformación Digital LATAM - Consultoría SAP, E-commerce y Automatización"
           className="absolute inset-0 w-full h-full object-cover"
           priority={true}
+          width={1920}
+          height={1080}
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary-glow/90 to-primary/95" />
       </div>

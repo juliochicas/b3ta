@@ -1,19 +1,22 @@
+import { lazy, Suspense } from "react";
 import { Hero } from "@/components/Hero";
 import { SolutionsByBudget } from "@/components/SolutionsByBudget";
 import { StrategicCTA } from "@/components/StrategicCTA";
 import { Benefits } from "@/components/Benefits";
-import { CaseStudiesIndustries } from "@/components/CaseStudiesIndustries";
-import { ProcessSteps } from "@/components/ProcessSteps";
-import { PartnersSection } from "@/components/PartnersSection";
-import { Testimonials } from "@/components/Testimonials";
-import { VideoSection } from "@/components/VideoSection";
-import { FAQ } from "@/components/FAQ";
 import { TrustBadges } from "@/components/TrustBadges";
-import { UrgencyBanner } from "@/components/UrgencyBanner";
-import { AIConsultant } from "@/components/AIConsultant";
-import { ContactForm } from "@/components/ContactForm";
 import { StickyCTA } from "@/components/StickyCTA";
 import { LazySection } from "@/components/LazySection";
+
+// Lazy load non-critical components for better performance
+const CaseStudiesIndustries = lazy(() => import("@/components/CaseStudiesIndustries").then(m => ({ default: m.CaseStudiesIndustries })));
+const ProcessSteps = lazy(() => import("@/components/ProcessSteps").then(m => ({ default: m.ProcessSteps })));
+const PartnersSection = lazy(() => import("@/components/PartnersSection").then(m => ({ default: m.PartnersSection })));
+const Testimonials = lazy(() => import("@/components/Testimonials").then(m => ({ default: m.Testimonials })));
+const VideoSection = lazy(() => import("@/components/VideoSection").then(m => ({ default: m.VideoSection })));
+const FAQ = lazy(() => import("@/components/FAQ").then(m => ({ default: m.FAQ })));
+const UrgencyBanner = lazy(() => import("@/components/UrgencyBanner").then(m => ({ default: m.UrgencyBanner })));
+const AIConsultant = lazy(() => import("@/components/AIConsultant").then(m => ({ default: m.AIConsultant })));
+const ContactForm = lazy(() => import("@/components/ContactForm").then(m => ({ default: m.ContactForm })));
 
 const Index = () => {
   return (
@@ -82,11 +85,15 @@ const Index = () => {
         
         {/* 4. PRUEBA SOCIAL - Casos + Industrias fusionados */}
         <div id="casos">
-          <CaseStudiesIndustries />
+          <Suspense fallback={<div className="py-28 bg-muted/30 animate-pulse" />}>
+            <CaseStudiesIndustries />
+          </Suspense>
         </div>
         
         {/* 5. PROCESO - Cómo trabajamos */}
-        <ProcessSteps />
+        <Suspense fallback={<div className="py-28 animate-pulse" />}>
+          <ProcessSteps />
+        </Suspense>
         
         {/* 🎯 CTA #3 - Después del proceso */}
         <StrategicCTA 
@@ -99,37 +106,51 @@ const Index = () => {
         
         {/* 6. CREDIBILIDAD - Partners y Testimonios */}
         <LazySection fallback={<div className="py-28 bg-muted/30" />}>
-          <PartnersSection />
+          <Suspense fallback={<div className="py-20 animate-pulse" />}>
+            <PartnersSection />
+          </Suspense>
         </LazySection>
         <LazySection fallback={<div className="py-28" />}>
-          <Testimonials />
+          <Suspense fallback={<div className="py-20 animate-pulse" />}>
+            <Testimonials />
+          </Suspense>
         </LazySection>
         
         {/* 7. CONTENIDO EDUCATIVO - Videos */}
         <div id="videos">
           <LazySection fallback={<div className="py-28 bg-muted/30" />}>
-            <VideoSection />
+            <Suspense fallback={<div className="py-20 animate-pulse" />}>
+              <VideoSection />
+            </Suspense>
           </LazySection>
         </div>
         
         {/* 8. RESPUESTAS - FAQ */}
         <div id="faq">
           <LazySection fallback={<div className="py-28" />}>
-            <FAQ />
+            <Suspense fallback={<div className="py-20 animate-pulse" />}>
+              <FAQ />
+            </Suspense>
           </LazySection>
         </div>
         
         {/* 9. HERRAMIENTA INTERACTIVA - Consultor IA */}
         <div id="ai-consultant">
           <LazySection fallback={<div className="py-28 bg-gradient-to-b from-muted/30 to-background" />}>
-            <AIConsultant />
+            <Suspense fallback={<div className="py-20 animate-pulse" />}>
+              <AIConsultant />
+            </Suspense>
           </LazySection>
         </div>
         
         {/* 10. CIERRE CON URGENCIA */}
-        <UrgencyBanner />
+        <Suspense fallback={<div className="py-16 animate-pulse" />}>
+          <UrgencyBanner />
+        </Suspense>
         <div id="contact">
-          <ContactForm />
+          <Suspense fallback={<div className="py-28 animate-pulse" />}>
+            <ContactForm />
+          </Suspense>
         </div>
         
         {/* Elementos flotantes */}
