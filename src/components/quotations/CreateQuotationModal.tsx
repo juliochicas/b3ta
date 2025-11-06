@@ -8,8 +8,9 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { X, Plus, Sparkles, Trash2, Search } from "lucide-react";
+import { X, Plus, Trash2, Search } from "lucide-react";
 import { formatCurrencyDisplay } from "@/lib/currency";
+import { TermsAIAssistant } from "./TermsAIAssistant";
 
 interface ProductService {
   id: string;
@@ -62,7 +63,6 @@ Para proceder con esta cotización, por favor realice el pago a través del link
   const [products, setProducts] = useState<ProductService[]>([]);
   const [reports, setReports] = useState<any[]>([]);
   const [isSavingAsDefault, setIsSavingAsDefault] = useState(false);
-  const [isImprovingTerms, setIsImprovingTerms] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string>("");
   const [showProductSelector, setShowProductSelector] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -148,47 +148,6 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       });
     } finally {
       setIsSavingAsDefault(false);
-    }
-  };
-
-  const improveTermsWithAI = async () => {
-    if (!formData.terms_conditions.trim()) {
-      toast({
-        title: "Error",
-        description: "Ingrese términos y condiciones antes de mejorar",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsImprovingTerms(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('improve-terms-text', {
-        body: { text: formData.terms_conditions }
-      });
-
-      if (error) throw error;
-
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      if (data?.improvedText) {
-        setFormData(prev => ({ ...prev, terms_conditions: data.improvedText }));
-        toast({
-          title: "Texto mejorado",
-          description: "Los términos y condiciones han sido mejorados con IA",
-        });
-      }
-    } catch (error) {
-      console.error('Error improving terms:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo mejorar el texto",
-        variant: "destructive",
-      });
-    } finally {
-      setIsImprovingTerms(false);
     }
   };
 
@@ -678,16 +637,10 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                 <div className="flex items-center justify-between mb-2">
                   <Label htmlFor="terms">Términos y Condiciones</Label>
                   <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={improveTermsWithAI}
-                      disabled={isImprovingTerms || !formData.terms_conditions.trim()}
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      {isImprovingTerms ? "Mejorando..." : "Mejorar con IA"}
-                    </Button>
+                    <TermsAIAssistant
+                      currentText={formData.terms_conditions}
+                      onTextImproved={(improvedText) => setFormData({ ...formData, terms_conditions: improvedText })}
+                    />
                     <Button
                       type="button"
                       variant="outline"
