@@ -35,19 +35,49 @@ export const EmailList = ({ folder, onEmailSelect, selectedEmail, accountId }: E
   const { data: emails, refetch } = useQuery({
     queryKey: ["emails", folder, accountId],
     queryFn: async () => {
-      let query = supabase
+      // Consulta principal por cuenta seleccionada
+      let primaryQuery = supabase
         .from("emails")
         .select("*")
-        .eq("folder", folder);
+        .eq("folder", folder)
+        .eq("account_id", accountId as string);
 
-      if (accountId) {
-        query = query.eq("account_id", accountId);
+      const { data: mainData, error: mainError } = await primaryQuery.order("created_at", { ascending: false });
+      if (mainError) throw mainError;
+
+      // Fallback: incluir correos antiguos sin account_id pero dirigidos a la cuenta seleccionada
+      // (algunas inserciones antiguas pudieron no guardar account_id)
+      const { data: account } = await supabase
+        .from("email_accounts")
+        .select("email")
+        .eq("id", accountId as string)
+        .single();
+
+      if (!account?.email) {
+        return (mainData || []) as Email[];
       }
 
-      const { data, error } = await query.order("created_at", { ascending: false });
+      const { data: legacyData, error: legacyError } = await supabase
+        .from("emails")
+        .select("*")
+        .eq("folder", folder)
+        .is("account_id", null)
+        .contains("to_email", [account.email])
+        .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data as Email[];
+      if (legacyError) {
+        // Si el fallback falla, devolver lo principal para no romper la UI
+        return (mainData || []) as Email[];
+      }
+
+      const merged = [...(mainData || [])];
+      for (const item of legacyData || []) {
+        if (!merged.find((e) => e.id === item.id)) merged.push(item);
+      }
+
+      // Orden descendente por fecha de creación/recepción
+      merged.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      return merged as Email[];
     },
   });
 
