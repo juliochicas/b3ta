@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.poll-emails-imap]
 verify_jwt = true
+
+[functions.improve-video-text]
+verify_jwt = true

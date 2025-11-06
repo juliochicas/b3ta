@@ -1,19 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
-const ALLOWED_ORIGINS = [
-  'https://sap.b3ta.us',
-  'https://b3ta.us',
-  'http://localhost:8080',
-];
-
-const getCorsHeaders = (origin: string | null) => {
-  const isAllowed = origin && ALLOWED_ORIGINS.includes(origin);
-  return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Max-Age': '86400',
-  };
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 interface RequestBody {
@@ -24,9 +13,6 @@ interface RequestBody {
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin');
-  const corsHeaders = getCorsHeaders(origin);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -103,8 +89,6 @@ INSTRUCCIONES CRÍTICAS:
           { role: "system", content: systemPrompt },
           { role: "user", content: prompts[action] }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
       }),
     });
 
