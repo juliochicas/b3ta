@@ -41,10 +41,16 @@ serve(async (req) => {
     const { quotation_id } = await req.json();
     if (!quotation_id) throw new Error("quotation_id is required");
 
-    // Get quotation details
+    console.log("[PAYMENT-LINK] Creating payment link for quotation:", quotation_id);
+
+    // Get quotation details with customer info
     const { data: quotation, error: quotationError } = await supabaseClient
       .from('quotations')
-      .select('*, quotation_items(*)')
+      .select(`
+        *,
+        quotation_items(*),
+        customers(email, name, company)
+      `)
       .eq('id', quotation_id)
       .single();
 
@@ -55,65 +61,106 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Check if customer exists
+    // Check if customer exists in Stripe
     const customers = await stripe.customers.list({ 
-      email: quotation.customer_email, 
+      email: quotation.customers.email, 
       limit: 1 
     });
     
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      console.log("[PAYMENT-LINK] Using existing customer:", customerId);
     } else {
       // Create new customer
       const customer = await stripe.customers.create({
-        email: quotation.customer_email,
-        name: quotation.customer_name,
+        email: quotation.customers.email,
+        name: quotation.customers.name,
+        metadata: {
+          customer_id: quotation.customer_id,
+        },
       });
       customerId = customer.id;
+      console.log("[PAYMENT-LINK] Created new customer:", customerId);
     }
 
-    // Create checkout session with line items from quotation
-    const lineItems = quotation.quotation_items.map((item: any) => ({
-      price_data: {
+    // Create products and prices for each item
+    const lineItems = [];
+    
+    for (const item of quotation.quotation_items) {
+      console.log("[PAYMENT-LINK] Creating product for:", item.item_name);
+      
+      // Create product
+      const product = await stripe.products.create({
+        name: item.item_name,
+        description: item.description || undefined,
+        metadata: {
+          quotation_id: quotation.id,
+          quotation_item_id: item.id,
+        },
+      });
+
+      // Create price
+      const price = await stripe.prices.create({
+        product: product.id,
         currency: quotation.currency.toLowerCase(),
         unit_amount: Math.round(item.unit_price * 100), // Convert to cents
-        product_data: {
-          name: item.item_name,
-          description: item.description || undefined,
+      });
+
+      lineItems.push({
+        price: price.id,
+        quantity: item.quantity,
+      });
+    }
+
+    console.log("[PAYMENT-LINK] Creating payment link with", lineItems.length, "items");
+
+    // Create payment link (no expira)
+    const paymentLink = await stripe.paymentLinks.create({
+      line_items: lineItems,
+      after_completion: {
+        type: 'redirect',
+        redirect: {
+          url: `${req.headers.get("origin")}/quotations?payment=success&quotation=${quotation.quotation_number}`,
         },
       },
-      quantity: item.quantity,
-    }));
-
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: lineItems,
-      mode: "payment",
-      locale: "en", // Forzar formato con punto decimal (200.00 en lugar de 200,00)
-      success_url: `${req.headers.get("origin")}/quotations?payment=success&quotation=${quotation.quotation_number}`,
-      cancel_url: `${req.headers.get("origin")}/quotations?payment=canceled`,
       metadata: {
         quotation_id: quotation.id,
         quotation_number: quotation.quotation_number,
       },
+      invoice_creation: {
+        enabled: true,
+        invoice_data: {
+          custom_fields: [
+            {
+              name: 'Cotización',
+              value: quotation.quotation_number,
+            },
+          ],
+          metadata: {
+            quotation_id: quotation.id,
+          },
+        },
+      },
     });
+
+    console.log("[PAYMENT-LINK] Payment link created:", paymentLink.url);
 
     // Update quotation with payment link
     await supabaseClient
       .from('quotations')
-      .update({ stripe_payment_link: session.url })
+      .update({ stripe_payment_link: paymentLink.url })
       .eq('id', quotation_id);
 
     return new Response(
-      JSON.stringify({ url: session.url }), 
+      JSON.stringify({ url: paymentLink.url }), 
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       }
     );
   } catch (error) {
-    console.error("Error creating payment link:", error);
+    console.error("[PAYMENT-LINK] Error:", error);
     const message = error instanceof Error ? error.message : String(error);
     return new Response(
       JSON.stringify({ error: message }), 
