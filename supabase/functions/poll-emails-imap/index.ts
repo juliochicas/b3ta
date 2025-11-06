@@ -67,15 +67,37 @@ async function fetchEmailsViaIMAP(account: any) {
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
 
-    // Función para enviar comandos IMAP
+    // Función para enviar comandos IMAP y leer hasta la respuesta etiquetada OK/BAD/NO
     async function sendCommand(command: string): Promise<string> {
+      // Extraer el "tag" del comando (p.ej. a001, a123)
+      const tag = command.match(/^([A-Za-z0-9]+)/)?.[1] || '';
       await conn.write(encoder.encode(command + "\r\n"));
-      
+
+      let response = '';
       const buffer = new Uint8Array(8192);
-      const n = await conn.read(buffer);
-      if (n === null) throw new Error("Connection closed");
-      
-      return decoder.decode(buffer.subarray(0, n));
+
+      // Leer en bucle hasta que el servidor responda con la línea final del tag
+      while (true) {
+        const n = await conn.read(buffer);
+        if (n === null) break; // conexión cerrada
+        response += decoder.decode(buffer.subarray(0, n));
+
+        // Si no hay tag, no podemos verificar; devolver lo leído
+        if (!tag) break;
+
+        // Respuesta final típica: "\r\n<tag> OK ..." o BAD/NO
+        if (response.match(new RegExp(`\r?\n${tag} (OK|BAD|NO)`, 'i'))) {
+          break;
+        }
+
+        // Protección: si la respuesta supera ~2MB asumimos fin para evitar loops
+        if (response.length > 2_000_000) {
+          console.warn(`IMAP response too large for ${tag}, cutting off`);
+          break;
+        }
+      }
+
+      return response;
     }
 
     // Login
