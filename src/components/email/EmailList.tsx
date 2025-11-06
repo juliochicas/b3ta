@@ -4,9 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { Mail, MailOpen, Star, Paperclip } from "lucide-react";
+import { Mail, MailOpen, Star, Paperclip, Inbox } from "lucide-react";
 import { toast } from "sonner";
 
 interface Email {
@@ -79,81 +79,107 @@ export const EmailList = ({ folder, onEmailSelect, selectedEmail, accountId }: E
     refetch();
   };
 
+  // Si no hay cuenta seleccionada
+  if (!accountId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center px-4">
+        <Mail className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+        <p className="text-sm text-muted-foreground">
+          Selecciona una cuenta de correo para ver los mensajes
+        </p>
+      </div>
+    );
+  }
+
   if (!emails || emails.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        No hay correos en esta carpeta
+      <div className="flex flex-col items-center justify-center h-64 text-center px-4">
+        <Inbox className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+        <p className="text-sm font-medium text-foreground mb-1">
+          No hay correos en esta carpeta
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Presiona "Sincronizar" para obtener nuevos mensajes
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {emails.map((email) => (
         <Card
           key={email.id}
-          className={`p-4 cursor-pointer hover:bg-accent transition-colors ${
-            selectedEmail?.id === email.id ? "bg-accent" : ""
-          } ${!email.is_read ? "border-l-4 border-l-primary" : ""}`}
+          className={`p-3.5 cursor-pointer transition-all border-l-2 ${
+            selectedEmail?.id === email.id
+              ? "bg-accent/30 border-l-primary shadow-sm"
+              : email.is_read
+              ? "bg-background hover:bg-accent/10 border-l-transparent"
+              : "bg-accent/5 hover:bg-accent/15 border-l-primary"
+          }`}
           onClick={() => onEmailSelect(email)}
         >
           <div className="flex items-start gap-3">
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex-1 min-w-0 space-y-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <p className={`text-sm truncate ${!email.is_read ? 'font-semibold text-foreground' : 'font-normal text-foreground/90'}`}>
+                    {folder === "sent" 
+                      ? (email.to_email?.[0] || "Sin destinatario")
+                      : (email.from_email || "Sin remitente")}
+                  </p>
+                  {email.has_attachments && (
+                    <Paperclip className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
+                  {formatDistanceToNow(new Date(email.received_at || email.created_at), {
+                    addSuffix: true,
+                    locale: es,
+                  })}
+                </p>
+              </div>
+              
+              <p className={`text-sm truncate ${!email.is_read ? 'font-semibold text-foreground' : 'font-normal text-foreground/80'}`}>
+                {email.subject || "(Sin asunto)"}
+              </p>
+              
+              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                {email.body_text?.substring(0, 120) || "Sin contenido"}
+              </p>
+            </div>
+            
+            <div className="flex flex-col gap-1 flex-shrink-0 pt-0.5">
               <Button
                 variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
+                size="icon"
+                className="h-7 w-7 hover:bg-accent/50"
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleRead(email.id, email.is_read);
                 }}
               >
                 {email.is_read ? (
-                  <MailOpen className="h-4 w-4" />
+                  <MailOpen className="h-3.5 w-3.5 text-muted-foreground" />
                 ) : (
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-3.5 w-3.5 text-primary" />
                 )}
               </Button>
               <Button
                 variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
+                size="icon"
+                className="h-7 w-7 hover:bg-accent/50"
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleStar(email.id, email.is_starred);
                 }}
               >
-                <Star
-                  className={`h-4 w-4 ${
-                    email.is_starred ? "fill-warning text-warning" : ""
-                  }`}
-                />
-              </Button>
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className={`font-medium truncate ${!email.is_read ? "font-bold" : ""}`}>
-                  {folder === "sent" ? email.to_email[0] : email.from_email}
-                </span>
-                {email.has_attachments && (
-                  <Paperclip className="h-4 w-4 text-muted-foreground" />
+                {email.is_starred ? (
+                  <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+                ) : (
+                  <Star className="h-3.5 w-3.5 text-muted-foreground" />
                 )}
-              </div>
-              <p className={`text-sm truncate mb-1 ${!email.is_read ? "font-semibold" : ""}`}>
-                {email.subject}
-              </p>
-              <p className="text-xs text-muted-foreground truncate">
-                {email.body_text}
-              </p>
-            </div>
-
-            <div className="text-xs text-muted-foreground whitespace-nowrap">
-              {format(
-                new Date(email.sent_at || email.received_at || email.created_at),
-                "d MMM",
-                { locale: es }
-              )}
+              </Button>
             </div>
           </div>
         </Card>

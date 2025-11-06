@@ -120,57 +120,77 @@ async function fetchEmailsViaIMAP(account: any) {
     for (const id of recentIds) {
       try {
         const tag = `a${String(100 + parseInt(id)).padStart(3, '0')}`;
+        
+        // Primero obtener todo el correo completo para parsing más robusto
         const fetchResponse = await sendCommand(
-          `${tag} FETCH ${id} (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE MESSAGE-ID IN-REPLY-TO REFERENCES)] BODY[TEXT])`
+          `${tag} FETCH ${id} (BODY.PEEK[])`
         );
         
         console.log(`Fetching email ${id}...`);
-        console.log(`Raw IMAP Response: ${fetchResponse.substring(0, 500)}`); // Log primeros 500 chars
+        console.log(`Raw IMAP Response length: ${fetchResponse.length} bytes`);
         
-        // Extraer la sección de headers y body por separado
-        const headerSection = fetchResponse.match(/BODY\[HEADER\.FIELDS[^\]]*\]\s*(?:\{[\d]+\})?\s*\r?\n([\s\S]*?)\r?\n\r?\n/i);
-        const bodySection = fetchResponse.match(/BODY\[TEXT\]\s*(?:\{[\d]+\})?\s*\r?\n([\s\S]+?)(?:\r?\n\)|\)$)/i);
+        // Extraer el contenido del correo después del tamaño literal
+        // Formato típico: * 123 FETCH (BODY[] {12345}\r\n...content...\r\n)
+        const literalMatch = fetchResponse.match(/BODY\[\]\s*\{(\d+)\}\r?\n([\s\S]+)/);
+        if (!literalMatch) {
+          console.error(`Could not parse email ${id} - invalid format`);
+          continue;
+        }
         
-        const headers = headerSection?.[1] || "";
-        const bodyText = bodySection?.[1]?.trim() || "";
+        const emailContent = literalMatch[2];
         
-        console.log(`Headers extracted: ${headers.substring(0, 200)}`);
-        console.log(`Body length: ${bodyText.length}`);
+        // Separar headers y body usando la línea en blanco estándar
+        const parts = emailContent.split(/\r?\n\r?\n/);
+        const headersPart = parts[0] || "";
+        const bodyPart = parts.slice(1).join('\n\n').trim();
         
-        // Parsear headers con mejor manejo - más flexible
-        const fromMatch = headers.match(/^From:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
-        const toMatch = headers.match(/^To:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
-        const subjectMatch = headers.match(/^Subject:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
-        const dateMatch = headers.match(/^Date:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
-        const messageIdMatch = headers.match(/^Message-ID:\s*<?([^>\r\n]+)>?/im);
-        const inReplyToMatch = headers.match(/^In-Reply-To:\s*<?([^>\r\n]+)>?/im);
-        const referencesMatch = headers.match(/^References:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
+        console.log(`Headers length: ${headersPart.length}, Body length: ${bodyPart.length}`);
+        console.log(`First 300 chars of headers:\n${headersPart.substring(0, 300)}`);
         
-        const rawFrom = fromMatch?.[1]?.replace(/\s+/g, ' ').trim() || "";
-        const rawSubject = subjectMatch?.[1]?.replace(/\s+/g, ' ').trim() || "(Sin asunto)";
-        const rawDate = dateMatch?.[1]?.trim() || null;
+        // Parsear headers con regex más robustos que manejen continuaciones
+        const parseHeader = (headerName: string): string => {
+          // Buscar el header y capturar incluyendo líneas de continuación (que empiezan con espacios)
+          const regex = new RegExp(`^${headerName}:\\s*(.+?)(?=\\r?\\n(?:[A-Za-z-]+:|$))`, 'ims');
+          const match = headersPart.match(regex);
+          return match?.[1]?.replace(/\r?\n\s+/g, ' ').trim() || "";
+        };
+        
+        const rawFrom = parseHeader('From');
+        const rawTo = parseHeader('To');
+        const rawSubject = parseHeader('Subject');
+        const rawDate = parseHeader('Date');
+        const rawMessageId = parseHeader('Message-ID');
+        const rawInReplyTo = parseHeader('In-Reply-To');
+        const rawReferences = parseHeader('References');
+        
+        console.log(`Parsed - From: "${rawFrom}", Subject: "${rawSubject}"`);
         
         // Decodificar headers MIME
-        const from = decodeMimeHeader(rawFrom);
-        const subject = decodeMimeHeader(rawSubject);
-        const messageId = messageIdMatch?.[1]?.trim() || `${id}@${account.imap_host}`;
-        const inReplyTo = inReplyToMatch?.[1]?.trim() || null;
+        const from = rawFrom ? decodeMimeHeader(rawFrom) : "";
+        const subject = rawSubject ? decodeMimeHeader(rawSubject) : "(Sin asunto)";
+        const messageId = rawMessageId.replace(/[<>]/g, '').trim() || `${id}@${account.imap_host}`;
+        const inReplyTo = rawInReplyTo.replace(/[<>]/g, '').trim() || null;
         
         // Parsear fecha correctamente
         const received_at = parseEmailDate(rawDate);
         
-        console.log(`Email ${id}: From=${from}, Subject=${subject}, MessageID=${messageId}, Body length=${bodyText.length}`);
+        console.log(`Email ${id}: From=${from}, Subject=${subject}, MessageID=${messageId}, Body length=${bodyPart.length}`);
+        
+        // Validar que al menos tengamos from o subject
+        if (!from && !rawSubject) {
+          console.warn(`Email ${id} has no From or Subject, might be malformed`);
+        }
         
         emails.push({
           from,
-          to: toMatch?.[1]?.split(",").map((e: string) => decodeMimeHeader(e.trim())) || [account.email],
+          to: rawTo ? rawTo.split(",").map((e: string) => decodeMimeHeader(e.trim())) : [account.email],
           subject,
-          body_text: bodyText,
+          body_text: bodyPart,
           message_id: messageId,
           in_reply_to: inReplyTo,
-          references: referencesMatch?.[1]?.split(/\s+/).map((r: string) => r.replace(/[<>]/g, '').trim()).filter((r: string) => r) || null,
+          references: rawReferences ? rawReferences.split(/\s+/).map((r: string) => r.replace(/[<>]/g, '').trim()).filter((r: string) => r) : null,
           received_at,
-          imap_uid: id, // Guardar el UID del IMAP para poder eliminarlo después
+          imap_uid: id,
         });
 
         // NO marcar como leído para permitir sincronizaciones futuras
