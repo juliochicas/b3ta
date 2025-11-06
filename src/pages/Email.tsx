@@ -11,7 +11,6 @@ import { EmailViewer } from "@/components/email/EmailViewer";
 import { EmailSetupGuide } from "@/components/email/EmailSetupGuide";
 import { EmailAccountsManager } from "@/components/email/EmailAccountsManager";
 import {
-  ArrowLeft,
   Inbox,
   Send,
   Star,
@@ -29,10 +28,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CRMNavigation } from "@/components/crm/CRMNavigation";
+import { User } from "@supabase/supabase-js";
 
 const Email = () => {
   const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState<string>("");
+  const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [showComposer, setShowComposer] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState("inbox");
   const [selectedEmail, setSelectedEmail] = useState<any>(null);
@@ -43,23 +45,35 @@ const Email = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      if (!user) {
+      if (!session) {
         navigate("/auth");
         return;
       }
 
-      setUserEmail(user.email || "");
+      setUser(session.user);
+      checkUserRole(session.user.id);
     };
 
     checkAuth();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+  const checkUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (!error) {
+        setUserRole(data?.role || null);
+      }
+    } catch (error) {
+      console.error('Error checking role:', error);
+    }
   };
 
   const handleSync = async () => {
@@ -102,34 +116,14 @@ const Email = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/crm")}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver al CRM
-              </Button>
-              <h1 className="text-2xl font-bold">Correo Electrónico</h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
-                {userEmail}
-              </span>
-              <Button variant="outline" onClick={handleLogout}>
-                Cerrar Sesión
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-muted/30">
+      <CRMNavigation userEmail={user?.email} userRole={userRole} />
 
       <main className="container mx-auto px-4 py-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Correo Electrónico</h1>
+          <p className="text-muted-foreground">Gestiona tus correos electrónicos</p>
+        </div>
         <div className="grid grid-cols-12 gap-6 h-[calc(100vh-180px)]">
           {/* Sidebar */}
           <div className="col-span-3 space-y-4 overflow-y-auto">

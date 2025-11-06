@@ -7,6 +7,9 @@ import { VideoModal } from "@/components/videos/VideoModal";
 import { VideoPlayerModal } from "@/components/videos/VideoPlayerModal";
 import { VideoCard } from "@/components/videos/VideoCard";
 import { useUserRole } from "@/hooks/useUserRole";
+import { CRMNavigation } from "@/components/crm/CRMNavigation";
+import { User } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 interface Video {
   id: string;
@@ -30,13 +33,44 @@ const Videos = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [playingVideo, setPlayingVideo] = useState<Video | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const { role } = useUserRole();
+  const navigate = useNavigate();
 
   const canManageVideos = role === 'admin';
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        setUser(session.user);
+        checkUserRoleData(session.user.id);
+      }
+    };
+
+    checkAuth();
     fetchVideos();
   }, []);
+
+  const checkUserRoleData = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (!error) {
+        setUserRole(data?.role || null);
+      }
+    } catch (error) {
+      console.error('Error checking role:', error);
+    }
+  };
 
   const fetchVideos = async () => {
     try {
@@ -96,32 +130,14 @@ const Videos = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="fixed top-0 w-full bg-background/80 backdrop-blur-lg z-50 border-b border-border">
-        <div className="container mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 bg-clip-text text-transparent">
-              B3TA
-            </div>
-            <span className="text-xs text-muted-foreground">.us</span>
-          </div>
-          
-          <nav className="flex items-center gap-6">
-            <a href="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Inicio
-            </a>
-            <a href="/crm" className="text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors py-2 px-4 rounded-lg">
-              CRM
-            </a>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen bg-muted/30">
+      <CRMNavigation userEmail={user?.email} userRole={userRole} />
 
-      <main className="pt-24 pb-16">
+      <main className="pt-8 pb-16">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">Showcase de Videos</h1>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Showcase de Videos</h1>
               <p className="text-muted-foreground">
                 Ejemplos de implementaciones y casos de éxito
               </p>

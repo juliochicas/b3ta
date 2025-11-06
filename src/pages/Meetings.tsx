@@ -1,67 +1,61 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MeetingCalendar } from "@/components/meetings/MeetingCalendar";
 import { AvailabilitySettings } from "@/components/meetings/AvailabilitySettings";
-import { Calendar, Settings, ArrowLeft } from "lucide-react";
+import { Calendar, Settings } from "lucide-react";
+import { CRMNavigation } from "@/components/crm/CRMNavigation";
+import { User } from "@supabase/supabase-js";
 
 const Meetings = () => {
   const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState<string>("");
+  const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      if (!user) {
+      if (!session) {
         navigate("/auth");
         return;
       }
 
-      setUserEmail(user.email || "");
+      setUser(session.user);
+      checkUserRole(session.user.id);
     };
 
     checkAuth();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+  const checkUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (!error) {
+        setUserRole(data?.role || null);
+      }
+    } catch (error) {
+      console.error('Error checking role:', error);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/crm")}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver al CRM
-              </Button>
-              <h1 className="text-2xl font-bold">Gestión de Reuniones</h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
-                {userEmail}
-              </span>
-              <Button variant="outline" onClick={handleLogout}>
-                Cerrar Sesión
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-muted/30">
+      <CRMNavigation userEmail={user?.email} userRole={userRole} />
 
       <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Gestión de Reuniones</h1>
+          <p className="text-muted-foreground">Organiza y administra tus reuniones</p>
+        </div>
         <Tabs defaultValue="calendar" className="space-y-6">
           <TabsList>
             <TabsTrigger value="calendar" className="gap-2">

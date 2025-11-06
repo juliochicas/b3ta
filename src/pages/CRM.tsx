@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { Button } from "@/components/ui/button";
-import { LogOut, Users, TrendingUp, Clock, Star, FileText, Mail, Video } from "lucide-react";
 import { LeadsList } from "@/components/crm/LeadsList";
 import { CRMStats } from "@/components/crm/CRMStats";
 import { useToast } from "@/hooks/use-toast";
+import { CRMNavigation } from "@/components/crm/CRMNavigation";
 
 export default function CRM() {
   const [user, setUser] = useState<User | null>(null);
@@ -80,79 +79,14 @@ export default function CRM() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      {/* Header */}
-      <header className="bg-background border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 bg-clip-text text-transparent">
-                B3TA CRM
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Panel de Gestión de Leads
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/reports')}
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Informes
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/quotations')}
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Cotizaciones
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/meetings')}
-              >
-                <Clock className="mr-2 h-4 w-4" />
-                Reuniones
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/email')}
-              >
-                <Mail className="mr-2 h-4 w-4" />
-                Correo
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/videos')}
-              >
-                <Video className="mr-2 h-4 w-4" />
-                Videos
-              </Button>
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium">{user?.email}</p>
-                <p className="text-xs text-muted-foreground capitalize">{userRole || 'Usuario'}</p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Salir
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <CRMNavigation userEmail={user?.email} userRole={userRole} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-foreground">Panel de Gestión de Leads</h1>
+          <p className="text-muted-foreground">Administra y da seguimiento a tus leads</p>
+        </div>
         <CRMStats />
         <LeadsList />
       </main>
