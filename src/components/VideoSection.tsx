@@ -167,7 +167,7 @@ export const VideoSection = () => {
 
           <div className="mt-8 text-center">
             <Button variant="outline" asChild>
-              <a href="/videos">
+              <a href="/videos" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/videos'); window.dispatchEvent(new PopStateEvent('popstate')); }}>
                 Ver Todos los Videos
                 <ExternalLink className="ml-2 h-4 w-4" />
               </a>
