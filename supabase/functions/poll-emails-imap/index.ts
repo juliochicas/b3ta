@@ -125,19 +125,26 @@ async function fetchEmailsViaIMAP(account: any) {
         );
         
         console.log(`Fetching email ${id}...`);
+        console.log(`Raw IMAP Response: ${fetchResponse.substring(0, 500)}`); // Log primeros 500 chars
         
-        // Parsear headers con mejor manejo de saltos de línea
-        const fromMatch = fetchResponse.match(/From:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
-        const toMatch = fetchResponse.match(/To:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
-        const subjectMatch = fetchResponse.match(/Subject:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
-        const dateMatch = fetchResponse.match(/Date:\s*([^\r\n]+)/i);
-        const messageIdMatch = fetchResponse.match(/Message-ID:\s*<?([^>\r\n]+)>?/i);
-        const inReplyToMatch = fetchResponse.match(/In-Reply-To:\s*<?([^>\r\n]+)>?/i);
-        const referencesMatch = fetchResponse.match(/References:\s*([^\r\n]+(?:\r?\n\s+[^\r\n]+)*)/i);
-
-        // Parsear body
-        const bodyMatch = fetchResponse.match(/BODY\[TEXT\]\s*(?:\{[\d]+\})?\r?\n([\s\S]+?)(?:\r?\n\)|$)/);
-        const bodyText = bodyMatch?.[1]?.trim() || "";
+        // Extraer la sección de headers y body por separado
+        const headerSection = fetchResponse.match(/BODY\[HEADER\.FIELDS[^\]]*\]\s*(?:\{[\d]+\})?\s*\r?\n([\s\S]*?)\r?\n\r?\n/i);
+        const bodySection = fetchResponse.match(/BODY\[TEXT\]\s*(?:\{[\d]+\})?\s*\r?\n([\s\S]+?)(?:\r?\n\)|\)$)/i);
+        
+        const headers = headerSection?.[1] || "";
+        const bodyText = bodySection?.[1]?.trim() || "";
+        
+        console.log(`Headers extracted: ${headers.substring(0, 200)}`);
+        console.log(`Body length: ${bodyText.length}`);
+        
+        // Parsear headers con mejor manejo - más flexible
+        const fromMatch = headers.match(/^From:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
+        const toMatch = headers.match(/^To:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
+        const subjectMatch = headers.match(/^Subject:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
+        const dateMatch = headers.match(/^Date:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
+        const messageIdMatch = headers.match(/^Message-ID:\s*<?([^>\r\n]+)>?/im);
+        const inReplyToMatch = headers.match(/^In-Reply-To:\s*<?([^>\r\n]+)>?/im);
+        const referencesMatch = headers.match(/^References:\s*(.+?)(?=\r?\n(?:[A-Z][-A-Za-z]*:|$))/ims);
         
         const rawFrom = fromMatch?.[1]?.replace(/\s+/g, ' ').trim() || "";
         const rawSubject = subjectMatch?.[1]?.replace(/\s+/g, ' ').trim() || "(Sin asunto)";
@@ -152,16 +159,16 @@ async function fetchEmailsViaIMAP(account: any) {
         // Parsear fecha correctamente
         const received_at = parseEmailDate(rawDate);
         
-        console.log(`Email ${id}: From=${from}, Subject=${subject}, MessageID=${messageId}, InReplyTo=${inReplyTo}`);
+        console.log(`Email ${id}: From=${from}, Subject=${subject}, MessageID=${messageId}, Body length=${bodyText.length}`);
         
         emails.push({
           from,
-          to: toMatch?.[1]?.split(",").map(e => decodeMimeHeader(e.trim())) || [account.email],
+          to: toMatch?.[1]?.split(",").map((e: string) => decodeMimeHeader(e.trim())) || [account.email],
           subject,
           body_text: bodyText,
           message_id: messageId,
           in_reply_to: inReplyTo,
-          references: referencesMatch?.[1]?.split(/\s+/).map(r => r.replace(/[<>]/g, '').trim()).filter(r => r) || null,
+          references: referencesMatch?.[1]?.split(/\s+/).map((r: string) => r.replace(/[<>]/g, '').trim()).filter((r: string) => r) || null,
           received_at,
           imap_uid: id, // Guardar el UID del IMAP para poder eliminarlo después
         });
