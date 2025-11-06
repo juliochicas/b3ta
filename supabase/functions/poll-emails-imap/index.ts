@@ -1,20 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ALLOWED_ORIGINS = [
-  'https://sap.b3ta.us',
-  'https://b3ta.us',
-  'http://localhost:8080',
-];
-
-const getCorsHeaders = (origin: string | null) => {
-  const isAllowed = origin && ALLOWED_ORIGINS.includes(origin);
-  return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Max-Age': '86400',
-  };
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
 
 // Función para parsear fecha RFC 2822 a ISO
@@ -44,7 +35,7 @@ function decodeMimeHeader(text: string): string {
   if (!text) return text;
   
   // Decodificar =?UTF-8?B?...?= y =?UTF-8?Q?...?=
-  return text.replace(/=\?([^?]+)\?([BQ])\?([^?]+)\?=/gi, (match, charset, encoding, encoded) => {
+  return text.replace(/=\?([^?]+)\?([BQ])\?([^?]+)\?=/gi, (match: string, charset: string, encoding: string, encoded: string) => {
     try {
       if (encoding.toUpperCase() === 'B') {
         // Base64
@@ -53,7 +44,7 @@ function decodeMimeHeader(text: string): string {
         // Quoted-printable
         return encoded
           .replace(/_/g, ' ')
-          .replace(/=([0-9A-F]{2})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+          .replace(/=([0-9A-F]{2})/gi, (_: string, hex: string) => String.fromCharCode(parseInt(hex, 16)));
       }
     } catch (e) {
       console.warn(`Failed to decode MIME header: ${match}`);
@@ -193,9 +184,6 @@ async function fetchEmailsViaIMAP(account: any) {
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin');
-  const corsHeaders = getCorsHeaders(origin);
-  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -345,8 +333,6 @@ serve(async (req) => {
     );
   } catch (error: any) {
     console.error("Error in poll-emails-imap:", error);
-    const origin = req.headers.get('origin');
-    const corsHeaders = getCorsHeaders(origin);
     return new Response(
       JSON.stringify({ 
         error: error.message,
