@@ -55,6 +55,9 @@ export default defineConfig(({ mode }) => ({
     target: 'es2020',
     chunkSizeWarningLimit: 1000,
     sourcemap: false,
+    commonjsOptions: {
+      transformMixedEsModules: true
+    }
   },
   // Optimize dependencies
   optimizeDeps: {
@@ -63,7 +66,10 @@ export default defineConfig(({ mode }) => ({
       'react-dom', 
       'react-router-dom',
       'lucide-react',
-      '@supabase/supabase-js',
     ],
+    exclude: ['@supabase/supabase-js', '@supabase/postgrest-js'],
+    esbuildOptions: {
+      mainFields: ['module', 'jsnext:main', 'browser']
+    }
   },
 }));
