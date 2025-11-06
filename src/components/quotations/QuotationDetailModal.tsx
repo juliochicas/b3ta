@@ -1093,13 +1093,24 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           <div className="space-y-3">
             <div className="flex gap-3">
               {quotation.stripe_payment_link ? (
-                <Button
-                  className="flex-1"
-                  onClick={() => window.open(quotation.stripe_payment_link!, '_blank')}
-                >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Ver Link de Pago
-                </Button>
+                <>
+                  <Button
+                    className="flex-1"
+                    onClick={() => window.open(quotation.stripe_payment_link!, '_blank')}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Ver Link de Pago
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={createStripePaymentLink}
+                    disabled={isCreatingPaymentLink}
+                  >
+                    <DollarSign className="mr-2 h-4 w-4" />
+                    {isCreatingPaymentLink ? 'Regenerando...' : 'Regenerar Link'}
+                  </Button>
+                </>
               ) : (
                 <Button
                   className="flex-1"
