@@ -19,7 +19,7 @@ const getCorsHeaders = (origin: string | null) => {
 
 interface RequestBody {
   text: string;
-  action: 'correct' | 'improve' | 'structure' | 'professional' | 'expand';
+  action: 'correct' | 'improve' | 'professional' | 'friendly' | 'expand' | 'summarize';
   section: string;
 }
 
@@ -51,15 +51,19 @@ ${text}`,
 
 ${text}`,
       
-      structure: `Organiza y estructura el siguiente texto en párrafos bien definidos con una jerarquía lógica. Agrega conectores y haz que fluya mejor:
-
-${text}`,
-      
       professional: `Reescribe el siguiente texto de manera más formal y profesional, apropiado para un informe de consultoría ejecutiva. Mantén todos los puntos clave:
 
 ${text}`,
       
+      friendly: `Reescribe el siguiente texto de manera más amigable y cercana, pero manteniendo el profesionalismo. Hazlo más accesible y conversacional:
+
+${text}`,
+      
       expand: `Expande el siguiente texto agregando más detalles, ejemplos y explicaciones. Hazlo más completo y detallado mientras mantienes el enfoque principal:
+
+${text}`,
+      
+      summarize: `Resume el siguiente texto de manera concisa, manteniendo solo los puntos clave más importantes. Hazlo breve pero completo:
 
 ${text}`
     };

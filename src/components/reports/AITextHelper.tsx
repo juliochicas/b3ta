@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, CheckCheck, FileEdit, ListOrdered, Briefcase, Expand } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Sparkles, CheckCircle2, Type, Smile, Zap, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface Props {
   text: string;
@@ -16,23 +11,26 @@ interface Props {
   onTextImproved: (newText: string) => void;
 }
 
-type Action = 'correct' | 'improve' | 'structure' | 'professional' | 'expand';
+type Action = 'correct' | 'improve' | 'professional' | 'friendly' | 'expand' | 'summarize';
 
 export const AITextHelper = ({ text, section, onTextImproved }: Props) => {
-  const [loading, setLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const improveText = async (action: Action) => {
+  const handleImprove = async (action: Action, actionLabel: string) => {
     if (!text.trim()) {
       toast({
-        title: "Campo vacío",
-        description: "Escribe algo de texto primero para que la IA pueda ayudarte",
+        title: "Error",
+        description: "Escriba texto antes de usar IA",
         variant: "destructive",
       });
       return;
     }
 
-    setLoading(true);
+    setIsProcessing(true);
+    setOpen(false);
+
     try {
       const { data, error } = await supabase.functions.invoke('improve-report-text', {
         body: { text, action, section }
@@ -41,14 +39,14 @@ export const AITextHelper = ({ text, section, onTextImproved }: Props) => {
       if (error) {
         if (error.message.includes("429")) {
           toast({
-            title: "Límite excedido",
-            description: "Has hecho muchas solicitudes. Espera un momento e intenta de nuevo.",
+            title: "Límite alcanzado",
+            description: "Has alcanzado el límite de solicitudes. Intenta de nuevo en unos minutos.",
             variant: "destructive",
           });
         } else if (error.message.includes("402")) {
           toast({
             title: "Créditos agotados",
-            description: "Recarga tus créditos de Lovable AI en la configuración.",
+            description: "No tienes suficientes créditos. Recarga tu saldo en configuración.",
             variant: "destructive",
           });
         } else {
@@ -60,78 +58,98 @@ export const AITextHelper = ({ text, section, onTextImproved }: Props) => {
       if (data?.improvedText) {
         onTextImproved(data.improvedText);
         toast({
-          title: "✨ Texto mejorado",
-          description: getSuccessMessage(action),
+          title: "Texto mejorado",
+          description: `${actionLabel} aplicado exitosamente`,
         });
       }
     } catch (error: any) {
-      console.error('Error mejorando texto:', error);
+      console.error('Error improving report text:', error);
       toast({
         title: "Error",
-        description: "No se pudo mejorar el texto. Intenta de nuevo.",
+        description: error instanceof Error ? error.message : "No se pudo procesar el texto",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const getSuccessMessage = (action: Action): string => {
-    const messages = {
-      correct: "Ortografía y gramática corregidas",
-      improve: "Redacción mejorada",
-      structure: "Texto estructurado y organizado",
-      professional: "Texto profesionalizado",
-      expand: "Texto expandido con más detalles"
-    };
-    return messages[action];
-  };
+  const actions = [
+    {
+      action: "correct" as Action,
+      label: "Corregir ortografía",
+      icon: CheckCircle2,
+      description: "Corrige errores ortográficos y gramaticales"
+    },
+    {
+      action: "improve" as Action,
+      label: "Mejorar redacción",
+      icon: Sparkles,
+      description: "Mejora claridad y profesionalismo"
+    },
+    {
+      action: "professional" as Action,
+      label: "Tono profesional",
+      icon: Type,
+      description: "Convierte a tono más formal y técnico"
+    },
+    {
+      action: "friendly" as Action,
+      label: "Tono amigable",
+      icon: Smile,
+      description: "Hace el texto más cercano y accesible"
+    },
+    {
+      action: "expand" as Action,
+      label: "Expandir",
+      icon: Zap,
+      description: "Añade más detalles y explicaciones"
+    },
+    {
+      action: "summarize" as Action,
+      label: "Resumir",
+      icon: FileText,
+      description: "Condensa manteniendo puntos clave"
+    }
+  ];
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          disabled={loading}
-          className="gap-2"
+          disabled={isProcessing || !text.trim()}
         >
-          {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Mejorando...
-            </>
-          ) : (
-            <>
-              <Sparkles className="h-4 w-4" />
-              Mejorar con IA
-            </>
-          )}
+          <Sparkles className="h-4 w-4 mr-2" />
+          {isProcessing ? "Procesando..." : "IA"}
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuItem onClick={() => improveText('correct')}>
-          <CheckCheck className="mr-2 h-4 w-4" />
-          Corregir ortografía
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => improveText('improve')}>
-          <FileEdit className="mr-2 h-4 w-4" />
-          Mejorar redacción
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => improveText('structure')}>
-          <ListOrdered className="mr-2 h-4 w-4" />
-          Dar estructura
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => improveText('professional')}>
-          <Briefcase className="mr-2 h-4 w-4" />
-          Hacer más profesional
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => improveText('expand')}>
-          <Expand className="mr-2 h-4 w-4" />
-          Expandir contenido
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </PopoverTrigger>
+      <PopoverContent className="w-80" align="end">
+        <div className="space-y-2">
+          <h4 className="font-semibold text-sm mb-3">Mejorar con IA</h4>
+          <div className="space-y-1">
+            {actions.map(({ action, label, icon: Icon, description }) => (
+              <Button
+                key={action}
+                variant="ghost"
+                className="w-full justify-start h-auto py-3"
+                onClick={() => handleImprove(action, label)}
+                disabled={isProcessing}
+              >
+                <div className="flex items-start gap-3 text-left">
+                  <Icon className="h-4 w-4 mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm">{label}</div>
+                    <div className="text-xs text-muted-foreground">{description}</div>
+                  </div>
+                </div>
+              </Button>
+            ))}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
