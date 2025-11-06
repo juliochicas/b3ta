@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { VideoPlayerModal } from "@/components/videos/VideoPlayerModal";
 
 interface Video {
   id: string;
@@ -14,11 +15,14 @@ interface Video {
   category: string;
   duration: string | null;
   is_featured: boolean;
+  views_count: number;
+  seo_keywords: string[] | null;
 }
 
 export const VideoSection = () => {
   const [featuredVideo, setFeaturedVideo] = useState<Video | null>(null);
   const [recentVideos, setRecentVideos] = useState<Video[]>([]);
+  const [playingVideo, setPlayingVideo] = useState<Video | null>(null);
 
   useEffect(() => {
     fetchVideos();
@@ -50,8 +54,8 @@ export const VideoSection = () => {
     }
   };
 
-  const handlePlay = (url: string) => {
-    window.open(url, '_blank');
+  const handlePlay = (video: Video) => {
+    setPlayingVideo(video);
   };
 
   if (!featuredVideo && recentVideos.length === 0) {
@@ -76,7 +80,7 @@ export const VideoSection = () => {
 
           <Card 
             className="relative overflow-hidden cursor-pointer group border-2 border-border hover:border-primary transition-all shadow-2xl"
-            onClick={() => handlePlay(displayVideo.video_url)}
+            onClick={() => handlePlay(displayVideo)}
           >
             <div className="relative h-[500px]">
               {displayVideo.thumbnail_url ? (
@@ -129,7 +133,7 @@ export const VideoSection = () => {
                 <Card 
                   key={video.id} 
                   className="p-0 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow group"
-                  onClick={() => handlePlay(video.video_url)}
+                  onClick={() => handlePlay(video)}
                 >
                   <div className="relative h-40 bg-muted">
                     {video.thumbnail_url ? (
@@ -171,6 +175,11 @@ export const VideoSection = () => {
           </div>
         </div>
       </div>
+
+      <VideoPlayerModal
+        video={playingVideo}
+        onClose={() => setPlayingVideo(null)}
+      />
     </section>
   );
 };
