@@ -60,6 +60,7 @@ export const ScheduleMeetingModal = ({
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState("scheduled");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [meetingLink, setMeetingLink] = useState("");
   
   // Attendees management
   interface Attendee {
@@ -88,6 +89,7 @@ export const ScheduleMeetingModal = ({
       setNotes(meetingToEdit.notes || "");
       setStatus(meetingToEdit.status);
       setOriginalScheduledAt(meetingToEdit.scheduled_at);
+      setMeetingLink(meetingToEdit.meeting_link || "");
     } else {
       setDate(preSelectedDate || undefined);
       setTime("");
@@ -98,6 +100,9 @@ export const ScheduleMeetingModal = ({
       setStatus("scheduled");
       setAttendees([]);
       setOriginalScheduledAt(null);
+      // Generate meeting link immediately for new meetings
+      const roomName = `b3ta-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      setMeetingLink(`https://meet.jit.si/${roomName}`);
     }
   }, [meetingToEdit, leadId, preSelectedDate]);
 
@@ -161,10 +166,6 @@ export const ScheduleMeetingModal = ({
 
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("No user found");
-
-      // Generate unique Jitsi Meet link
-      const roomName = `b3ta-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      const meetingLink = `https://meet.jit.si/${roomName}`;
 
       const meetingData = {
         lead_id: selectedLeadId && selectedLeadId !== "none" ? selectedLeadId : null,
@@ -395,6 +396,40 @@ export const ScheduleMeetingModal = ({
               </Select>
             </div>
           </div>
+
+          {!meetingToEdit && meetingLink && (
+            <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Link de Videollamada Generado
+              </div>
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">
+                  Este link se compartirá automáticamente con todos los invitados
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input 
+                    value={meetingLink} 
+                    readOnly 
+                    className="text-sm font-mono"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(meetingLink);
+                      toast.success("Link copiado al portapapeles");
+                    }}
+                  >
+                    Copiar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div>
             <Label>Zona Horaria</Label>
