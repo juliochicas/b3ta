@@ -242,6 +242,7 @@ export type Database = {
           from_email: string
           has_attachments: boolean | null
           id: string
+          imap_uid: string | null
           in_reply_to: string | null
           is_draft: boolean | null
           is_read: boolean | null
@@ -271,6 +272,7 @@ export type Database = {
           from_email: string
           has_attachments?: boolean | null
           id?: string
+          imap_uid?: string | null
           in_reply_to?: string | null
           is_draft?: boolean | null
           is_read?: boolean | null
@@ -300,6 +302,7 @@ export type Database = {
           from_email?: string
           has_attachments?: boolean | null
           id?: string
+          imap_uid?: string | null
           in_reply_to?: string | null
           is_draft?: boolean | null
           is_read?: boolean | null
