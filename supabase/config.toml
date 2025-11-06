@@ -47,3 +47,6 @@ verify_jwt = true
 
 [functions.improve-video-text]
 verify_jwt = true
+
+[functions.generate-video-thumbnail]
+verify_jwt = true

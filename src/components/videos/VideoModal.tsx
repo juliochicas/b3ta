@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Wand2 } from "lucide-react";
 
 interface Video {
   id?: string;
@@ -44,12 +44,48 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
   });
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [thumbnailLoading, setThumbnailLoading] = useState(false);
 
   useEffect(() => {
     if (video) {
       setFormData(video);
     }
   }, [video]);
+
+  const handleGenerateThumbnail = async () => {
+    if (!formData.title.trim()) {
+      toast.error("Agrega un título primero");
+      return;
+    }
+
+    setThumbnailLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-video-thumbnail', {
+        body: { 
+          title: formData.title,
+          description: formData.description,
+          category: formData.category
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.imageUrl) {
+        setFormData(prev => ({
+          ...prev,
+          thumbnail_url: data.imageUrl
+        }));
+        toast.success("Thumbnail generado con IA");
+      } else {
+        throw new Error('No se recibió la imagen');
+      }
+    } catch (error: any) {
+      console.error('Error generating thumbnail:', error);
+      toast.error(error.message || "Error al generar thumbnail");
+    } finally {
+      setThumbnailLoading(false);
+    }
+  };
 
   const handleAIImprove = async (field: 'title' | 'description' | 'meta_description' | 'seo_keywords', action: 'improve' | 'persuasive' | 'seo' | 'keywords') => {
     let textToImprove = '';
@@ -253,13 +289,37 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="thumbnail_url">URL de Miniatura</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="thumbnail_url">URL de Miniatura</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateThumbnail}
+                  disabled={thumbnailLoading || !formData.title.trim()}
+                >
+                  <Wand2 className="h-3 w-3 mr-1" />
+                  {thumbnailLoading ? 'Generando...' : 'Generar con IA'}
+                </Button>
+              </div>
               <Input
                 id="thumbnail_url"
                 value={formData.thumbnail_url || ''}
                 onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                placeholder="https://..."
+                placeholder="https://... o genera uno con IA"
               />
+              {formData.thumbnail_url && (
+                <div className="mt-2">
+                  <img 
+                    src={formData.thumbnail_url} 
+                    alt="Preview" 
+                    className="w-full h-32 object-cover rounded border"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="col-span-2">
