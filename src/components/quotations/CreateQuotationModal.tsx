@@ -61,6 +61,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
   const [items, setItems] = useState<QuotationItem[]>([]);
   const [products, setProducts] = useState<ProductService[]>([]);
   const [reports, setReports] = useState<any[]>([]);
+  const [isSavingAsDefault, setIsSavingAsDefault] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string>("");
   const [showProductSelector, setShowProductSelector] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -68,6 +69,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
 
   useEffect(() => {
     loadProducts();
+    loadDefaultTerms();
     if (leadId) loadReportsForLead();
   }, [leadId]);
 
@@ -89,6 +91,63 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       .order('created_at', { ascending: false });
     
     setReports(data || []);
+  };
+
+  const loadDefaultTerms = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('default_terms_conditions')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      if (data?.default_terms_conditions) {
+        setFormData(prev => ({
+          ...prev,
+          terms_conditions: data.default_terms_conditions
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading default terms:', error);
+    }
+  };
+
+  const saveAsDefaultTerms = async () => {
+    setIsSavingAsDefault(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          default_terms_conditions: formData.terms_conditions
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Términos guardados",
+        description: "Los términos y condiciones se han guardado como predeterminados",
+      });
+    } catch (error) {
+      console.error('Error saving default terms:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar los términos predeterminados",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingAsDefault(false);
+    }
   };
 
   const addItem = () => {
@@ -574,13 +633,28 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                 />
               </div>
               <div>
-                <Label htmlFor="terms">Términos y Condiciones</Label>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="terms">Términos y Condiciones</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={saveAsDefaultTerms}
+                    disabled={isSavingAsDefault || !formData.terms_conditions}
+                  >
+                    Guardar como Predeterminado
+                  </Button>
+                </div>
                 <Textarea
                   id="terms"
                   value={formData.terms_conditions}
                   onChange={(e) => setFormData({ ...formData, terms_conditions: e.target.value })}
                   rows={6}
+                  placeholder="Ingrese los términos y condiciones..."
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Los términos predeterminados se cargarán automáticamente en nuevas cotizaciones
+                </p>
               </div>
             </div>
           </Card>

@@ -71,6 +71,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [tags, setTags] = useState((quotation.tags || []).join(", "));
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(quotation.notes || "");
+  const [isEditingTerms, setIsEditingTerms] = useState(false);
+  const [termsConditions, setTermsConditions] = useState(quotation.terms_conditions || "");
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -230,6 +232,32 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       toast({
         title: "Error",
         description: "No se pudieron actualizar los comentarios",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateTermsConditions = async () => {
+    try {
+      const { error } = await supabase
+        .from('quotations')
+        .update({ terms_conditions: termsConditions || null })
+        .eq('id', quotation.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Términos actualizados",
+        description: "Los términos y condiciones se han actualizado exitosamente",
+      });
+      
+      setIsEditingTerms(false);
+      onUpdate();
+    } catch (error) {
+      console.error("Error updating terms:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron actualizar los términos y condiciones",
         variant: "destructive",
       });
     }
@@ -1080,14 +1108,51 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                 </Card>
               )}
 
-              {quotation.terms_conditions && (
-                <Card className="p-6">
-                  <h3 className="font-semibold mb-2">Términos y Condiciones</h3>
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold">Términos y Condiciones</h3>
+                  {!isEditingTerms && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsEditingTerms(true)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                {isEditingTerms ? (
+                  <div className="space-y-2">
+                    <Textarea
+                      value={termsConditions}
+                      onChange={(e) => setTermsConditions(e.target.value)}
+                      rows={8}
+                      placeholder="Ingrese los términos y condiciones..."
+                    />
+                    <div className="flex gap-2">
+                      <Button onClick={updateTermsConditions} size="sm">
+                        <Save className="h-4 w-4 mr-2" />
+                        Guardar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setTermsConditions(quotation.terms_conditions || "");
+                          setIsEditingTerms(false);
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
                   <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {quotation.terms_conditions}
+                    {quotation.terms_conditions || "Sin términos y condiciones"}
                   </p>
-                </Card>
-              )}
+                )}
+              </Card>
             </TabsContent>
 
             <TabsContent value="expenses">
