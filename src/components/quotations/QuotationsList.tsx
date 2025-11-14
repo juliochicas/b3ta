@@ -5,7 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical } from "lucide-react";
+import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { QuotationDetailModal } from "./QuotationDetailModal";
@@ -46,6 +54,8 @@ export const QuotationsList = () => {
   const [selectedQuotation, setSelectedQuotation] = useState<Quotation | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [quotationToDelete, setQuotationToDelete] = useState<string | null>(null);
   const pageSize = 10;
   const { toast } = useToast();
 
@@ -104,6 +114,66 @@ export const QuotationsList = () => {
     }
   };
 
+  const handleArchive = async (quotationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('quotations')
+        .update({ status: 'archived' })
+        .eq('id', quotationId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Cotización archivada",
+        description: "La cotización ha sido archivada exitosamente",
+      });
+      loadQuotations();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo archivar la cotización",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!quotationToDelete) return;
+
+    try {
+      // Primero eliminar los items relacionados
+      const { error: itemsError } = await supabase
+        .from('quotation_items')
+        .delete()
+        .eq('quotation_id', quotationToDelete);
+
+      if (itemsError) throw itemsError;
+
+      // Luego eliminar la cotización
+      const { error } = await supabase
+        .from('quotations')
+        .delete()
+        .eq('id', quotationToDelete);
+
+      if (error) throw error;
+
+      toast({
+        title: "Cotización eliminada",
+        description: "La cotización ha sido eliminada exitosamente",
+      });
+      
+      setDeleteDialogOpen(false);
+      setQuotationToDelete(null);
+      loadQuotations();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la cotización",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: any; label: string }> = {
       draft: { variant: "secondary", label: "Borrador" },
@@ -111,6 +181,7 @@ export const QuotationsList = () => {
       accepted: { variant: "default", label: "Aceptada" },
       rejected: { variant: "destructive", label: "Rechazada" },
       expired: { variant: "secondary", label: "Expirada" },
+      archived: { variant: "outline", label: "Archivada" },
     };
     const config = variants[status] || { variant: "secondary", label: status };
     return <Badge variant={config.variant}>{config.label}</Badge>;
@@ -188,13 +259,44 @@ export const QuotationsList = () => {
                     <div className="text-2xl font-bold text-primary mb-4">
                       {formatCurrencyDisplay(quotation.total, quotation.currency)}
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => setSelectedQuotation(quotation)}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      Ver Detalles
-                    </Button>
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        size="sm"
+                        onClick={() => setSelectedQuotation(quotation)}
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Ver Detalles
+                      </Button>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {quotation.status !== 'archived' && quotation.status !== 'accepted' && (
+                            <>
+                              <DropdownMenuItem onClick={() => handleArchive(quotation.id)}>
+                                <Archive className="h-4 w-4 mr-2" />
+                                Archivar
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                            </>
+                          )}
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              setQuotationToDelete(quotation.id);
+                              setDeleteDialogOpen(true);
+                            }}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
               </Card>
