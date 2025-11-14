@@ -10,12 +10,13 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { InvoiceDetailModal } from "./InvoiceDetailModal";
 import { ExpensesList } from "./ExpensesList";
 import { TermsAIAssistant } from "./TermsAIAssistant";
+import { EditQuotationItemModal } from "./EditQuotationItemModal";
 
 interface Quotation {
   id: string;
@@ -78,6 +79,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
   const [stripePaymentLink, setStripePaymentLink] = useState(quotation.stripe_payment_link);
+  const [editingItem, setEditingItem] = useState<QuotationItem | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -1043,13 +1045,15 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
             <TabsContent value="details" className="space-y-6">
               {/* Items */}
               <Card className="p-6">
-                <h3 className="font-semibold mb-4">Detalles</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">Detalles</h3>
+                </div>
                 {isLoading ? (
                   <p className="text-center text-muted-foreground">Cargando items...</p>
                 ) : (
                   <div className="space-y-3">
                     {items.map((item) => (
-                      <div key={item.id} className="flex justify-between items-start pb-3 border-b last:border-0">
+                      <div key={item.id} className="flex justify-between items-start pb-3 border-b last:border-0 group">
                         <div className="flex-1">
                           <p className="font-medium">{item.item_name}</p>
                           {item.description && (
@@ -1064,8 +1068,18 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                             )}
                           </p>
                         </div>
-                        <div className="text-right font-semibold">
-                          ${item.total.toFixed(2)}
+                        <div className="flex items-center gap-2">
+                          <div className="text-right font-semibold">
+                            ${item.total.toFixed(2)}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingItem(item)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -1268,6 +1282,18 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           onClose={() => setShowInvoice(false)}
           onUpdate={() => {
             loadRelatedInvoice();
+            onUpdate();
+          }}
+        />
+      )}
+
+      {editingItem && (
+        <EditQuotationItemModal
+          item={editingItem}
+          onClose={() => setEditingItem(null)}
+          onSuccess={() => {
+            setEditingItem(null);
+            loadItems();
             onUpdate();
           }}
         />
