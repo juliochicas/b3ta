@@ -484,8 +484,12 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       );
       yPos += 8;
 
+      // Línea separadora ANTES del total
       doc.setDrawColor(99, 102, 241);
-      doc.line(margin + contentWidth * 0.55, yPos - 2, margin + contentWidth * 0.95, yPos - 2);
+      doc.setLineWidth(0.5);
+      doc.line(margin + contentWidth * 0.55, yPos - 3, margin + contentWidth * 0.95, yPos - 3);
+
+      yPos += 2;
 
       doc.setFontSize(14);
       doc.setFont(undefined, 'bold');
@@ -1206,10 +1210,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                 variant="outline" 
                 className="flex-1"
                 onClick={sendQuotationEmail}
-                disabled={quotation.status === 'sent'}
               >
                 <Send className="mr-2 h-4 w-4" />
-                {quotation.status === 'sent' ? 'Email Enviado' : 'Enviar al Cliente'}
+                {quotation.status === 'sent' ? 'Reenviar Email' : 'Enviar al Cliente'}
               </Button>
             </div>
             
