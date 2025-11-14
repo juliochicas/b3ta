@@ -340,6 +340,14 @@ export const QuotationsList = () => {
           onUpdate={loadQuotations}
         />
       )}
+
+      <AlertDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="¿Eliminar cotización?"
+        description="Esta acción no se puede deshacer. La cotización y todos sus items serán eliminados permanentemente."
+      />
     </>
   );
 };
