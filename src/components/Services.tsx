@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Database, ShoppingCart, Zap, Brain, Globe, Package, Lightbulb } from "lucide-react";
+import { Database, ShoppingCart, Zap, Brain, Globe, Package, Lightbulb, Link as LinkIcon } from "lucide-react";
 import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
 import { useNavigate } from "react-router-dom";
 
@@ -52,6 +52,13 @@ const services = [
     description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7 para empresas en crecimiento",
     features: ["Migración a HANA", "Desarrollo Custom", "Integración ERP"],
     priceUSD: 15000
+  },
+  {
+    icon: LinkIcon,
+    title: "Conector Shopify-SAP",
+    description: "Sincronización automática en tiempo real entre Shopify y SAP Business One vía Service Layer. Elimina errores manuales",
+    features: ["Sync Tiempo Real", "Service Layer API", "Stock Automático"],
+    priceUSD: 5000
   }
 ];
 
@@ -102,6 +109,8 @@ export const Services = () => {
                     navigate('/importaciones-china');
                   } else if (service.title === "MVP & Desarrollo de Producto") {
                     navigate('/mvp-desarrollo-producto');
+                  } else if (service.title === "Conector Shopify-SAP") {
+                    navigate('/conector-shopify-sap');
                   } else {
                     const contactElement = document.getElementById('contact');
                     contactElement?.scrollIntoView({ behavior: 'smooth' });
@@ -113,11 +122,13 @@ export const Services = () => {
                   ? "Ver Servicios Completos →"
                   : service.title === "MVP & Desarrollo de Producto"
                     ? "Ver Metodología Completa →"
-                    : service.priceUSD === null 
-                      ? "Sin Inversión Inicial"
-                      : loading 
-                        ? "..." 
-                        : `Desde ${formatPrice(service.priceUSD)}`
+                    : service.title === "Conector Shopify-SAP"
+                      ? "Ver Demo y Detalles →"
+                      : service.priceUSD === null 
+                        ? "Sin Inversión Inicial"
+                        : loading 
+                          ? "..." 
+                          : `Desde ${formatPrice(service.priceUSD)}`
                 }
               </button>
             </Card>
