@@ -30,6 +30,7 @@ export const Footer = () => {
               <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Crecimiento</a></li>
               <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Enterprise</a></li>
               <li><a href="/sap-business-one" className="hover:text-primary transition-colors">SAP Business One</a></li>
+              <li><a href="/conector-shopify-sap" className="hover:text-primary transition-colors">Conector Shopify-SAP</a></li>
               <li><a href="/importaciones-china" className="hover:text-primary transition-colors">Importaciones China</a></li>
               <li><a href="/e-commerce" className="hover:text-primary transition-colors">E-commerce</a></li>
               <li><a href="/mvp-desarrollo-producto" className="hover:text-primary transition-colors">MVP Desarrollo</a></li>
