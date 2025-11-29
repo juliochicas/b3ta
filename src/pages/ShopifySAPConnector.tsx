@@ -48,6 +48,8 @@ const ShopifySAPConnector = () => {
   const features = [
     "Sincronización bidireccional de productos (Shopify ↔ SAP)",
     "Actualización de stock en tiempo real",
+    "Soporte multialmacén - Sincroniza cualquier almacén de SAP",
+    "Compatible con multiempresas en misma base de datos",
     "Gestión automática de precios y promociones",
     "Sincronización de descripciones multiidioma",
     "Control de variantes y SKUs",
@@ -88,7 +90,15 @@ const ShopifySAPConnector = () => {
     },
     {
       question: "¿Es compatible con mi versión de SAP Business One?",
-      answer: "Sí, el conector es compatible con SAP Business One 9.3 y versiones superiores, tanto SQL como HANA."
+      answer: "El conector está diseñado específicamente para SAP Business One versión 10.x sobre HANA. Requiere esta versión para funcionar correctamente."
+    },
+    {
+      question: "¿Puedo sincronizar múltiples almacenes?",
+      answer: "Sí, el conector soporta sincronización de cualquier almacén configurado en SAP Business One. Ideal para empresas con múltiples ubicaciones."
+    },
+    {
+      question: "¿Funciona con multiempresas?",
+      answer: "Sí, es compatible con configuraciones de múltiples empresas siempre que estén en la misma base de datos de SAP Business One."
     },
     {
       question: "¿Qué pasa si hay conflictos de datos?",
@@ -148,7 +158,8 @@ const ShopifySAPConnector = () => {
 
               <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
                 Elimina la duplicación de datos y errores manuales. Conecta Shopify con SAP Business One 
-                para mantener productos, inventario y precios sincronizados automáticamente.
+                para mantener productos, inventario y precios sincronizados automáticamente. Compatible con 
+                multialmacén y multiempresas en HANA 10.x.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-6">
@@ -205,6 +216,61 @@ const ShopifySAPConnector = () => {
                   <p className="text-muted-foreground leading-relaxed">{benefit.description}</p>
                 </Card>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Technical Specifications Section */}
+        <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5 border-y border-border">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                  Especificaciones Técnicas
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Requisitos y capacidades del conector
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <Card className="p-6 bg-card border-2 border-primary/20">
+                  <div className="text-center">
+                    <Database className="h-10 w-10 text-primary mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-foreground mb-2">Versión SAP</h3>
+                    <p className="text-muted-foreground mb-2">SAP Business One</p>
+                    <p className="text-xl font-bold text-primary">Versión 10.x HANA</p>
+                    <p className="text-sm text-muted-foreground mt-2">Exclusivamente HANA</p>
+                  </div>
+                </Card>
+
+                <Card className="p-6 bg-card border-2 border-primary/20">
+                  <div className="text-center">
+                    <Package className="h-10 w-10 text-primary mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-foreground mb-2">Multialmacén</h3>
+                    <p className="text-muted-foreground mb-2">Sincronización de</p>
+                    <p className="text-xl font-bold text-primary">Cualquier Almacén</p>
+                    <p className="text-sm text-muted-foreground mt-2">Sin límites de ubicaciones</p>
+                  </div>
+                </Card>
+
+                <Card className="p-6 bg-card border-2 border-primary/20">
+                  <div className="text-center">
+                    <Network className="h-10 w-10 text-primary mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-foreground mb-2">Multiempresas</h3>
+                    <p className="text-muted-foreground mb-2">Soporta múltiples empresas</p>
+                    <p className="text-xl font-bold text-primary">Misma Base Datos</p>
+                    <p className="text-sm text-muted-foreground mt-2">Configuración unificada</p>
+                  </div>
+                </Card>
+              </div>
+
+              <div className="mt-8 p-6 bg-muted/50 rounded-lg border border-border">
+                <p className="text-center text-muted-foreground">
+                  <strong className="text-foreground">Nota importante:</strong> El conector requiere SAP Business One versión 10.x sobre HANA. 
+                  No es compatible con versiones SQL Server o versiones anteriores a la 10.x.
+                </p>
+              </div>
             </div>
           </div>
         </section>
