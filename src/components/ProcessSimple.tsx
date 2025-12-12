@@ -1,34 +1,34 @@
-import { Card } from "@/components/ui/card";
-import { MessageCircle, Search, Wrench, Rocket } from "lucide-react";
+import { MessageSquare, Search, Rocket, Headphones, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const steps = [
   {
-    number: "1",
-    icon: MessageCircle,
-    title: "Cuéntanos tu problema",
-    description: "Usa nuestra IA o agenda una llamada. Sin compromiso.",
-    time: "5 min"
+    number: "01",
+    icon: MessageSquare,
+    title: "Cuéntanos Tu Reto",
+    description: "Habla con nuestra IA o agenda una llamada. Sin compromiso.",
+    color: "from-orange-500 to-rose-500"
   },
   {
-    number: "2",
+    number: "02",
     icon: Search,
-    title: "Analizamos tu situación",
-    description: "Te damos un diagnóstico claro y opciones concretas.",
-    time: "24-48h"
+    title: "Diseñamos La Solución",
+    description: "Te presentamos opciones claras con tiempos y costos reales.",
+    color: "from-blue-500 to-cyan-500"
   },
   {
-    number: "3",
-    icon: Wrench,
-    title: "Construimos la solución",
-    description: "Desarrollo ágil con validaciones en cada paso.",
-    time: "2-12 semanas"
-  },
-  {
-    number: "4",
+    number: "03",
     icon: Rocket,
-    title: "Lanzamos y crecemos",
-    description: "Soporte continuo. Tu éxito es nuestro éxito.",
-    time: "Continuo"
+    title: "Implementamos",
+    description: "Nuestro equipo ejecuta mientras tú te enfocas en tu negocio.",
+    color: "from-violet-500 to-purple-500"
+  },
+  {
+    number: "04",
+    icon: Headphones,
+    title: "Te Acompañamos",
+    description: "Soporte continuo y optimización. Crecemos juntos.",
+    color: "from-emerald-500 to-teal-500"
   }
 ];
 
@@ -38,61 +38,76 @@ export const ProcessSimple = () => {
   };
 
   return (
-    <section className="py-20 bg-background">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-32 bg-background relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 mesh-gradient opacity-20" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      
+      <div className="container mx-auto px-4 sm:px-6 relative">
         
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Así de Simple
+        <div className="text-center mb-20 max-w-3xl mx-auto">
+          <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium bg-secondary/10 text-secondary mb-6">
+            Proceso Simple
+          </span>
+          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
+            Así <span className="gradient-text">Trabajamos</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            4 pasos. Sin letra pequeña. Sin sorpresas.
+          <p className="text-xl text-muted-foreground">
+            De la idea al resultado en 4 pasos claros
           </p>
         </div>
 
         {/* Steps */}
-        <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto mb-20">
           {steps.map((step, idx) => (
-            <div key={idx} className="relative">
-              {/* Connector line */}
+            <div 
+              key={idx}
+              className="group relative"
+            >
+              {/* Connector Line */}
               {idx < steps.length - 1 && (
-                <div className="hidden md:block absolute top-12 left-1/2 w-full h-0.5 bg-gradient-to-r from-primary to-primary/30" />
+                <div className="hidden md:block absolute top-16 left-[60%] w-full h-0.5 bg-gradient-to-r from-border to-transparent" />
               )}
               
-              <Card className="p-6 border border-border hover:border-primary/50 transition-all duration-300 bg-card relative z-10">
-                {/* Number badge */}
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg mb-4">
-                  {step.number}
+              <div className="relative text-center space-y-6">
+                {/* Number Badge */}
+                <div className="relative inline-block">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center mx-auto group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
+                    <step.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-background border-2 border-border flex items-center justify-center text-xs font-bold text-muted-foreground">
+                    {step.number}
+                  </span>
                 </div>
 
-                <step.icon className="h-8 w-8 text-primary mb-4" />
-                
-                <h3 className="text-lg font-bold text-foreground mb-2">
-                  {step.title}
-                </h3>
-                
-                <p className="text-muted-foreground text-sm mb-4">
-                  {step.description}
-                </p>
-                
-                <div className="text-xs text-primary font-medium">
-                  ⏱ {step.time}
+                {/* Content */}
+                <div className="space-y-3">
+                  <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    {step.title}
+                  </h4>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {step.description}
+                  </p>
                 </div>
-              </Card>
+              </div>
             </div>
           ))}
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
-          <button 
+        <div className="text-center">
+          <Button 
             onClick={scrollToAI}
-            className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold inline-flex items-center gap-2 shadow-lg"
+            size="lg"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
           >
-            <MessageCircle className="h-5 w-5" />
-            Empezar Ahora (Gratis)
-          </button>
+            Empezar Ahora
+            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+          </Button>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Sin compromiso • Respuesta en menos de 24h
+          </p>
         </div>
       </div>
     </section>
