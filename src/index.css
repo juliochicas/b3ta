@@ -288,3 +288,15 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Performance optimizations for accordion animations */
+@layer utilities {
+  [data-radix-accordion-content] {
+    will-change: height;
+    contain: layout style;
+  }
+  
+  [data-state="closed"] [data-radix-accordion-content] {
+    will-change: auto;
+  }
+}

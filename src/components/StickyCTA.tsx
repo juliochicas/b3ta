@@ -1,27 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, X } from "lucide-react";
 
 export const StickyCTA = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const ticking = useRef(false);
+  const windowHeightRef = useRef(0);
+
+  const updateVisibility = useCallback(() => {
+    const scrollPosition = window.scrollY;
+    const threshold = windowHeightRef.current * 1.5;
+    
+    if (scrollPosition > threshold && !isDismissed) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+    ticking.current = false;
+  }, [isDismissed]);
 
   useEffect(() => {
+    // Cache window height on mount and resize
+    windowHeightRef.current = window.innerHeight;
+    
+    const handleResize = () => {
+      windowHeightRef.current = window.innerHeight;
+    };
+
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
-      
-      // Mostrar después de scroll 1.5 pantallas
-      if (scrollPosition > windowHeight * 1.5 && !isDismissed) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
+      if (!ticking.current) {
+        requestAnimationFrame(updateVisibility);
+        ticking.current = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isDismissed]);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [updateVisibility]);
 
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
