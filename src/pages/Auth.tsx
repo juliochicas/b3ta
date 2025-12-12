@@ -126,7 +126,7 @@ export default function Auth() {
 
         <Card className="p-8 shadow-2xl">
           <div className="text-center mb-8">
-            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 bg-clip-text text-transparent mb-2">
+            <div className="text-3xl font-bold font-sans tracking-normal bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-2">
               B3TA CRM
             </div>
             <p className="text-muted-foreground">

@@ -140,7 +140,7 @@ export default function PublicReport() {
                 <span className="text-2xl font-bold text-white">B3</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold font-sans tracking-normal bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
                   B3TA
                 </h1>
                 <p className="text-sm text-muted-foreground">Consultoría Profesional</p>
@@ -363,7 +363,7 @@ export default function PublicReport() {
             <div className="h-8 w-8 rounded bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <span className="text-sm font-bold text-white">B3</span>
             </div>
-            <span className="font-bold text-lg">B3TA</span>
+            <span className="font-bold font-sans tracking-normal text-lg">B3TA</span>
           </div>
           <p className="text-sm text-muted-foreground mb-1">Consultoría Profesional</p>
           <p className="text-sm text-muted-foreground">www.b3ta.com | info@b3ta.com</p>
