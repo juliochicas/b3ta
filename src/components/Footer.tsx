@@ -4,7 +4,7 @@ export const Footer = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-5 gap-12 mb-16">
           <div className="md:col-span-2">
-            <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-sans tracking-normal">
               B3TA
             </h3>
             <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
