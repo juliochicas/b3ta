@@ -1,25 +1,45 @@
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export const WhatsAppButton = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBottomBannerVisible, setIsBottomBannerVisible] = useState(false);
   const phoneNumber = "50241571786"; // Guatemala
   const message = "Hola! Me interesa saber más sobre los servicios de B3TA";
+  const ticking = useRef(false);
+  const windowHeightRef = useRef(0);
+
+  const updateScrollState = useCallback(() => {
+    const scrollY = window.scrollY;
+    setIsScrolled(scrollY > 200);
+    setIsBottomBannerVisible(scrollY > windowHeightRef.current * 1.5);
+    ticking.current = false;
+  }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrolled = window.scrollY > 200;
-      const nearBottom = window.scrollY > window.innerHeight * 1.5;
-      
-      setIsScrolled(scrolled);
-      setIsBottomBannerVisible(nearBottom);
+    // Cache window height on mount
+    windowHeightRef.current = window.innerHeight;
+
+    const handleResize = () => {
+      windowHeightRef.current = window.innerHeight;
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const handleScroll = () => {
+      if (!ticking.current) {
+        requestAnimationFrame(updateScrollState);
+        ticking.current = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [updateScrollState]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
