@@ -74,6 +74,9 @@ export default function ClientPages() {
   const [usePassword, setUsePassword] = useState(false);
   const [grandSlamPage, setGrandSlamPage] = useState<ClientPage | null>(null);
   const [grandSlamHtml, setGrandSlamHtml] = useState<string | null>(null);
+  const [editPasswordPage, setEditPasswordPage] = useState<ClientPage | null>(null);
+  const [editPassword, setEditPassword] = useState("");
+  const [editUsePassword, setEditUsePassword] = useState(false);
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -81,6 +84,36 @@ export default function ClientPages() {
     for (let i = 0; i < 8; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length));
     setPagePassword(pwd);
     setUsePassword(true);
+  };
+
+  const generateEditPassword = () => {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    let pwd = '';
+    for (let i = 0; i < 8; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    setEditPassword(pwd);
+    setEditUsePassword(true);
+  };
+
+  const openEditPassword = (page: ClientPage) => {
+    setEditPasswordPage(page);
+    setEditPassword(page.page_password || "");
+    setEditUsePassword(!!page.page_password);
+  };
+
+  const savePassword = async () => {
+    if (!editPasswordPage) return;
+    const newPwd = editUsePassword && editPassword ? editPassword : null;
+    const { error } = await supabase
+      .from('client_pages')
+      .update({ page_password: newPwd })
+      .eq('id', editPasswordPage.id);
+    if (error) {
+      toast.error("Error al actualizar contraseña");
+    } else {
+      toast.success(newPwd ? "Contraseña actualizada" : "Protección removida");
+      setEditPasswordPage(null);
+      loadData();
+    }
   };
 
   useEffect(() => {
@@ -398,10 +431,10 @@ export default function ClientPages() {
                         <Badge variant={page.is_active ? "default" : "secondary"}>
                           {page.is_active ? "Activa" : "Inactiva"}
                         </Badge>
-                        {page.page_password && (
-                          <Badge variant="outline" className="gap-1 cursor-pointer" onClick={() => { navigator.clipboard.writeText(page.page_password!); toast.success("Contraseña copiada"); }}>
-                            <Lock className="h-3 w-3" />
-                            Protegida
+                      {page.page_password && (
+                        <Badge variant="outline" className="gap-1 cursor-pointer" onClick={() => { navigator.clipboard.writeText(page.page_password!); toast.success("Contraseña copiada"); }} title="Clic para copiar contraseña">
+                          <Lock className="h-3 w-3" />
+                          Protegida
                           </Badge>
                         )}
                       </div>
@@ -418,6 +451,14 @@ export default function ClientPages() {
                         checked={page.is_active}
                         onCheckedChange={() => toggleActive(page)}
                       />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEditPassword(page)}
+                        title="Editar contraseña"
+                      >
+                        {page.page_password ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -511,6 +552,46 @@ export default function ClientPages() {
           customerName={grandSlamPage?.customers?.name}
           customerCompany={grandSlamPage?.customers?.company || undefined}
         />
+        {/* Edit Password Modal */}
+        <Dialog open={!!editPasswordPage} onOpenChange={(open) => !open && setEditPasswordPage(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Contraseña de página</DialogTitle>
+              <DialogDescription>
+                {editPasswordPage?.title} — Configura o cambia la contraseña de acceso
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="flex items-center gap-3">
+                <Switch checked={editUsePassword} onCheckedChange={(v) => { setEditUsePassword(v); if (v && !editPassword) generateEditPassword(); }} />
+                <Label className="flex items-center gap-2">
+                  {editUsePassword ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
+                  Proteger con contraseña
+                </Label>
+              </div>
+              {editUsePassword && (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={editPassword}
+                    onChange={(e) => setEditPassword(e.target.value)}
+                    placeholder="Contraseña"
+                    className="font-mono"
+                  />
+                  <Button type="button" variant="outline" size="icon" onClick={generateEditPassword} title="Generar nueva">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(editPassword); toast.success("Contraseña copiada"); }}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditPasswordPage(null)}>Cancelar</Button>
+              <Button onClick={savePassword}>Guardar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
