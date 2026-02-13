@@ -169,11 +169,13 @@ export default function ClientPages() {
     // Search filter
     if (searchPages.trim()) {
       const q = searchPages.toLowerCase();
+      const numSearch = q.replace('#', '');
       return (
         page.title.toLowerCase().includes(q) ||
         page.slug.toLowerCase().includes(q) ||
         page.customers?.name?.toLowerCase().includes(q) ||
-        page.customers?.company?.toLowerCase().includes(q)
+        page.customers?.company?.toLowerCase().includes(q) ||
+        (page.customers?.customer_number?.toString() === numSearch)
       );
     }
     return true;
@@ -675,51 +677,60 @@ export default function ClientPages() {
           </Card>
         )}
 
-        {/* Stats Cards */}
+        {/* Stats + Search + Filters */}
         {pages.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {[
-              { label: 'Total', value: stats.total, filter: 'all', color: 'text-foreground' },
-              { label: 'Activas', value: stats.active, filter: 'active', color: 'text-emerald-600' },
-              { label: 'Prueba', value: stats.test, filter: 'test', color: 'text-blue-600' },
-              { label: 'Vencidas', value: stats.expired, filter: 'expired', color: 'text-red-600' },
-              { label: 'Por vencer', value: stats.expiringSoon, filter: 'expiring', color: 'text-amber-600' },
-              { label: 'Inactivas', value: stats.inactive, filter: 'inactive', color: 'text-muted-foreground' },
-            ].map((s) => (
-              <Card
-                key={s.filter}
-                className={cn("cursor-pointer transition-all hover:shadow-md", filterStatus === s.filter && "ring-2 ring-primary")}
-                onClick={() => setFilterStatus(s.filter)}
-              >
-                <CardContent className="p-3 text-center">
-                  <p className={cn("text-2xl font-bold", s.color)}>{s.value}</p>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+          <div className="space-y-4 mb-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {[
+                { label: 'Total', value: stats.total, filter: 'all', color: 'text-foreground' },
+                { label: 'Activas', value: stats.active, filter: 'active', color: 'text-emerald-600' },
+                { label: 'Prueba', value: stats.test, filter: 'test', color: 'text-blue-600' },
+                { label: 'Vencidas', value: stats.expired, filter: 'expired', color: 'text-red-600' },
+                { label: 'Por vencer', value: stats.expiringSoon, filter: 'expiring', color: 'text-amber-600' },
+                { label: 'Inactivas', value: stats.inactive, filter: 'inactive', color: 'text-muted-foreground' },
+              ].map((s) => (
+                <Card
+                  key={s.filter}
+                  className={cn(
+                    "cursor-pointer transition-all hover:shadow-md border",
+                    filterStatus === s.filter ? "ring-2 ring-primary bg-primary/5" : "hover:bg-muted/50"
+                  )}
+                  onClick={() => setFilterStatus(s.filter)}
+                >
+                  <CardContent className="p-3 text-center">
+                    <p className={cn("text-2xl font-bold", s.color)}>{s.value}</p>
+                    <p className="text-xs text-muted-foreground">{s.label}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-        {/* Search Bar */}
-        {pages.length > 0 && (
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por título, slug o cliente..."
-              value={searchPages}
-              onChange={(e) => setSearchPages(e.target.value)}
-              className="pl-10"
-            />
+            {/* Search Bar + Results count */}
+            <div className="space-y-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por título, slug, cliente o #número..."
+                  value={searchPages}
+                  onChange={(e) => setSearchPages(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {totalFilteredPages} resultado{totalFilteredPages !== 1 ? 's' : ''}
+                  {filterStatus !== 'all' && ` — filtro: ${filterStatus === 'active' ? 'Activas' : filterStatus === 'test' ? 'Prueba' : filterStatus === 'expired' ? 'Vencidas' : filterStatus === 'expiring' ? 'Por vencer' : 'Inactivas'}`}
+                  {searchPages && ` • "${searchPages}"`}
+                </p>
+                {(filterStatus !== 'all' || searchPages) && (
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => { setFilterStatus('all'); setSearchPages(''); }}>
+                    Limpiar filtros
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
-        )}
-
-        {/* Results count */}
-        {pages.length > 0 && (
-          <p className="text-sm text-muted-foreground">
-            {totalFilteredPages} resultado{totalFilteredPages !== 1 ? 's' : ''}
-            {filterStatus !== 'all' && ` (filtro: ${filterStatus === 'active' ? 'activas' : filterStatus === 'test' ? 'prueba' : filterStatus === 'expired' ? 'vencidas' : filterStatus === 'expiring' ? 'por vencer' : 'inactivas'})`}
-            {searchPages && ` • búsqueda: "${searchPages}"`}
-          </p>
         )}
 
         {/* Pages List */}
