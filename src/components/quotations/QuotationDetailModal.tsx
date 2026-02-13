@@ -329,74 +329,87 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 20;
       const contentWidth = pageWidth - margin * 2;
-      let yPos = 20;
+      let yPos = 0;
 
-      // Encabezado con fondo blanco
-      doc.setFillColor(255, 255, 255);
-      doc.rect(0, 0, pageWidth, 45, 'F');
-      
-      // Nombre de la empresa
-      doc.setTextColor(99, 102, 241);
-      doc.setFontSize(20);
-      doc.setFont(undefined, 'bold');
-      doc.text('B3TA', margin, 15);
-      
-      // Texto del encabezado
-      doc.setTextColor(0, 0, 0);
+      const brandBlue: [number, number, number] = [43, 79, 224];
+      const brandCyan: [number, number, number] = [0, 201, 167];
+      const brandDark: [number, number, number] = [26, 31, 46];
+
+      // ── BRANDED HEADER ──
+      doc.setFillColor(...brandDark);
+      doc.rect(0, 0, pageWidth, 48, 'F');
+      doc.setFillColor(...brandCyan);
+      doc.rect(0, 48, pageWidth, 2, 'F');
+
+      // Logo
+      doc.setTextColor(255, 255, 255);
       doc.setFontSize(24);
-      doc.text(`Cotización ${quotation.quotation_number}`, margin, 28);
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
+      doc.setFont(undefined!, 'bold');
+      doc.text('B3TA', margin, 18);
+      doc.setFontSize(8);
+      doc.setFont(undefined!, 'normal');
+      doc.setTextColor(180, 200, 220);
+      doc.text('Tecnologia que escala contigo', margin, 24);
+
+      // Quotation number
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont(undefined!, 'bold');
+      doc.text(`Cotizacion ${quotation.quotation_number}`, margin, 35);
+      doc.setFontSize(9);
+      doc.setFont(undefined!, 'normal');
+      doc.setTextColor(180, 200, 220);
       doc.text(
-        `Válida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), 'PPP', { locale: es }) : 'No especificado'}`,
-        margin,
-        36
+        `Valida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), 'PPP', { locale: es }) : 'No especificado'}`,
+        margin, 41
       );
-      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, margin, 41);
-      
-      yPos = 55;
+      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, pageWidth - margin, 41, { align: 'right' });
 
-      // Reset de color
-      doc.setTextColor(0, 0, 0);
-      yPos += 20;
+      yPos = 60;
 
-      // Datos del cliente
+      // Client info
+      doc.setTextColor(...brandBlue);
       doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
+      doc.setFont(undefined!, 'bold');
       doc.text('CLIENTE', margin, yPos);
       yPos += 7;
       doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
+      doc.setFont(undefined!, 'normal');
+      doc.setTextColor(...brandDark);
       doc.text(quotation.customers.name, margin, yPos);
       yPos += 5;
       if (quotation.customers.company) {
         doc.text(quotation.customers.company, margin, yPos);
         yPos += 5;
       }
+      doc.setTextColor(100, 100, 100);
       doc.text(quotation.customers.email, margin, yPos);
       yPos += 5;
-      
-      // Tracking number if available
       if (quotation.tracking_number) {
-        doc.setFont(undefined, 'bold');
+        doc.setFont(undefined!, 'bold');
+        doc.setTextColor(...brandDark);
         doc.text('Tracking: ', margin, yPos);
-        doc.setFont(undefined, 'normal');
+        doc.setFont(undefined!, 'normal');
         doc.text(quotation.tracking_number, margin + 20, yPos);
         yPos += 5;
       }
-      
-      yPos += 10;
+      yPos += 8;
 
-      // Título de items
+      // Items title with accent bar
+      doc.setFillColor(...brandBlue);
+      doc.rect(margin, yPos - 3, 3, 8, 'F');
       doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.text('DETALLE DE PRODUCTOS/SERVICIOS', margin, yPos);
-      yPos += 7;
+      doc.setFont(undefined!, 'bold');
+      doc.setTextColor(...brandDark);
+      doc.text('DETALLE DE PRODUCTOS/SERVICIOS', margin + 6, yPos + 2);
+      yPos += 12;
 
-      // Header de tabla
-      doc.setFillColor(248, 249, 250);
+      // Table header
+      doc.setFillColor(235, 240, 255);
       doc.rect(margin, yPos - 5, contentWidth, 8, 'F');
       doc.setFontSize(9);
+      doc.setFont(undefined!, 'bold');
+      doc.setTextColor(...brandDark);
       doc.text('Producto/Servicio', margin + 2, yPos);
       doc.text('Cant.', margin + contentWidth * 0.55, yPos);
       doc.text('P. Unit.', margin + contentWidth * 0.68, yPos);
@@ -404,14 +417,12 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.text('Total', margin + contentWidth * 0.9, yPos);
       yPos += 8;
 
-      // Filas
-      doc.setFont(undefined, 'normal');
+      // Rows
+      doc.setFont(undefined!, 'normal');
       doc.setFontSize(9);
+      doc.setTextColor(60, 60, 60);
       items.forEach((item) => {
-        if (yPos > 270) {
-          doc.addPage();
-          yPos = 20;
-        }
+        if (yPos > 255) { doc.addPage(); yPos = 20; }
         doc.text(item.item_name.substring(0, 35), margin + 2, yPos);
         doc.text(String(item.quantity), margin + contentWidth * 0.55, yPos);
         doc.text(`$${item.unit_price.toFixed(2)}`, margin + contentWidth * 0.68, yPos);
@@ -424,109 +435,76 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
           doc.setTextColor(100, 100, 100);
           const descLines = doc.splitTextToSize(item.description, contentWidth * 0.55);
           descLines.forEach((line: string) => {
-            if (yPos > 270) {
-              doc.addPage();
-              yPos = 20;
-            }
+            if (yPos > 255) { doc.addPage(); yPos = 20; }
             doc.text(line, margin + 4, yPos);
             yPos += 4;
           });
           doc.setFontSize(9);
-          doc.setTextColor(0, 0, 0);
+          doc.setTextColor(60, 60, 60);
         }
         yPos += 2;
       });
 
-      // Totales
-      yPos += 10;
-      const totalsSectionHeight = quotation.discount_percentage > 0 ? 40 : 30;
-      doc.setFillColor(248, 249, 250);
-      doc.rect(margin + contentWidth * 0.5, yPos - 5, contentWidth * 0.5, totalsSectionHeight, 'F');
-
+      // Totals
+      yPos += 8;
+      const totalsX = margin + contentWidth * 0.5;
       doc.setFontSize(10);
-      doc.text('Subtotal:', margin + contentWidth * 0.55, yPos);
-      doc.text(
-        `${quotation.currency} $${quotation.subtotal.toFixed(2)}`,
-        margin + contentWidth * 0.92,
-        yPos,
-        { align: 'right' }
-      );
+      doc.setTextColor(60, 60, 60);
+      doc.text('Subtotal:', totalsX + 5, yPos);
+      doc.text(`${quotation.currency} $${quotation.subtotal.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
       yPos += 6;
 
-      // Mostrar descuento global si existe
       if (quotation.discount_percentage > 0) {
         doc.setTextColor(220, 38, 38);
-        doc.text(`Descuento Global (${quotation.discount_percentage}%):`, margin + contentWidth * 0.55, yPos);
-        doc.text(
-          `-${quotation.currency} $${quotation.discount_amount.toFixed(2)}`,
-          margin + contentWidth * 0.92,
-          yPos,
-          { align: 'right' }
-        );
+        doc.text(`Descuento (${quotation.discount_percentage}%):`, totalsX + 5, yPos);
+        doc.text(`-${quotation.currency} $${quotation.discount_amount.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
         yPos += 6;
-
-        doc.setTextColor(0, 0, 0);
-        doc.text('Subtotal con Descuento:', margin + contentWidth * 0.55, yPos);
-        doc.text(
-          `${quotation.currency} $${(quotation.subtotal - quotation.discount_amount).toFixed(2)}`,
-          margin + contentWidth * 0.92,
-          yPos,
-          { align: 'right' }
-        );
+        doc.setTextColor(60, 60, 60);
+        doc.text('Subtotal con Descuento:', totalsX + 5, yPos);
+        doc.text(`${quotation.currency} $${(quotation.subtotal - quotation.discount_amount).toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
         yPos += 6;
       }
 
       doc.setTextColor(100, 100, 100);
-      doc.text(`IVA (${quotation.tax_rate}%):`, margin + contentWidth * 0.55, yPos);
-      doc.text(
-        `${quotation.currency} $${quotation.tax_amount.toFixed(2)}`,
-        margin + contentWidth * 0.92,
-        yPos,
-        { align: 'right' }
-      );
+      doc.text(`IVA (${quotation.tax_rate}%):`, totalsX + 5, yPos);
+      doc.text(`${quotation.currency} $${quotation.tax_amount.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
       yPos += 8;
 
-      // Línea separadora ANTES del total
-      doc.setDrawColor(99, 102, 241);
-      doc.setLineWidth(0.5);
-      doc.line(margin + contentWidth * 0.55, yPos - 3, margin + contentWidth * 0.95, yPos - 3);
+      // Total box
+      doc.setFillColor(...brandDark);
+      doc.roundedRect(totalsX, yPos - 5, contentWidth * 0.5, 16, 2, 2, 'F');
+      doc.setFillColor(...brandCyan);
+      doc.rect(totalsX, yPos - 5, 3, 16, 'F');
+      doc.setTextColor(180, 200, 220);
+      doc.setFontSize(10);
+      doc.setFont(undefined!, 'normal');
+      doc.text('Total:', totalsX + 8, yPos + 2);
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont(undefined!, 'bold');
+      doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, totalsX + 8, yPos + 9);
+      yPos += 22;
 
-      yPos += 2;
-
-      doc.setFontSize(14);
-      doc.setFont(undefined, 'bold');
-      doc.setTextColor(99, 102, 241);
-      doc.text('Total:', margin + contentWidth * 0.55, yPos);
-      doc.text(
-        `${quotation.currency} $${quotation.total.toFixed(2)}`,
-        margin + contentWidth * 0.92,
-        yPos,
-        { align: 'right' }
-      );
-
-      // Notas y términos
+      // Notes & Terms
       if (quotation.notes || quotation.terms_conditions) {
-        yPos += 15;
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFont(undefined!, 'normal');
 
         if (quotation.notes) {
-          if (yPos > 250) {
-            doc.addPage();
-            yPos = 20;
-          }
-          doc.setFont(undefined, 'bold');
-          doc.text('NOTAS:', margin, yPos);
-          yPos += 6;
-          doc.setFont(undefined, 'normal');
+          if (yPos > 240) { doc.addPage(); yPos = 20; }
+          doc.setFillColor(...brandBlue);
+          doc.rect(margin, yPos - 3, 3, 8, 'F');
+          doc.setFont(undefined!, 'bold');
+          doc.setTextColor(...brandDark);
+          doc.text('NOTAS', margin + 6, yPos + 2);
+          yPos += 10;
+          doc.setFont(undefined!, 'normal');
           doc.setFontSize(9);
+          doc.setTextColor(60, 60, 60);
           const notesLines = doc.splitTextToSize(quotation.notes, contentWidth);
           notesLines.forEach((line: string) => {
-            if (yPos > 270) {
-              doc.addPage();
-              yPos = 20;
-            }
+            if (yPos > 255) { doc.addPage(); yPos = 20; }
             doc.text(line, margin, yPos);
             yPos += 5;
           });
@@ -534,56 +512,41 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         }
 
         if (quotation.terms_conditions) {
-          if (yPos > 250) {
-            doc.addPage();
-            yPos = 20;
-          }
-          doc.setFontSize(10);
-          doc.setFont(undefined, 'bold');
-          doc.text('TÉRMINOS Y CONDICIONES:', margin, yPos);
-          yPos += 6;
-          doc.setFont(undefined, 'normal');
+          if (yPos > 240) { doc.addPage(); yPos = 20; }
+          doc.setFillColor(...brandBlue);
+          doc.rect(margin, yPos - 3, 3, 8, 'F');
+          doc.setFont(undefined!, 'bold');
+          doc.setTextColor(...brandDark);
+          doc.text('TERMINOS Y CONDICIONES', margin + 6, yPos + 2);
+          yPos += 10;
+          doc.setFont(undefined!, 'normal');
           doc.setFontSize(8);
           doc.setTextColor(100, 100, 100);
           const termsLines = doc.splitTextToSize(quotation.terms_conditions, contentWidth);
           termsLines.forEach((line: string) => {
-            if (yPos > 270) {
-              doc.addPage();
-              yPos = 20;
-            }
+            if (yPos > 255) { doc.addPage(); yPos = 20; }
             doc.text(line, margin, yPos);
             yPos += 4;
           });
-          doc.setTextColor(0, 0, 0);
         }
       }
 
-
-      // Footer con información de la empresa
+      // ── BRANDED FOOTER on all pages ──
       const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        
-        // Línea separadora
-        doc.setDrawColor(200, 200, 200);
-        doc.line(margin, pageHeight - 30, pageWidth - margin, pageHeight - 30);
-        
-        // Información de la empresa
-        doc.setFontSize(8);
-        doc.setTextColor(80, 80, 80);
-        doc.setFont(undefined, 'bold');
-        doc.text('B3TA', margin, pageHeight - 23);
-        
-        doc.setFont(undefined, 'normal');
+        doc.setFillColor(...brandDark);
+        doc.rect(0, pageHeight - 18, pageWidth, 18, 'F');
+        doc.setFillColor(...brandCyan);
+        doc.rect(0, pageHeight - 18, pageWidth, 1.5, 'F');
+        doc.setTextColor(180, 200, 220);
         doc.setFontSize(7);
-        doc.setTextColor(100, 100, 100);
-        doc.text('consulting@b3ta.us | b3ta.us | +1 435 534 8065', margin, pageHeight - 18);
-        doc.text('Consultoría en infraestructura, automatización y soluciones digitales', margin, pageHeight - 14);
-        
-        // Número de página y agradecimiento
-        doc.setTextColor(150, 150, 150);
-        doc.text('Gracias por su preferencia', pageWidth / 2, pageHeight - 10, { align: 'center' });
-        doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+        doc.setFont(undefined!, 'normal');
+        doc.text('consulting@b3ta.us | b3ta.us | +1 435 534 8065', margin, pageHeight - 9);
+        doc.text(`Pagina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: 'right' });
+        doc.setFontSize(6);
+        doc.setTextColor(120, 140, 160);
+        doc.text('Consultoria en infraestructura, automatizacion y soluciones digitales', margin, pageHeight - 5);
       }
 
       doc.save(`Cotizacion-${quotation.quotation_number}.pdf`);

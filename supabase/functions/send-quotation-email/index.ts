@@ -80,67 +80,77 @@ serve(async (req) => {
           <meta charset="utf-8">
           <title>Cotización ${quotation.quotation_number}</title>
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px;">
-          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-            <h1 style="margin: 0 0 8px 0; color: #1a1a1a;">Cotización ${quotation.quotation_number}</h1>
-            <p style="margin: 0; color: #666;">Válida hasta: ${quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString('es-ES') : 'No especificado'}</p>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 0; background: #f4f6fa;">
+          <!-- Branded Header -->
+          <div style="background: #1A1F2E; padding: 28px 32px 20px 32px; border-radius: 8px 8px 0 0;">
+            <h2 style="margin: 0; color: #fff; font-size: 24px; font-weight: 700; letter-spacing: 1px;">B3TA</h2>
+            <p style="margin: 4px 0 0 0; color: #b4c8dc; font-size: 12px;">Tecnología que escala contigo</p>
+          </div>
+          <div style="height: 3px; background: linear-gradient(90deg, #00C9A7, #2B4FE0);"></div>
+
+          <div style="background: #fff; padding: 32px; border-radius: 0 0 8px 8px;">
+            <h1 style="margin: 0 0 8px 0; color: #1A1F2E; font-size: 22px;">Cotización ${quotation.quotation_number}</h1>
+            <p style="margin: 0 0 24px 0; color: #888; font-size: 13px;">Válida hasta: ${quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString('es-ES') : 'No especificado'}</p>
+
+            <div style="margin-bottom: 24px; padding: 16px; background: #f8faff; border-left: 4px solid #2B4FE0; border-radius: 4px;">
+              <p style="margin: 0; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px;">Cliente</p>
+              <p style="margin: 4px 0 0 0; font-weight: 600; color: #1A1F2E;">${quotation.customer_name}</p>
+              ${quotation.customer_company ? `<p style="margin: 2px 0 0 0; color: #555;">${quotation.customer_company}</p>` : ''}
+              <p style="margin: 2px 0 0 0; color: #555;">${quotation.customer_email}</p>
+              ${quotation.tracking_number ? `<p style="margin: 6px 0 0 0; color: #888; font-size: 12px;"><strong>Tracking:</strong> ${quotation.tracking_number}</p>` : ''}
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+              <thead>
+                <tr style="background: #f0f4ff;">
+                  <th style="padding: 12px; text-align: left; border-bottom: 2px solid #2B4FE0; color: #1A1F2E; font-size: 13px;">Producto/Servicio</th>
+                  <th style="padding: 12px; text-align: center; border-bottom: 2px solid #2B4FE0; color: #1A1F2E; font-size: 13px;">Cantidad</th>
+                  <th style="padding: 12px; text-align: right; border-bottom: 2px solid #2B4FE0; color: #1A1F2E; font-size: 13px;">Precio Unitario</th>
+                  <th style="padding: 12px; text-align: right; border-bottom: 2px solid #2B4FE0; color: #1A1F2E; font-size: 13px;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+              </tbody>
+            </table>
+
+            <div style="text-align: right; padding: 20px; background: #1A1F2E; border-radius: 8px; color: #fff;">
+              <div style="margin-bottom: 6px;">
+                <span style="color: #b4c8dc; font-size: 13px;">Subtotal:</span>
+                <strong style="margin-left: 16px; color: #fff;">${formatCurrencyDisplay(quotation.subtotal, quotation.currency)}</strong>
+              </div>
+              <div style="margin-bottom: 6px;">
+                <span style="color: #b4c8dc; font-size: 13px;">IVA (${quotation.tax_rate}%):</span>
+                <span style="margin-left: 16px; color: #b4c8dc;">${formatCurrencyDisplay(quotation.tax_amount, quotation.currency)}</span>
+              </div>
+              <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #00C9A7; font-size: 22px;">
+                <span style="color: #b4c8dc;">Total:</span>
+                <strong style="margin-left: 16px; color: #00C9A7;">${formatCurrencyDisplay(quotation.total, quotation.currency)}</strong>
+              </div>
+            </div>
+
+            ${paymentLinkHtml ? `<p style="margin: 24px 0; text-align: center;"><a href="${quotation.stripe_payment_link}" style="display: inline-block; background: linear-gradient(135deg, #2B4FE0, #00C9A7); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">Pagar Ahora</a></p>` : ''}
+
+            ${quotation.notes ? `
+              <div style="margin: 24px 0; padding: 16px; background: #f8faff; border-left: 4px solid #00C9A7; border-radius: 4px;">
+                <h3 style="margin: 0 0 8px 0; font-size: 13px; color: #1A1F2E; text-transform: uppercase; letter-spacing: 1px;">Notas</h3>
+                <p style="margin: 0; white-space: pre-wrap; color: #555; font-size: 13px;">${quotation.notes}</p>
+              </div>
+            ` : ''}
+
+            ${quotation.terms_conditions ? `
+              <div style="margin: 24px 0; padding: 16px; background: #fafafa; border-radius: 4px;">
+                <h3 style="margin: 0 0 8px 0; font-size: 12px; color: #1A1F2E; text-transform: uppercase; letter-spacing: 1px;">Términos y Condiciones</h3>
+                <p style="margin: 0; white-space: pre-wrap; font-size: 11px; color: #888;">${quotation.terms_conditions}</p>
+              </div>
+            ` : ''}
           </div>
 
-          <div style="margin-bottom: 24px;">
-            <h2 style="font-size: 16px; color: #666; margin: 0 0 8px 0;">Cliente</h2>
-            <p style="margin: 0;"><strong>${quotation.customer_name}</strong></p>
-            ${quotation.customer_company ? `<p style="margin: 4px 0 0 0;">${quotation.customer_company}</p>` : ''}
-            <p style="margin: 4px 0 0 0;">${quotation.customer_email}</p>
-            ${quotation.tracking_number ? `<p style="margin: 8px 0 0 0; color: #666;"><strong>Tracking:</strong> ${quotation.tracking_number}</p>` : ''}
-          </div>
-
-          <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
-            <thead>
-              <tr style="background: #f8f9fa;">
-                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Producto/Servicio</th>
-                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #dee2e6;">Cantidad</th>
-                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">Precio Unitario</th>
-                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsHtml}
-            </tbody>
-          </table>
-
-          <div style="text-align: right; padding: 16px; background: #f8f9fa; border-radius: 8px;">
-            <div style="margin-bottom: 8px;">
-              <span style="color: #666;">Subtotal:</span>
-              <strong style="margin-left: 16px;">${formatCurrencyDisplay(quotation.subtotal, quotation.currency)}</strong>
-            </div>
-            <div style="margin-bottom: 8px; color: #666;">
-              <span>IVA (${quotation.tax_rate}%):</span>
-              <span style="margin-left: 16px;">${formatCurrencyDisplay(quotation.tax_amount, quotation.currency)}</span>
-            </div>
-            <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6; font-size: 20px;">
-              <span>Total:</span>
-              <strong style="margin-left: 16px; color: #6366f1;">${formatCurrencyDisplay(quotation.total, quotation.currency)}</strong>
-            </div>
-          </div>
-
-          ${paymentLinkHtml}
-
-          ${quotation.notes ? `
-            <div style="margin: 24px 0; padding: 16px; background: #f8f9fa; border-radius: 8px;">
-              <h3 style="margin: 0 0 8px 0; font-size: 14px; color: #666;">Notas</h3>
-              <p style="margin: 0; white-space: pre-wrap;">${quotation.notes}</p>
-            </div>
-          ` : ''}
-
-          ${quotation.terms_conditions ? `
-            <div style="margin: 24px 0; padding: 16px; background: #f8f9fa; border-radius: 8px;">
-              <h3 style="margin: 0 0 8px 0; font-size: 14px; color: #666;">Términos y Condiciones</h3>
-              <p style="margin: 0; white-space: pre-wrap; font-size: 12px; color: #666;">${quotation.terms_conditions}</p>
-            </div>
-          ` : ''}
-
-          <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #dee2e6; text-align: center; color: #666; font-size: 12px;">
-            <p style="margin: 0;">Gracias por su preferencia</p>
+          <!-- Branded Footer -->
+          <div style="background: #1A1F2E; padding: 20px 32px; border-radius: 0 0 8px 8px; margin-top: 2px; text-align: center;">
+            <p style="margin: 0; color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 1px;">B3TA</p>
+            <p style="margin: 4px 0 0 0; color: #b4c8dc; font-size: 11px;">consulting@b3ta.us | b3ta.us | +1 435 534 8065</p>
+            <p style="margin: 8px 0 0 0; color: #7a8ca0; font-size: 10px;">Consultoría en infraestructura, automatización y soluciones digitales</p>
           </div>
         </body>
       </html>
