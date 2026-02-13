@@ -107,6 +107,9 @@ export default function ClientPages() {
   const [quickPhone, setQuickPhone] = useState("");
   const [creatingCustomer, setCreatingCustomer] = useState(false);
   const [searchPages, setSearchPages] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGES_PER_PAGE = 20;
   const [customerComboOpen, setCustomerComboOpen] = useState(false);
   const [deleteConfirmPage, setDeleteConfirmPage] = useState<ClientPage | null>(null);
   // Service management state
@@ -130,6 +133,59 @@ export default function ClientPages() {
     setPagePassword(pwd);
     setUsePassword(true);
   };
+
+  // Computed stats
+  const now = new Date();
+  const stats = {
+    total: pages.length,
+    active: pages.filter(p => p.is_active && p.service_type === 'active').length,
+    test: pages.filter(p => p.service_type === 'test').length,
+    expired: pages.filter(p => p.service_type === 'expired' || (p.service_expiration_date && new Date(p.service_expiration_date) < now)).length,
+    expiringSoon: pages.filter(p => {
+      if (!p.service_expiration_date) return false;
+      const exp = new Date(p.service_expiration_date);
+      const daysLeft = (exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+      return daysLeft > 0 && daysLeft <= 30;
+    }).length,
+    inactive: pages.filter(p => !p.is_active).length,
+  };
+
+  // Filter + search
+  const filteredPages = pages.filter((page) => {
+    // Status filter
+    if (filterStatus === 'active' && !(page.is_active && page.service_type === 'active')) return false;
+    if (filterStatus === 'test' && page.service_type !== 'test') return false;
+    if (filterStatus === 'expired') {
+      const isExpired = page.service_type === 'expired' || (page.service_expiration_date && new Date(page.service_expiration_date) < now);
+      if (!isExpired) return false;
+    }
+    if (filterStatus === 'expiring') {
+      if (!page.service_expiration_date) return false;
+      const exp = new Date(page.service_expiration_date);
+      const daysLeft = (exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+      if (!(daysLeft > 0 && daysLeft <= 30)) return false;
+    }
+    if (filterStatus === 'inactive' && page.is_active) return false;
+    // Search filter
+    if (searchPages.trim()) {
+      const q = searchPages.toLowerCase();
+      return (
+        page.title.toLowerCase().includes(q) ||
+        page.slug.toLowerCase().includes(q) ||
+        page.customers?.name?.toLowerCase().includes(q) ||
+        page.customers?.company?.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+
+  const totalFilteredPages = filteredPages.length;
+  const totalPagesCount = Math.ceil(totalFilteredPages / PAGES_PER_PAGE);
+  const paginatedPages = filteredPages.slice((currentPage - 1) * PAGES_PER_PAGE, currentPage * PAGES_PER_PAGE);
+
+  // Reset pagination on filter/search change
+  useEffect(() => { setCurrentPage(1); }, [filterStatus, searchPages]);
+
 
   const generateEditPassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -619,6 +675,31 @@ export default function ClientPages() {
           </Card>
         )}
 
+        {/* Stats Cards */}
+        {pages.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[
+              { label: 'Total', value: stats.total, filter: 'all', color: 'text-foreground' },
+              { label: 'Activas', value: stats.active, filter: 'active', color: 'text-emerald-600' },
+              { label: 'Prueba', value: stats.test, filter: 'test', color: 'text-blue-600' },
+              { label: 'Vencidas', value: stats.expired, filter: 'expired', color: 'text-red-600' },
+              { label: 'Por vencer', value: stats.expiringSoon, filter: 'expiring', color: 'text-amber-600' },
+              { label: 'Inactivas', value: stats.inactive, filter: 'inactive', color: 'text-muted-foreground' },
+            ].map((s) => (
+              <Card
+                key={s.filter}
+                className={cn("cursor-pointer transition-all hover:shadow-md", filterStatus === s.filter && "ring-2 ring-primary")}
+                onClick={() => setFilterStatus(s.filter)}
+              >
+                <CardContent className="p-3 text-center">
+                  <p className={cn("text-2xl font-bold", s.color)}>{s.value}</p>
+                  <p className="text-xs text-muted-foreground">{s.label}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
         {/* Search Bar */}
         {pages.length > 0 && (
           <div className="relative">
@@ -632,6 +713,15 @@ export default function ClientPages() {
           </div>
         )}
 
+        {/* Results count */}
+        {pages.length > 0 && (
+          <p className="text-sm text-muted-foreground">
+            {totalFilteredPages} resultado{totalFilteredPages !== 1 ? 's' : ''}
+            {filterStatus !== 'all' && ` (filtro: ${filterStatus === 'active' ? 'activas' : filterStatus === 'test' ? 'prueba' : filterStatus === 'expired' ? 'vencidas' : filterStatus === 'expiring' ? 'por vencer' : 'inactivas'})`}
+            {searchPages && ` • búsqueda: "${searchPages}"`}
+          </p>
+        )}
+
         {/* Pages List */}
         {pages.length === 0 ? (
           <Card>
@@ -641,20 +731,17 @@ export default function ClientPages() {
               <p className="text-muted-foreground">Sube tu primer archivo HTML para comenzar</p>
             </CardContent>
           </Card>
+        ) : totalFilteredPages === 0 ? (
+          <Card>
+            <CardContent className="py-8 text-center">
+              <Search className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-muted-foreground">No se encontraron páginas con estos filtros</p>
+              <Button variant="link" onClick={() => { setFilterStatus('all'); setSearchPages(''); }}>Limpiar filtros</Button>
+            </CardContent>
+          </Card>
         ) : (
           <div className="space-y-3">
-            {pages
-              .filter((page) => {
-                if (!searchPages.trim()) return true;
-                const q = searchPages.toLowerCase();
-                return (
-                  page.title.toLowerCase().includes(q) ||
-                  page.slug.toLowerCase().includes(q) ||
-                  page.customers?.name?.toLowerCase().includes(q) ||
-                  page.customers?.company?.toLowerCase().includes(q)
-                );
-              })
-              .map((page) => (
+            {paginatedPages.map((page) => (
               <Card key={page.id}>
                 <CardContent className="py-4">
                   <div className="flex items-center justify-between gap-4">
@@ -798,6 +885,31 @@ export default function ClientPages() {
                 </CardContent>
               </Card>
             ))}
+
+            {/* Pagination */}
+            {totalPagesCount > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(p => p - 1)}
+                >
+                  Anterior
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Página {currentPage} de {totalPagesCount}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === totalPagesCount}
+                  onClick={() => setCurrentPage(p => p + 1)}
+                >
+                  Siguiente
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
