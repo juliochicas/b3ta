@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Target, Gift, Shield, Clock, Zap, Eye, CheckCircle2, Download } from "lucide-react";
+import { Sparkles, Loader2, Target, Download, CheckCircle2 } from "lucide-react";
 import jsPDF from "jspdf";
 
 interface GrandSlamResult {
@@ -20,34 +19,21 @@ interface GrandSlamResult {
     time_delay: string;
     effort_sacrifice: string;
   };
-  items: Array<{
-    item_name: string;
-    description: string;
-    quantity: number;
-    unit_price: number;
-    suggested_price: number;
-  }>;
-  bonuses: Array<{
-    name: string;
-    description: string;
-    perceived_value: number;
-  }>;
-  guarantee: {
-    type: string;
-    description: string;
+  quotation: {
+    title: string;
+    sections: Array<{
+      title: string;
+      icon: string;
+      description: string;
+      features: string[];
+    }>;
+    pricing: {
+      base_price: number;
+      currency: string;
+      terms: string;
+    };
   };
-  scarcity: {
-    type: string;
-    description: string;
-  };
-  urgency: {
-    reason: string;
-    deadline: string;
-  };
-  offer_name: string;
-  grand_slam_section_html: string;
-  terms_suggestion: string;
-  notes: string;
+  professional_summary: string;
 }
 
 interface Props {
@@ -76,7 +62,6 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
   const [result, setResult] = useState<GrandSlamResult | null>(null);
   const [customPrompt, setCustomPrompt] = useState("");
   const [products, setProducts] = useState<any[]>([]);
-  const [showPreview, setShowPreview] = useState(false);
   const [currency, setCurrency] = useState("USD");
 
   useEffect(() => {
@@ -113,7 +98,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       if (data?.error) throw new Error(data.error);
 
       setResult(data);
-      toast.success("¡Cotización Grand Slam generada!");
+      toast.success("¡Cotización generada!");
     } catch (err: any) {
       toast.error(err.message || "Error generando cotización");
     } finally {
@@ -172,113 +157,60 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100);
-    doc.text(`Propuesta para: ${customerName || "Cliente"} - ${customerCompany || ""}`, margin, y);
+    doc.text(`Propuesta para: ${customerName || "Cliente"}`, margin, y);
     y += 6;
+    if (customerCompany) {
+      doc.text(`Empresa: ${customerCompany}`, margin, y);
+      y += 6;
+    }
     doc.text(`Moneda: ${currency}`, margin, y);
     y += 10;
     doc.setTextColor(0);
 
-    // Offer Name
-    addTitle(result.offer_name, 16);
-    y += 4;
-
-    // Analysis
-    addTitle("Análisis de Valor");
-    addText(`Resultado Soñado: ${result.analysis.dream_outcome}`);
+    // Title
+    addTitle(result.quotation.title, 16);
     y += 2;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    checkPage(8);
-    doc.text("Puntos de Dolor:", margin, y);
-    y += 6;
-    result.analysis.pain_points.forEach(p => addBullet(p));
-    y += 3;
 
-    addText(`Probabilidad: ${result.analysis.perceived_probability}`);
-    addText(`Tiempo: ${result.analysis.time_delay}`);
-    addText(`Esfuerzo: ${result.analysis.effort_sacrifice}`);
+    // Professional Summary
+    addText(result.professional_summary);
     y += 4;
 
-    // Items
-    addTitle("Detalle de la Propuesta");
-    let subtotal = 0;
-    result.items.forEach(item => {
+    // Analysis (Hormozi internamente)
+    addTitle("Valor Propuesto", 12);
+    addText(`${result.analysis.dream_outcome}`);
+    y += 2;
+
+    // Sections
+    result.quotation.sections.forEach((section) => {
       checkPage(20);
-      const price = item.suggested_price || item.unit_price;
-      const total = price * item.quantity;
-      subtotal += total;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.text(item.item_name, margin, y);
-      doc.text(formatPrice(total), pageWidth - margin, y, { align: "right" });
-      y += 5;
-      if (item.description) {
-        addText(item.description);
-      }
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(100);
-      doc.text(`Cant: ${item.quantity} × ${formatPrice(price)}`, margin + 3, y);
-      y += 6;
-      doc.setTextColor(0);
+      addTitle(`${section.icon} ${section.title}`, 12);
+      addText(section.description);
+      y += 2;
+      section.features.forEach(feature => addBullet(feature));
+      y += 3;
     });
 
-    // Total
+    // Pricing
     checkPage(15);
-    doc.setDrawColor(200);
+    doc.setDrawColor(150);
     doc.line(margin, y, pageWidth - margin, y);
     y += 6;
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("Total:", margin, y);
-    doc.text(`${currency} ${formatPrice(subtotal)}`, pageWidth - margin, y, { align: "right" });
+    doc.setFontSize(14);
+    doc.text("Inversión:", margin, y);
+    doc.text(formatPrice(result.quotation.pricing.base_price), pageWidth - margin, y, { align: "right" });
     y += 10;
 
-    // Bonuses
-    if (result.bonuses?.length > 0) {
-      addTitle("Bonos Incluidos");
-      result.bonuses.forEach(bonus => {
-        checkPage(15);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.text(`🎁 ${bonus.name}`, margin, y);
-        doc.text(`Valor: ${formatPrice(bonus.perceived_value)}`, pageWidth - margin, y, { align: "right" });
-        y += 5;
-        addText(bonus.description);
-        y += 2;
-      });
-      y += 3;
-    }
-
-    // Guarantee
-    if (result.guarantee) {
-      addTitle("Garantía");
-      addText(`${result.guarantee.type}: ${result.guarantee.description}`);
-      y += 3;
-    }
-
-    // Scarcity & Urgency
-    if (result.scarcity || result.urgency) {
-      addTitle("Condiciones Especiales");
-      if (result.scarcity) addText(`Escasez: ${result.scarcity.description}`);
-      if (result.urgency) addText(`Urgencia: ${result.urgency.reason} - ${result.urgency.deadline}`);
-      y += 3;
-    }
-
-    // Notes
-    if (result.notes) {
-      addTitle("Notas");
-      addText(result.notes);
-    }
-
     // Terms
-    if (result.terms_suggestion) {
-      checkPage(20);
-      addTitle("Términos y Condiciones Sugeridos");
-      addText(result.terms_suggestion);
+    if (result.quotation.pricing.terms) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Términos:", margin, y);
+      y += 5;
+      addText(result.quotation.pricing.terms);
     }
 
-    const fileName = `Grand-Slam-${customerCompany || customerName || "Propuesta"}.pdf`.replace(/\s+/g, "-");
+    const fileName = `Cotizacion-${customerCompany || customerName || "Propuesta"}.pdf`.replace(/\s+/g, "-");
     doc.save(fileName);
     toast.success("PDF exportado correctamente");
   };
@@ -289,10 +221,10 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Sparkles className="h-6 w-6 text-primary" />
-            Generador de Cotización Grand Slam
+            Generador de Cotización Profesional
           </DialogTitle>
           <DialogDescription>
-            Usa los frameworks de Alex Hormozi para crear una oferta irresistible basada en el demo del cliente.
+            Análisis de valor + Cotización profesional limpia para el cliente.
           </DialogDescription>
         </DialogHeader>
 
@@ -340,7 +272,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
               <Textarea
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
-                placeholder="Ej: Enfócate en automatización de procesos. El cliente tiene 50 empleados y factura $2M anuales. Quiere reducir costos operativos..."
+                placeholder="Ej: Enfócate en automatización. El cliente tiene 50 empleados..."
                 rows={3}
               />
             </div>
@@ -348,7 +280,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
             <Card className="p-4 border-primary/20 bg-primary/5">
               <h4 className="font-semibold mb-2 flex items-center gap-2">
                 <Target className="h-4 w-4" />
-                La IA aplicará estos frameworks de Hormozi:
+                La IA usará análisis Hormozi internamente:
               </h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex items-center gap-2">
@@ -357,48 +289,51 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-3 w-3 text-primary" />
-                  Oferta Grand Slam
+                  Dream Outcome
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-3 w-3 text-primary" />
-                  Escasez y Urgencia
+                  Pain Points
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-3 w-3 text-primary" />
-                  Bonos y Garantías
+                  Redacción Persuasiva
                 </div>
               </div>
+              <p className="text-xs text-muted-foreground mt-3">
+                El resultado será una cotización profesional limpia, sin frameworks visibles, pero con la persuasión de Hormozi atrás.
+              </p>
             </Card>
 
             <Button onClick={generate} disabled={loading} className="w-full" size="lg">
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Generando Oferta Grand Slam...
+                  Generando Cotización...
                 </>
               ) : (
                 <>
                   <Sparkles className="mr-2 h-5 w-5" />
-                  Generar Cotización Grand Slam
+                  Generar Cotización
                 </>
               )}
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Analysis */}
-            <Card className="p-4">
+            {/* Analysis Section (Internal) */}
+            <Card className="p-4 bg-secondary/20 border-secondary/40">
               <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
-                Análisis de Valor (Ecuación Hormozi)
+                <Target className="h-5 w-5 text-secondary-foreground" />
+                Análisis Hormozi (Interno)
               </h3>
               <div className="space-y-3 text-sm">
                 <div>
-                  <span className="font-medium text-primary">🎯 Resultado Soñado:</span>
+                  <span className="font-medium text-secondary-foreground">🎯 Resultado Soñado:</span>
                   <p className="ml-6 text-muted-foreground">{result.analysis.dream_outcome}</p>
                 </div>
                 <div>
-                  <span className="font-medium text-primary">🔥 Puntos de Dolor:</span>
+                  <span className="font-medium text-secondary-foreground">🔥 Puntos de Dolor:</span>
                   <ul className="ml-6 list-disc text-muted-foreground">
                     {result.analysis.pain_points.map((p, i) => (
                       <li key={i}>{p}</li>
@@ -422,115 +357,63 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
               </div>
             </Card>
 
-            {/* Offer Name */}
-            <Card className="p-4 bg-primary/5 border-primary/20 text-center">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Nombre de la Oferta</p>
-              <h2 className="text-xl font-bold text-primary mt-1">{result.offer_name}</h2>
-            </Card>
-
-            {/* Items */}
-            <Card className="p-4">
-              <h3 className="font-semibold mb-3">📦 Items de la Cotización</h3>
-              <div className="space-y-2">
-                {result.items.map((item, i) => (
-                  <div key={i} className="flex items-start justify-between p-2 rounded bg-muted/50">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{item.item_name}</p>
-                      <p className="text-xs text-muted-foreground">{item.description}</p>
-                    </div>
-                    <div className="text-right shrink-0 ml-3">
-                      <p className="font-semibold">{currency} {formatPrice(item.suggested_price || item.unit_price)}</p>
-                      <p className="text-xs text-muted-foreground">×{item.quantity}</p>
-                    </div>
+            {/* Quotation Sections */}
+            <Card className="p-4 bg-primary/5 border-primary/20">
+              <h2 className="text-2xl font-bold text-foreground mb-2">{result.quotation.title}</h2>
+              <p className="text-muted-foreground text-sm mb-4">{result.professional_summary}</p>
+              
+              <div className="space-y-4">
+                {result.quotation.sections.map((section, i) => (
+                  <div key={i} className="border-l-4 border-primary pl-4 py-2">
+                    <h3 className="font-semibold text-lg mb-1">
+                      {section.icon} {section.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-3">{section.description}</p>
+                    <ul className="space-y-1">
+                      {section.features.map((feature, j) => (
+                        <li key={j} className="text-sm flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
               </div>
             </Card>
 
-            {/* Bonuses */}
-            {result.bonuses?.length > 0 && (
-              <Card className="p-4">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <Gift className="h-5 w-5 text-amber-500" />
-                  Bonos Incluidos
-                </h3>
-                <div className="space-y-2">
-                  {result.bonuses.map((bonus, i) => (
-                    <div key={i} className="flex items-start justify-between p-2 rounded bg-amber-50 dark:bg-amber-950/20">
-                      <div>
-                        <p className="font-medium text-sm">🎁 {bonus.name}</p>
-                        <p className="text-xs text-muted-foreground">{bonus.description}</p>
-                      </div>
-                      <Badge variant="outline" className="shrink-0 ml-2">
-                        Valor: {formatPrice(bonus.perceived_value)}
-                      </Badge>
-                    </div>
-                  ))}
+            {/* Pricing */}
+            <Card className="p-4 border-2 border-primary bg-primary/5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted-foreground text-sm">Inversión Total</p>
+                  <p className="text-3xl font-bold text-primary">
+                    {formatPrice(result.quotation.pricing.base_price)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">{result.quotation.pricing.currency}</p>
                 </div>
-              </Card>
-            )}
+                <Badge variant="outline" className="h-fit text-lg px-4 py-2">
+                  Profesional
+                </Badge>
+              </div>
+              {result.quotation.pricing.terms && (
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">TÉRMINOS:</p>
+                  <p className="text-sm">{result.quotation.pricing.terms}</p>
+                </div>
+              )}
+            </Card>
 
-            {/* Guarantee + Scarcity + Urgency */}
-            <div className="grid grid-cols-3 gap-3">
-              <Card className="p-3">
-                <h4 className="text-xs font-semibold flex items-center gap-1 mb-2">
-                  <Shield className="h-3 w-3 text-green-600" />
-                  Garantía
-                </h4>
-                <p className="text-xs font-medium">{result.guarantee?.type}</p>
-                <p className="text-xs text-muted-foreground mt-1">{result.guarantee?.description}</p>
-              </Card>
-              <Card className="p-3">
-                <h4 className="text-xs font-semibold flex items-center gap-1 mb-2">
-                  <Zap className="h-3 w-3 text-red-600" />
-                  Escasez
-                </h4>
-                <p className="text-xs font-medium">{result.scarcity?.type}</p>
-                <p className="text-xs text-muted-foreground mt-1">{result.scarcity?.description}</p>
-              </Card>
-              <Card className="p-3">
-                <h4 className="text-xs font-semibold flex items-center gap-1 mb-2">
-                  <Clock className="h-3 w-3 text-orange-600" />
-                  Urgencia
-                </h4>
-                <p className="text-xs font-medium">{result.urgency?.reason}</p>
-                <p className="text-xs text-muted-foreground mt-1">{result.urgency?.deadline}</p>
-              </Card>
-            </div>
-
-            {/* Preview Grand Slam HTML */}
-            {result.grand_slam_section_html && (
-              <Button variant="outline" onClick={() => setShowPreview(!showPreview)} className="w-full">
-                <Eye className="mr-2 h-4 w-4" />
-                {showPreview ? "Ocultar" : "Ver"} Sección Visual Grand Slam
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={onClose} className="flex-1">
+                Cerrar
               </Button>
-            )}
-            {showPreview && result.grand_slam_section_html && (
-              <Card className="p-0 overflow-hidden">
-                <iframe
-                  srcDoc={result.grand_slam_section_html}
-                  title="Grand Slam Preview"
-                  className="w-full h-[500px] border-0"
-                  sandbox="allow-scripts"
-                />
-              </Card>
-            )}
-
-            <Separator />
-
-            <DialogFooter className="flex gap-2">
-              <Button variant="outline" onClick={() => { setResult(null); }}>
-                🔄 Regenerar
-              </Button>
-              <Button variant="outline" onClick={exportPDF}>
+              <Button onClick={exportPDF} className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
-                Exportar PDF
+                Descargar PDF
               </Button>
-              <Button onClick={() => onApply(result)}>
-                <Sparkles className="mr-2 h-4 w-4" />
-                Aplicar a Cotización
-              </Button>
-            </DialogFooter>
+            </div>
           </div>
         )}
       </DialogContent>
