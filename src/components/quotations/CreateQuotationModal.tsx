@@ -8,9 +8,10 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { X, Plus, Trash2, Search } from "lucide-react";
+import { X, Plus, Trash2, Search, Sparkles } from "lucide-react";
 import { formatCurrencyDisplay } from "@/lib/currency";
 import { TermsAIAssistant } from "./TermsAIAssistant";
+import { GrandSlamGenerator } from "./GrandSlamGenerator";
 
 interface ProductService {
   id: string;
@@ -35,9 +36,10 @@ interface Props {
   onClose: () => void;
   onSuccess: () => void;
   leadId?: string;
+  grandSlamResult?: any;
 }
 
-export const CreateQuotationModal = ({ onClose, onSuccess, leadId }: Props) => {
+export const CreateQuotationModal = ({ onClose, onSuccess, leadId, grandSlamResult }: Props) => {
   const [formData, setFormData] = useState({
     customer_name: "",
     customer_email: "",
@@ -66,7 +68,54 @@ Para proceder con esta cotización, por favor realice el pago a través del link
   const [selectedReportId, setSelectedReportId] = useState<string>("");
   const [showProductSelector, setShowProductSelector] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showGrandSlam, setShowGrandSlam] = useState(false);
   const { toast } = useToast();
+
+  // Apply Grand Slam result if provided
+  useEffect(() => {
+    if (grandSlamResult) {
+      applyGrandSlam(grandSlamResult);
+    }
+  }, [grandSlamResult]);
+
+  const applyGrandSlam = (result: any) => {
+    // Apply items
+    if (result.items?.length > 0) {
+      const newItems: QuotationItem[] = result.items.map((item: any) => ({
+        product_service_id: null,
+        item_name: item.item_name,
+        description: item.description || "",
+        quantity: item.quantity || 1,
+        unit_price: item.suggested_price || item.unit_price || 0,
+        discount_percentage: 0,
+        total: (item.suggested_price || item.unit_price || 0) * (item.quantity || 1),
+      }));
+      // Add bonuses as items with $0 price
+      if (result.bonuses?.length > 0) {
+        result.bonuses.forEach((bonus: any) => {
+          newItems.push({
+            product_service_id: null,
+            item_name: `🎁 BONO: ${bonus.name}`,
+            description: `${bonus.description} (Valor: $${bonus.perceived_value})`,
+            quantity: 1,
+            unit_price: 0,
+            discount_percentage: 0,
+            total: 0,
+          });
+        });
+      }
+      setItems(newItems);
+    }
+    // Apply notes
+    if (result.notes) {
+      setFormData(prev => ({ ...prev, notes: result.notes }));
+    }
+    // Apply terms
+    if (result.terms_suggestion) {
+      setFormData(prev => ({ ...prev, terms_conditions: result.terms_suggestion }));
+    }
+    toast({ title: "Oferta Grand Slam aplicada", description: `"${result.offer_name}" - Items, bonos y términos cargados` });
+  };
 
   useEffect(() => {
     loadProducts();
@@ -446,10 +495,20 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                   type="button"
                   variant="outline"
                   size="sm"
+                  onClick={() => setShowGrandSlam(true)}
+                  className="text-primary border-primary/30"
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Grand Slam IA
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowProductSelector(!showProductSelector)}
                 >
                   <Search className="mr-2 h-4 w-4" />
-                  Seleccionar de Catálogo
+                  Catálogo
                 </Button>
                 <Button
                   type="button"
@@ -458,7 +517,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                   onClick={addItem}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Agregar Item Manual
+                  Manual
                 </Button>
               </div>
             </div>
@@ -675,6 +734,14 @@ Para proceder con esta cotización, por favor realice el pago a través del link
             </Button>
           </div>
         </form>
+
+        <GrandSlamGenerator
+          open={showGrandSlam}
+          onClose={() => setShowGrandSlam(false)}
+          onApply={(result) => { applyGrandSlam(result); setShowGrandSlam(false); }}
+          customerName={formData.customer_name}
+          customerCompany={formData.customer_company}
+        />
       </DialogContent>
     </Dialog>
   );
