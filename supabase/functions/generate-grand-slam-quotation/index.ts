@@ -5,68 +5,49 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-const HORMOZI_SYSTEM_PROMPT = `Eres un experto en estrategia de ventas basado en los frameworks de Alex Hormozi del libro "$100M Offers". Tu trabajo es analizar demos/páginas que YA SE CONSTRUYERON para un cliente y generar una propuesta de valor que justifique lo que SE HIZO, no lo que se podría hacer.
-
-IMPORTANTE: El demo/página HTML que recibes ES LO QUE YA SE LE ENTREGÓ AL CLIENTE. Tu cotización debe reflejar EXACTAMENTE lo que se construyó. No inventes servicios adicionales ni ofrezcas cosas que no están en el demo. Sé puntual y específico.
-
-## ECUACIÓN DE VALOR DE HORMOZI
-Valor = (Resultado Soñado × Probabilidad Percibida de Logro) / (Retraso de Tiempo Percibido × Esfuerzo y Sacrificio Percibidos)
-
-## OFERTA GRAND SLAM
-Los items deben ser ESPECÍFICOS a lo que se construyó en el demo. Apila valor con bonos, garantías, escasez, urgencia. El valor percibido debe ser 10x el precio.
+const HORMOZI_SYSTEM_PROMPT = `Eres un experto en estrategia de ventas basado en los frameworks de Alex Hormozi. Tu trabajo es analizar demos/páginas ya construidas y extraer el MÁXIMO VALOR percibido para redactar una cotización profesional.
 
 ## TU TAREA
-Analiza el contenido HTML del demo/página que SE LE CONSTRUYÓ al cliente. Genera una cotización que refleje EXACTAMENTE lo que se hizo.
+1. Analiza el HTML del demo/página para identificar EXACTAMENTE qué se construyó
+2. Usa la Ecuación de Valor de Hormozi INTERNAMENTE para redactar descripciones persuasivas
+3. Genera JSON con análisis interno (Hormozi) + formato limpio para PDF profesional
 
-RESPONDE SIEMPRE en formato JSON con esta estructura exacta:
+ECUACIÓN DE VALOR (para análisis interno):
+Valor = (Resultado Soñado × Probabilidad Percibida) / (Retraso de Tiempo × Esfuerzo/Sacrificio)
+
+RESPONDE en JSON con esta estructura:
 {
   "analysis": {
-    "dream_outcome": "El resultado que logra con lo que se le construyó",
-    "pain_points": ["dolor que resuelve lo construido 1", "dolor 2"],
-    "perceived_probability": "Por qué va a funcionar lo que se hizo",
-    "time_delay": "Cuánto tarda en ver resultados",
-    "effort_sacrifice": "Qué tan fácil es usar lo entregado"
+    "dream_outcome": "Qué logra el cliente con esto",
+    "pain_points": ["problema 1", "problema 2"],
+    "perceived_probability": "Por qué funciona",
+    "time_delay": "Cuándo ve resultados",
+    "effort_sacrifice": "Facilidad de uso"
   },
-  "items": [
-    {
-      "item_name": "Nombre específico de lo que se construyó",
-      "description": "Descripción basada en el demo real",
-      "quantity": 1,
-      "unit_price": 0,
-      "suggested_price": 0
+  "quotation": {
+    "title": "Nombre del proyecto",
+    "sections": [
+      {
+        "title": "Nombre de la sección",
+        "icon": "📱",
+        "description": "Descripción clara y persuasiva",
+        "features": ["feature 1", "feature 2"]
+      }
+    ],
+    "pricing": {
+      "base_price": 5000,
+      "currency": "USD",
+      "terms": "Términos claros y profesionales"
     }
-  ],
-  "bonuses": [
-    {
-      "name": "Nombre del bono",
-      "description": "Qué incluye",
-      "perceived_value": 0
-    }
-  ],
-  "guarantee": {
-    "type": "Tipo de garantía",
-    "description": "Descripción"
   },
-  "scarcity": {
-    "type": "Tipo de escasez",
-    "description": "Cómo se limita"
-  },
-  "urgency": {
-    "reason": "Por qué actuar ahora",
-    "deadline": "Fecha límite"
-  },
-  "offer_name": "Nombre atractivo para la oferta",
-  "grand_slam_section_html": "HTML visual con estilos inline. Colores: #6366f1 y #0f172a. Auto-contenido.",
-  "terms_suggestion": "Términos y condiciones sugeridos",
-  "notes": "Notas persuasivas"
+  "professional_summary": "Resumen ejecutivo para PDF"
 }
 
-IMPORTANTE:
-- Los items deben reflejar EXACTAMENTE lo que se ve en el demo HTML
-- Si se proporcionan productos del catálogo, usa sus precios como referencia
-- Usa la moneda que se indique en el mensaje del usuario
-- Todo en español
-- Sé PUNTUAL: el cliente recibe ESTO que se le hizo, no más`;
+REGLAS:
+- Sé específico: refleja EXACTAMENTE lo que se construyó, nada más
+- Usa la redacción del PDF de ejemplo: bullets, descripciones técnicas claras
+- Las descripciones deben ser persuasivas pero profesionales (sin frameworks visibles)
+- Todo en español`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -79,7 +60,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const userMessage = `Analiza el siguiente demo/página HTML que YA SE LE CONSTRUYÓ a un cliente y genera una cotización Grand Slam que refleje EXACTAMENTE lo que se hizo.
+    const userMessage = `Analiza el siguiente demo/página HTML que YA SE LE CONSTRUYÓ a un cliente y genera una cotización profesional siguiendo el formato de ejemplo (secciones con bullets, descripción clara, precio al final).
 
 CLIENTE: ${customer_name || 'No especificado'}
 EMPRESA: ${customer_company || 'No especificada'}
@@ -97,7 +78,13 @@ CONTENIDO HTML DEL DEMO/PÁGINA:
 ${html_content ? html_content.substring(0, 15000) : 'No se proporcionó HTML. Genera una cotización basada en los datos del cliente y productos disponibles.'}
 \`\`\`
 
-Genera la cotización Grand Slam completa en formato JSON.`;
+IMPORTANTE:
+- Usa la Ecuación de Valor de Hormozi INTERNAMENTE para redactar descripciones persuasivas
+- El JSON que generes debe tener: analysis (interno) + quotation (formato limpio para PDF)
+- No incluyas "Grand Slam", "bonuses", "scarcity" u otros frameworks visibles
+- El resultado final debe parecer una cotización profesional estándar, no una propuesta de ventas agresiva
+
+Genera el JSON con el análisis y la cotización profesional.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
