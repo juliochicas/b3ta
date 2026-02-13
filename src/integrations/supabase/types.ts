@@ -22,6 +22,7 @@ export type Database = {
           html_storage_path: string
           id: string
           is_active: boolean
+          page_password: string | null
           slug: string
           title: string
           updated_at: string
@@ -33,6 +34,7 @@ export type Database = {
           html_storage_path: string
           id?: string
           is_active?: boolean
+          page_password?: string | null
           slug: string
           title: string
           updated_at?: string
@@ -44,6 +46,7 @@ export type Database = {
           html_storage_path?: string
           id?: string
           is_active?: boolean
+          page_password?: string | null
           slug?: string
           title?: string
           updated_at?: string

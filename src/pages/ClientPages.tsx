@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   AlertDialog,
@@ -39,7 +39,14 @@ interface ClientPage {
   html_storage_path: string;
   is_active: boolean;
   created_at: string;
+  page_password: string | null;
   customers?: { name: string; company: string | null } | null;
+}
+
+interface Customer {
+  id: string;
+  name: string;
+  company: string | null;
 }
 
 interface Customer {
@@ -62,6 +69,16 @@ export default function ClientPages() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [htmlPreview, setHtmlPreview] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [pagePassword, setPagePassword] = useState("");
+  const [usePassword, setUsePassword] = useState(false);
+
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    let pwd = '';
+    for (let i = 0; i < 8; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    setPagePassword(pwd);
+    setUsePassword(true);
+  };
 
   useEffect(() => {
     if (!roleLoading && !isAdmin && !isSales) {
@@ -135,7 +152,8 @@ export default function ClientPages() {
           title: newTitle,
           customer_id: selectedCustomer || null,
           html_storage_path: storagePath,
-        });
+          page_password: usePassword && pagePassword ? pagePassword : null,
+        } as any);
 
       if (insertError) throw insertError;
 
@@ -145,6 +163,8 @@ export default function ClientPages() {
       setNewSlug("");
       setSelectedCustomer("");
       setSelectedFile(null);
+      setPagePassword("");
+      setUsePassword(false);
       loadData();
     } catch (err: any) {
       toast.error(err.message || "Error al subir la página");
@@ -283,6 +303,32 @@ export default function ClientPages() {
                 />
               </div>
 
+              {/* Password protection */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Switch checked={usePassword} onCheckedChange={(v) => { setUsePassword(v); if (v && !pagePassword) generatePassword(); }} />
+                  <Label className="flex items-center gap-2">
+                    {usePassword ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
+                    Proteger con contraseña
+                  </Label>
+                </div>
+                {usePassword && (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={pagePassword}
+                      onChange={(e) => setPagePassword(e.target.value)}
+                      placeholder="Contraseña"
+                      className="font-mono"
+                    />
+                    <Button type="button" variant="outline" size="icon" onClick={generatePassword} title="Generar nueva contraseña">
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(pagePassword); toast.success("Contraseña copiada"); }}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
               <div className="flex gap-2">
                 <Button 
                   onClick={() => setShowPreview(true)} 
@@ -325,6 +371,12 @@ export default function ClientPages() {
                         <Badge variant={page.is_active ? "default" : "secondary"}>
                           {page.is_active ? "Activa" : "Inactiva"}
                         </Badge>
+                        {page.page_password && (
+                          <Badge variant="outline" className="gap-1 cursor-pointer" onClick={() => { navigator.clipboard.writeText(page.page_password!); toast.success("Contraseña copiada"); }}>
+                            <Lock className="h-3 w-3" />
+                            Protegida
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground">/p/{page.slug}</p>
                       {page.customers && (
