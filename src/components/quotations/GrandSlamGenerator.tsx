@@ -80,10 +80,14 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
   const [editingPrice, setEditingPrice] = useState(false);
   const [editPrice, setEditPrice] = useState("");
   const [currentSavedId, setCurrentSavedId] = useState<string | null>(null);
+  const [editName, setEditName] = useState(customerName || "");
+  const [editCompany, setEditCompany] = useState(customerCompany || "");
 
   useEffect(() => {
     if (open) {
       loadProducts();
+      setEditName(customerName || "");
+      setEditCompany(customerCompany || "");
       if (savedResult) {
         setResult(savedResult);
         setCurrentSavedId(savedId || null);
@@ -93,7 +97,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
         setCurrentSavedId(null);
       }
     }
-  }, [open, savedResult, savedId]);
+  }, [open, savedResult, savedId, customerName, customerCompany]);
 
   const loadProducts = async () => {
     const { data } = await supabase
@@ -111,8 +115,8 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       const { data, error } = await supabase.functions.invoke('generate-grand-slam-quotation', {
         body: {
           html_content: htmlContent,
-          customer_name: customerName,
-          customer_company: customerCompany,
+          customer_name: editName,
+          customer_company: editCompany,
           products_catalog: products,
           custom_prompt: customPrompt,
           currency,
@@ -143,8 +147,8 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
           .update({
             result_json: result as any,
             currency,
-            customer_name: customerName,
-            customer_company: customerCompany,
+            customer_name: editName,
+            customer_company: editCompany,
           })
           .eq('id', currentSavedId);
         if (error) throw error;
@@ -156,8 +160,8 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
           .insert({
             result_json: result as any,
             currency,
-            customer_name: customerName || null,
-            customer_company: customerCompany || null,
+            customer_name: editName || null,
+            customer_company: editCompany || null,
             client_page_id: clientPageId || null,
           })
           .select('id')
@@ -273,10 +277,10 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100);
-    doc.text(`Propuesta para: ${customerName || "Cliente"}`, margin, y);
+    doc.text(`Propuesta para: ${editName || "Cliente"}`, margin, y);
     y += 5;
-    if (customerCompany) {
-      doc.text(`Empresa: ${customerCompany}`, margin, y);
+    if (editCompany) {
+      doc.text(`Empresa: ${editCompany}`, margin, y);
       y += 5;
     }
     doc.text(`Moneda: ${currency}`, margin, y);
@@ -330,7 +334,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       addText(result.quotation.pricing.terms);
     }
 
-    const fileName = `Cotizacion-${stripEmoji(customerCompany || customerName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
+    const fileName = `Cotizacion-${stripEmoji(editCompany || editName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
     doc.save(fileName);
     toast.success("PDF exportado correctamente");
   };
@@ -352,13 +356,23 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
           <div className="space-y-4">
             <Card className="p-4 bg-muted/50">
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Cliente:</span>{" "}
-                  <span className="font-medium">{customerName || "No especificado"}</span>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Cliente</Label>
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Nombre del cliente"
+                    className="h-8 text-sm"
+                  />
                 </div>
-                <div>
-                  <span className="text-muted-foreground">Empresa:</span>{" "}
-                  <span className="font-medium">{customerCompany || "No especificada"}</span>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Empresa</Label>
+                  <Input
+                    value={editCompany}
+                    onChange={(e) => setEditCompany(e.target.value)}
+                    placeholder="Nombre de la empresa"
+                    className="h-8 text-sm"
+                  />
                 </div>
                 <div>
                   <span className="text-muted-foreground">Demo HTML:</span>{" "}

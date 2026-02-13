@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen } from "lucide-react";
 import { GrandSlamGenerator } from "@/components/quotations/GrandSlamGenerator";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -81,6 +81,8 @@ export default function ClientPages() {
   const [savedQuotations, setSavedQuotations] = useState<any[]>([]);
   const [viewingSavedResult, setViewingSavedResult] = useState<any | null>(null);
   const [viewingSavedId, setViewingSavedId] = useState<string | null>(null);
+  const [editCustomerPage, setEditCustomerPage] = useState<ClientPage | null>(null);
+  const [editCustomerId, setEditCustomerId] = useState<string>("");
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -296,6 +298,26 @@ export default function ClientPages() {
     setGrandSlamPage(page);
   };
 
+  const openEditCustomer = (page: ClientPage) => {
+    setEditCustomerPage(page);
+    setEditCustomerId(page.customer_id || "");
+  };
+
+  const saveCustomer = async () => {
+    if (!editCustomerPage) return;
+    const { error } = await supabase
+      .from('client_pages')
+      .update({ customer_id: editCustomerId && editCustomerId !== "none" ? editCustomerId : null })
+      .eq('id', editCustomerPage.id);
+    if (error) {
+      toast.error("Error al actualizar cliente");
+    } else {
+      toast.success("Cliente actualizado");
+      setEditCustomerPage(null);
+      loadData();
+    }
+  };
+
   const handleGrandSlamApply = (result: any) => {
     // Navigate to quotations with the grand slam data
     setGrandSlamPage(null);
@@ -483,6 +505,9 @@ export default function ClientPages() {
                           {page.customers.company ? ` (${page.customers.company})` : ''}
                         </p>
                       )}
+                      {!page.customers && (
+                        <p className="text-sm text-muted-foreground italic">Sin cliente asignado</p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Switch
@@ -516,6 +541,14 @@ export default function ClientPages() {
                         title="Editar contraseña"
                       >
                         {page.page_password ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEditCustomer(page)}
+                        title="Editar cliente asignado"
+                      >
+                        <UserPen className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -669,6 +702,37 @@ export default function ClientPages() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setEditPasswordPage(null)}>Cancelar</Button>
               <Button onClick={savePassword}>Guardar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        {/* Edit Customer Modal */}
+        <Dialog open={!!editCustomerPage} onOpenChange={(open) => !open && setEditCustomerPage(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Editar cliente asignado</DialogTitle>
+              <DialogDescription>
+                {editCustomerPage?.title} — Selecciona o cambia el cliente
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <Label>Cliente</Label>
+              <Select value={editCustomerId} onValueChange={setEditCustomerId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar cliente..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sin cliente</SelectItem>
+                  {customers.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name} {c.company ? `(${c.company})` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditCustomerPage(null)}>Cancelar</Button>
+              <Button onClick={saveCustomer}>Guardar</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
