@@ -847,22 +847,21 @@ export default function ClientPages() {
                             {page.page_password ? <Lock className="h-4 w-4 mr-2" /> : <LockOpen className="h-4 w-4 mr-2" />}
                             {page.page_password ? "Cambiar contraseña" : "Agregar contraseña"}
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem asChild>
-                            <label className="cursor-pointer flex items-center">
-                              <FileUp className="h-4 w-4 mr-2" />
-                              {replacingPageId === page.id ? "Subiendo..." : "Reemplazar HTML"}
-                              <input
-                                type="file"
-                                accept=".html,.htm"
-                                className="hidden"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) replaceFile(page, file);
-                                  e.target.value = '';
-                                }}
-                              />
-                            </label>
+                          <DropdownMenuItem
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              const input = document.createElement('input');
+                              input.type = 'file';
+                              input.accept = '.html,.htm';
+                              input.onchange = (ev) => {
+                                const file = (ev.target as HTMLInputElement).files?.[0];
+                                if (file) replaceFile(page, file);
+                              };
+                              input.click();
+                            }}
+                          >
+                            <FileUp className="h-4 w-4 mr-2" />
+                            {replacingPageId === page.id ? "Subiendo..." : "Reemplazar HTML"}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openGrandSlam(page)}>
                             <Sparkles className="h-4 w-4 mr-2" />
