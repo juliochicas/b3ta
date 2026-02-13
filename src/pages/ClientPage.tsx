@@ -16,6 +16,7 @@ export default function ClientPage() {
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [pageData, setPageData] = useState<{ html_storage_path: string; page_password: string | null } | null>(null);
+  const [htmlContent, setHtmlContent] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -38,8 +39,7 @@ export default function ClientPage() {
           return;
         }
 
-        // No password - redirect directly to the HTML file
-        redirectToPage(data.html_storage_path);
+        await loadAndRenderPage(data.html_storage_path);
       } catch {
         setError(true);
       } finally {
@@ -49,18 +49,29 @@ export default function ClientPage() {
     load();
   }, [slug]);
 
-  const redirectToPage = (storagePath: string) => {
-    const { data: urlData } = supabase.storage
-      .from('client-pages')
-      .getPublicUrl(storagePath);
+  const loadAndRenderPage = async (storagePath: string) => {
+    try {
+      const { data: urlData } = supabase.storage
+        .from('client-pages')
+        .getPublicUrl(storagePath);
 
-    if (!urlData?.publicUrl) {
+      if (!urlData?.publicUrl) {
+        setError(true);
+        return;
+      }
+
+      // Fetch the HTML content directly
+      const response = await fetch(urlData.publicUrl + `?t=${Date.now()}`);
+      if (!response.ok) {
+        setError(true);
+        return;
+      }
+
+      const html = await response.text();
+      setHtmlContent(html);
+    } catch {
       setError(true);
-      return;
     }
-
-    // Redirect to the actual HTML file - all scripts, exports, downloads work natively
-    window.location.href = urlData.publicUrl + `?t=${Date.now()}`;
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -69,11 +80,22 @@ export default function ClientPage() {
 
     if (passwordInput === pageData.page_password) {
       setNeedsPassword(false);
-      redirectToPage(pageData.html_storage_path);
+      setLoading(true);
+      await loadAndRenderPage(pageData.html_storage_path);
+      setLoading(false);
     } else {
       setPasswordError(true);
     }
   };
+
+  // Render the full HTML page by replacing the document
+  useEffect(() => {
+    if (htmlContent) {
+      document.open();
+      document.write(htmlContent);
+      document.close();
+    }
+  }, [htmlContent]);
 
   if (loading) {
     return (
