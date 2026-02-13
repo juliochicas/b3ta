@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles } from "lucide-react";
+import { GrandSlamGenerator } from "@/components/quotations/GrandSlamGenerator";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   AlertDialog,
@@ -71,6 +72,8 @@ export default function ClientPages() {
   const [showPreview, setShowPreview] = useState(false);
   const [pagePassword, setPagePassword] = useState("");
   const [usePassword, setUsePassword] = useState(false);
+  const [grandSlamPage, setGrandSlamPage] = useState<ClientPage | null>(null);
+  const [grandSlamHtml, setGrandSlamHtml] = useState<string | null>(null);
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -204,6 +207,30 @@ export default function ClientPages() {
     const url = `${window.location.origin}/p/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("URL copiada al portapapeles");
+  };
+
+  const openGrandSlam = async (page: ClientPage) => {
+    // Download HTML content for the page
+    const { data: fileData, error } = await supabase.storage
+      .from('client-pages')
+      .download(page.html_storage_path);
+
+    if (error || !fileData) {
+      toast.error("No se pudo cargar el HTML de la página");
+      return;
+    }
+
+    const text = await fileData.text();
+    setGrandSlamHtml(text);
+    setGrandSlamPage(page);
+  };
+
+  const handleGrandSlamApply = (result: any) => {
+    // Navigate to quotations with the grand slam data
+    setGrandSlamPage(null);
+    setGrandSlamHtml(null);
+    navigate('/quotations', { state: { grandSlamResult: result, fromClientPage: true } });
+    toast.success("Redirigiendo a cotizaciones con la oferta Grand Slam...");
   };
 
   if (roleLoading || loading) {
@@ -402,6 +429,15 @@ export default function ClientPages() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        onClick={() => openGrandSlam(page)}
+                        title="Generar Cotización Grand Slam"
+                        className="text-primary"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => window.open(`/p/${page.slug}`, '_blank')}
                         title="Ver página"
                       >
@@ -466,6 +502,15 @@ export default function ClientPages() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        {/* Grand Slam Generator Modal */}
+        <GrandSlamGenerator
+          open={!!grandSlamPage}
+          onClose={() => { setGrandSlamPage(null); setGrandSlamHtml(null); }}
+          onApply={handleGrandSlamApply}
+          htmlContent={grandSlamHtml}
+          customerName={grandSlamPage?.customers?.name}
+          customerCompany={grandSlamPage?.customers?.company || undefined}
+        />
       </div>
     </div>
   );
