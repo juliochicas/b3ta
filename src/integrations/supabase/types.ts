@@ -20,7 +20,9 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          custom_domain: string | null
           customer_id: string | null
+          domain_status: string
           html_storage_path: string
           id: string
           is_active: boolean
@@ -41,7 +43,9 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          custom_domain?: string | null
           customer_id?: string | null
+          domain_status?: string
           html_storage_path: string
           id?: string
           is_active?: boolean
@@ -62,7 +66,9 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          custom_domain?: string | null
           customer_id?: string | null
+          domain_status?: string
           html_storage_path?: string
           id?: string
           is_active?: boolean

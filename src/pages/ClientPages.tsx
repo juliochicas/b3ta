@@ -51,6 +51,8 @@ interface ClientPage {
   auto_renew: boolean;
   last_payment_date: string | null;
   next_payment_date: string | null;
+  custom_domain: string | null;
+  domain_status: string;
   customers?: { name: string; company: string | null } | null;
 }
 
@@ -110,6 +112,8 @@ export default function ClientPages() {
   const [svcAutoRenew, setSvcAutoRenew] = useState(false);
   const [svcLastPayment, setSvcLastPayment] = useState("");
   const [svcNextPayment, setSvcNextPayment] = useState("");
+  const [svcCustomDomain, setSvcCustomDomain] = useState("");
+  const [svcDomainStatus, setSvcDomainStatus] = useState("none");
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -395,6 +399,8 @@ export default function ClientPages() {
     setSvcAutoRenew(page.auto_renew || false);
     setSvcLastPayment(page.last_payment_date || "");
     setSvcNextPayment(page.next_payment_date || "");
+    setSvcCustomDomain(page.custom_domain || "");
+    setSvcDomainStatus(page.domain_status || "none");
   };
 
   const saveService = async () => {
@@ -411,6 +417,8 @@ export default function ClientPages() {
         auto_renew: svcAutoRenew,
         last_payment_date: svcLastPayment || null,
         next_payment_date: svcNextPayment || null,
+        custom_domain: svcCustomDomain || null,
+        domain_status: svcDomainStatus,
       } as any)
       .eq('id', servicePageEdit.id);
     if (error) {
@@ -611,6 +619,12 @@ export default function ClientPages() {
                           {page.is_active ? "Activa" : "Inactiva"}
                         </Badge>
                         {getServiceBadge(page.service_type)}
+                        {page.custom_domain && (
+                          <Badge variant="outline" className="gap-1">
+                            <Globe className="h-3 w-3" />
+                            {page.custom_domain}
+                          </Badge>
+                        )}
                       {page.page_password && (
                         <Badge variant="outline" className="gap-1 cursor-pointer" onClick={() => { navigator.clipboard.writeText(page.page_password!); toast.success("Contraseña copiada"); }} title="Clic para copiar contraseña">
                           <Lock className="h-3 w-3" />
@@ -1003,6 +1017,56 @@ export default function ClientPages() {
                   placeholder="Ej: Pago mensual de $50 USD. Renovación cada 12 meses. Incluye hosting y mantenimiento básico."
                   rows={3}
                 />
+              </div>
+              {/* Custom Domain Section */}
+              <div className="border-t pt-4 space-y-3">
+                <Label className="text-sm font-semibold flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  Dominio Personalizado
+                </Label>
+                <div className="space-y-2">
+                  <Input
+                    value={svcCustomDomain}
+                    onChange={(e) => setSvcCustomDomain(e.target.value)}
+                    placeholder="Ej: micliente.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Estado del dominio</Label>
+                  <Select value={svcDomainStatus} onValueChange={setSvcDomainStatus}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sin dominio</SelectItem>
+                      <SelectItem value="pending">Pendiente de configuración</SelectItem>
+                      <SelectItem value="active">Activo</SelectItem>
+                      <SelectItem value="offline">Offline</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {svcCustomDomain && (
+                  <div className="rounded-md bg-muted p-3 text-xs space-y-1">
+                    <p className="font-semibold">Instrucciones DNS para el cliente:</p>
+                    <p>1. En su registrador de dominio, crear un registro <strong>CNAME</strong>:</p>
+                    <p className="font-mono bg-background p-1 rounded">@ → www.b3ta.us</p>
+                    <p>2. O un <strong>redirect/frame</strong> hacia:</p>
+                    <p className="font-mono bg-background p-1 rounded">https://www.b3ta.us/p/{servicePageEdit?.slug}</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://www.b3ta.us/p/${servicePageEdit?.slug}`);
+                        toast.success("URL copiada");
+                      }}
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copiar URL
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
