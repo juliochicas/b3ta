@@ -125,56 +125,35 @@ export const EmailAccountsManager = ({
             }`}
             onClick={() => onSelectAccount?.(account.id)}
           >
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    {account.display_name}
+            <CardHeader className="p-4">
+              <div className="flex items-center justify-between gap-2 min-w-0">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-sm truncate">{account.display_name}</span>
                     {account.is_default && (
-                      <Badge variant="default" className="text-xs">
+                      <Badge variant="default" className="text-[10px] px-1.5 py-0 shrink-0">
                         <Star className="h-3 w-3 mr-1" />
                         Predeterminada
                       </Badge>
                     )}
                     {selectedAccountId === account.id && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 shrink-0">
                         Activa
                       </Badge>
                     )}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-0.5 truncate">
                     {account.email}
                   </p>
                 </div>
-                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <div className="flex shrink-0" onClick={(e) => e.stopPropagation()}>
                   {!account.is_default && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSetDefault(account.id)}
-                      title="Establecer como predeterminada"
-                    >
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSetDefault(account.id)} title="Establecer como predeterminada">
                       <Star className="h-4 w-4" />
                     </Button>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setEditingAccount(account);
-                      setShowModal(true);
-                    }}
-                    title="Configurar"
-                  >
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setEditingAccount(account); setShowModal(true); }} title="Configurar">
                     <Settings className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(account.id)}
-                    title="Eliminar"
-                  >
-                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
