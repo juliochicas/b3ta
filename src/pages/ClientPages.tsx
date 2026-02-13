@@ -933,7 +933,7 @@ export default function ClientPages() {
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Tipo</Label>
                     <Select value={svcType} onValueChange={setSvcType}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="test">Prueba / Demo</SelectItem>
                         <SelectItem value="active">Servicio Activo</SelectItem>
@@ -962,12 +962,12 @@ export default function ClientPages() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Cuota mensual</Label>
-                    <Input type="number" step="0.01" value={svcMonthlyFee} onChange={(e) => setSvcMonthlyFee(e.target.value)} placeholder="0.00" />
+                    <Input type="number" step="0.01" value={svcMonthlyFee} onChange={(e) => setSvcMonthlyFee(e.target.value)} placeholder="0.00" className="h-9 text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Moneda</Label>
                     <Select value={svcCurrency} onValueChange={setSvcCurrency}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="USD">USD</SelectItem>
                         <SelectItem value="GTQ">GTQ</SelectItem>
