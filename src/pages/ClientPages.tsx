@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   AlertDialog,
@@ -22,6 +22,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface ClientPage {
   id: string;
@@ -52,6 +60,8 @@ export default function ClientPages() {
   const [newSlug, setNewSlug] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [htmlPreview, setHtmlPreview] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (!roleLoading && !isAdmin && !isSales) {
@@ -259,12 +269,30 @@ export default function ClientPages() {
                 <Input
                   type="file"
                   accept=".html,.htm"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setSelectedFile(file);
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        setHtmlPreview(event.target?.result as string);
+                      };
+                      reader.readAsText(file);
+                    }
+                  }}
                 />
               </div>
 
               <div className="flex gap-2">
-                <Button onClick={handleUpload} disabled={uploading}>
+                <Button 
+                  onClick={() => setShowPreview(true)} 
+                  disabled={uploading || !selectedFile}
+                  variant="outline"
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  Previsualizar
+                </Button>
+                <Button onClick={handleUpload} disabled={uploading || !selectedFile}>
                   <Upload className="mr-2 h-4 w-4" />
                   {uploading ? "Subiendo..." : "Subir Página"}
                 </Button>
@@ -357,6 +385,35 @@ export default function ClientPages() {
             ))}
           </div>
         )}
+
+        {/* Preview Modal */}
+        <Dialog open={showPreview} onOpenChange={setShowPreview}>
+          <DialogContent className="max-w-4xl h-[80vh] p-0">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b">
+              <DialogTitle>Previsualizar HTML</DialogTitle>
+              <DialogDescription>
+                Verifica cómo se verá tu página antes de publicarla
+              </DialogDescription>
+            </DialogHeader>
+            {htmlPreview ? (
+              <iframe
+                srcDoc={htmlPreview}
+                title="Preview HTML"
+                className="w-full flex-1 border-0"
+                sandbox="allow-scripts allow-same-origin allow-popups"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-96">
+                <p className="text-muted-foreground">No hay contenido para previsualizar</p>
+              </div>
+            )}
+            <DialogFooter className="px-6 py-4 border-t">
+              <Button variant="outline" onClick={() => setShowPreview(false)}>
+                Cerrar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
