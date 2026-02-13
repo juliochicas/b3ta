@@ -232,12 +232,16 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
+    const margin = 18;
     const maxWidth = pageWidth - margin * 2;
-    let y = 20;
+    let y = 0;
+
+    const brandBlue = [43, 79, 224] as const;  // #2B4FE0
+    const brandCyan = [0, 201, 167] as const;   // #00C9A7
+    const brandDark = [26, 31, 46] as const;    // #1A1F2E
 
     const checkPage = (needed: number) => {
-      if (y + needed > pageHeight - 15) {
+      if (y + needed > pageHeight - 30) {
         doc.addPage();
         y = 20;
       }
@@ -247,16 +251,16 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       checkPage(12);
       doc.setFontSize(size);
       doc.setFont("helvetica", "bold");
-      const clean = stripEmoji(text);
-      doc.text(clean, margin, y);
+      doc.setTextColor(...brandDark);
+      doc.text(stripEmoji(text), margin, y);
       y += size * 0.5 + 4;
     };
 
     const addText = (text: string, size = 10) => {
       doc.setFontSize(size);
       doc.setFont("helvetica", "normal");
-      const clean = stripEmoji(text);
-      const lines = doc.splitTextToSize(clean, maxWidth);
+      doc.setTextColor(60, 60, 60);
+      const lines = doc.splitTextToSize(stripEmoji(text), maxWidth);
       checkPage(lines.length * (size * 0.4 + 1));
       doc.text(lines, margin, y);
       y += lines.length * (size * 0.4 + 1) + 2;
@@ -265,31 +269,56 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     const addBullet = (text: string) => {
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
+      doc.setTextColor(60, 60, 60);
       const clean = stripEmoji(text);
-      const bulletText = `- ${clean}`;
-      const lines = doc.splitTextToSize(bulletText, maxWidth - 5);
+      const lines = doc.splitTextToSize(clean, maxWidth - 8);
       checkPage(lines.length * 5);
-      doc.text(lines, margin + 3, y);
+      // Cyan bullet dot
+      doc.setFillColor(...brandCyan);
+      doc.circle(margin + 2, y - 1.5, 1, 'F');
+      doc.text(lines, margin + 6, y);
       y += lines.length * 5 + 1;
     };
 
-    // Header
+    // ── BRANDED HEADER ──
+    doc.setFillColor(...brandDark);
+    doc.rect(0, 0, pageWidth, 42, 'F');
+    // Accent line
+    doc.setFillColor(...brandCyan);
+    doc.rect(0, 42, pageWidth, 2, 'F');
+
+    // Logo text
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("B3TA", margin, 16);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(180, 200, 220);
+    doc.text("Tecnologia que escala contigo", margin, 22);
+
+    // Client info in header
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100);
-    doc.text(`Propuesta para: ${editName || "Cliente"}`, margin, y);
-    y += 5;
+    doc.text(`Propuesta para: ${editName || "Cliente"}`, margin, 32);
     if (editCompany) {
-      doc.text(`Empresa: ${editCompany}`, margin, y);
-      y += 5;
+      doc.text(`Empresa: ${editCompany}`, margin, 37);
     }
-    doc.text(`Moneda: ${currency}`, margin, y);
-    y += 8;
-    doc.setTextColor(0);
+    doc.setFontSize(9);
+    doc.setTextColor(180, 200, 220);
+    doc.text(`Moneda: ${currency}`, pageWidth - margin, 32, { align: "right" });
+    doc.text(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - margin, 37, { align: "right" });
+
+    y = 52;
+    doc.setTextColor(0, 0, 0);
 
     // Title
-    addTitle(stripEmoji(result.quotation.title), 16);
-    y += 2;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...brandBlue);
+    doc.text(stripEmoji(result.quotation.title), margin, y);
+    y += 10;
 
     // Professional Summary
     if (result.professional_summary) {
@@ -299,6 +328,8 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
 
     // Valor Propuesto
     if (result.analysis?.dream_outcome) {
+      doc.setFillColor(240, 245, 255);
+      doc.roundedRect(margin - 2, y - 4, maxWidth + 4, 6 + Math.ceil(result.analysis.dream_outcome.length / 80) * 5, 2, 2, 'F');
       addTitle("Valor Propuesto", 12);
       addText(result.analysis.dream_outcome);
       y += 4;
@@ -307,8 +338,14 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     // Sections
     result.quotation.sections.forEach((section) => {
       checkPage(20);
-      const sectionTitle = stripEmoji(section.title);
-      addTitle(sectionTitle, 12);
+      // Section header with accent bar
+      doc.setFillColor(...brandBlue);
+      doc.rect(margin, y - 3, 3, 8, 'F');
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...brandDark);
+      doc.text(stripEmoji(section.title), margin + 6, y + 2);
+      y += 10;
       if (section.description) {
         addText(section.description);
         y += 1;
@@ -317,21 +354,44 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       y += 3;
     });
 
-    // Pricing
-    checkPage(20);
-    doc.setDrawColor(150);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 8;
+    // Pricing block
+    checkPage(25);
+    doc.setFillColor(...brandDark);
+    doc.roundedRect(margin, y, maxWidth, 22, 3, 3, 'F');
+    doc.setFillColor(...brandCyan);
+    doc.rect(margin, y, 4, 22, 'F');
+    doc.setTextColor(180, 200, 220);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Inversion Total", margin + 10, y + 8);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.text("Inversion:", margin, y);
-    doc.text(`${currency} ${formatPrice(result.quotation.pricing.base_price)}`, pageWidth - margin, y, { align: "right" });
-    y += 10;
+    doc.text(`${currency} ${formatPrice(result.quotation.pricing.base_price)}`, margin + 10, y + 17);
+    y += 30;
 
     // Terms
     if (result.quotation.pricing.terms) {
       addTitle("Terminos", 11);
       addText(result.quotation.pricing.terms);
+    }
+
+    // ── BRANDED FOOTER on all pages ──
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFillColor(...brandDark);
+      doc.rect(0, pageHeight - 18, pageWidth, 18, 'F');
+      doc.setFillColor(...brandCyan);
+      doc.rect(0, pageHeight - 18, pageWidth, 1.5, 'F');
+      doc.setTextColor(180, 200, 220);
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.text("consulting@b3ta.us | b3ta.us | +1 435 534 8065", margin, pageHeight - 9);
+      doc.text(`Pagina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: "right" });
+      doc.setFontSize(6);
+      doc.setTextColor(120, 140, 160);
+      doc.text("Consultoria en infraestructura, automatizacion y soluciones digitales", margin, pageHeight - 5);
     }
 
     const fileName = `Cotizacion-${stripEmoji(editCompany || editName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
@@ -344,18 +404,23 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
+    const margin = 18;
     const maxWidth = pageWidth - margin * 2;
-    let y = 20;
+    let y = 0;
+
+    const brandBlue = [43, 79, 224] as const;
+    const brandCyan = [0, 201, 167] as const;
+    const brandDark = [26, 31, 46] as const;
 
     const checkPage = (needed: number) => {
-      if (y + needed > pageHeight - 15) { doc.addPage(); y = 20; }
+      if (y + needed > pageHeight - 30) { doc.addPage(); y = 20; }
     };
 
     const addTitle = (text: string, size = 14) => {
       checkPage(12);
       doc.setFontSize(size);
       doc.setFont("helvetica", "bold");
+      doc.setTextColor(...brandDark);
       doc.text(stripEmoji(text), margin, y);
       y += size * 0.5 + 4;
     };
@@ -363,6 +428,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     const addText = (text: string, size = 10) => {
       doc.setFontSize(size);
       doc.setFont("helvetica", "normal");
+      doc.setTextColor(60, 60, 60);
       const lines = doc.splitTextToSize(stripEmoji(text), maxWidth);
       checkPage(lines.length * (size * 0.4 + 1));
       doc.text(lines, margin, y);
@@ -372,30 +438,49 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     const addBullet = (text: string) => {
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
-      const lines = doc.splitTextToSize(`- ${stripEmoji(text)}`, maxWidth - 5);
+      doc.setTextColor(60, 60, 60);
+      const lines = doc.splitTextToSize(stripEmoji(text), maxWidth - 8);
       checkPage(lines.length * 5);
-      doc.text(lines, margin + 3, y);
+      doc.setFillColor(...brandCyan);
+      doc.circle(margin + 2, y - 1.5, 1, 'F');
+      doc.text(lines, margin + 6, y);
       y += lines.length * 5 + 1;
     };
 
-    // Header
-    doc.setFontSize(12);
+    // ── BRANDED HEADER (red accent for internal) ──
+    doc.setFillColor(...brandDark);
+    doc.rect(0, 0, pageWidth, 42, 'F');
+    doc.setFillColor(220, 50, 50);
+    doc.rect(0, 42, pageWidth, 2, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(150, 0, 0);
-    doc.text("DOCUMENTO INTERNO - TECNICAS DE VENTA", margin, y);
-    y += 8;
-    doc.setTextColor(0);
-    doc.setFontSize(10);
+    doc.text("B3TA", margin, 16);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text(`Cliente: ${editName || "No especificado"}`, margin, y);
-    y += 5;
-    if (editCompany) { doc.text(`Empresa: ${editCompany}`, margin, y); y += 5; }
-    doc.text(`Precio propuesto: ${currency} ${formatPrice(result.quotation.pricing.base_price)}`, margin, y);
-    y += 10;
+    doc.setTextColor(255, 120, 120);
+    doc.text("DOCUMENTO INTERNO - TECNICAS DE VENTA", margin, 23);
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text(`Cliente: ${editName || "No especificado"}`, margin, 32);
+    if (editCompany) doc.text(`Empresa: ${editCompany}`, margin, 37);
+    doc.setTextColor(180, 200, 220);
+    doc.setFontSize(9);
+    doc.text(`Precio: ${currency} ${formatPrice(result.quotation.pricing.base_price)}`, pageWidth - margin, 32, { align: "right" });
+    doc.text(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - margin, 37, { align: "right" });
+
+    y = 52;
 
     // Analisis Hormozi
-    addTitle("Analisis de Valor (Framework Hormozi)", 14);
-    y += 2;
+    doc.setFillColor(255, 245, 245);
+    doc.roundedRect(margin - 2, y - 4, maxWidth + 4, 10, 2, 2, 'F');
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...brandBlue);
+    doc.text("Analisis de Valor (Framework Hormozi)", margin, y + 2);
+    y += 14;
 
     if (result.analysis.dream_outcome) {
       addTitle("Dream Outcome", 11);
@@ -427,7 +512,6 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       y += 3;
     }
 
-    // Secciones de la cotización (resumen)
     checkPage(15);
     addTitle("Resumen de Secciones de la Cotizacion", 12);
     result.quotation.sections.forEach((section) => {
@@ -435,11 +519,25 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       addBullet(`${stripEmoji(section.title)}: ${stripEmoji(section.description || '')}`);
     });
 
-    // Terms
     if (result.quotation.pricing.terms) {
       y += 5;
       addTitle("Terminos Propuestos", 11);
       addText(result.quotation.pricing.terms);
+    }
+
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFillColor(...brandDark);
+      doc.rect(0, pageHeight - 18, pageWidth, 18, 'F');
+      doc.setFillColor(220, 50, 50);
+      doc.rect(0, pageHeight - 18, pageWidth, 1.5, 'F');
+      doc.setTextColor(255, 120, 120);
+      doc.setFontSize(7);
+      doc.text("CONFIDENCIAL - USO INTERNO", margin, pageHeight - 9);
+      doc.setTextColor(180, 200, 220);
+      doc.text(`Pagina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: "right" });
     }
 
     const fileName = `Ventas-${stripEmoji(editCompany || editName || "Analisis")}.pdf`.replace(/\s+/g, "-");
