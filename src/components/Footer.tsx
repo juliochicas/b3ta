@@ -8,7 +8,7 @@ export const Footer = () => {
               B3TA
             </h3>
             <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
-              Transformación Digital Integral para LATAM. De SAP a Shopify, de China a tu Almacén. Consultoría + Tecnología + Crecimiento.
+              Transformación Digital Integral para LATAM. Procesos, MVPs y Páginas Web. Consultoría + Tecnología + Crecimiento.
             </p>
             <div className="flex space-x-4">
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-all duration-300">
@@ -29,11 +29,9 @@ export const Footer = () => {
               <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Emprendedor</a></li>
               <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Crecimiento</a></li>
               <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Enterprise</a></li>
-              <li><a href="/sap-business-one" className="hover:text-primary transition-colors">SAP Business One</a></li>
-              <li><a href="/conector-shopify-sap" className="hover:text-primary transition-colors">Conector Shopify-SAP</a></li>
-              <li><a href="/importaciones-china" className="hover:text-primary transition-colors">Importaciones China</a></li>
-              <li><a href="/e-commerce" className="hover:text-primary transition-colors">E-commerce</a></li>
               <li><a href="/mvp-desarrollo-producto" className="hover:text-primary transition-colors">MVP Desarrollo</a></li>
+              <li><a href="/e-commerce" className="hover:text-primary transition-colors">E-commerce</a></li>
+              <li><a href="/importaciones-china" className="hover:text-primary transition-colors">Importaciones China</a></li>
             </ul>
           </div>
           

@@ -82,11 +82,11 @@ const solutionGroups = [
     gradient: "from-violet-500 via-purple-500 to-fuchsia-500",
     solutions: [
       {
-        icon: Database,
-        name: "SAP Business One",
-        description: "El ERP que usan las empresas grandes. Ahora accesible",
-        time: "3-6 meses",
-        budget: "Desde $15,000"
+        icon: Sparkles,
+        name: "MVP & Producto Digital",
+        description: "Valida tu idea rápido. Lanza tu producto al mercado en semanas",
+        time: "4-8 semanas",
+        budget: "Desde $3,000"
       },
       {
         icon: Bot,

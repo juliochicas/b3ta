@@ -20,7 +20,7 @@ const problems = [
     icon: TrendingUp,
     hook: "¿Crecimiento estancado?",
     pain: "Tu negocio creció pero tu tecnología no. Ahora es un cuello de botella.",
-    solution: "SAP, ERPs, Consultoría Estratégica",
+    solution: "MVPs, Apps Web, Consultoría Estratégica",
     color: "from-purple-500/20 to-indigo-500/10"
   }
 ];

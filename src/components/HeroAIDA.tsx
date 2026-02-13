@@ -79,7 +79,7 @@ export const HeroAIDA = () => {
             className="text-xl md:text-2xl text-primary-foreground/80 max-w-2xl mx-auto leading-relaxed font-light animate-fade-up"
             style={{ animationDelay: '0.5s' }}
           >
-            Da igual si empiezas con un sitio web o necesitas SAP.
+            Da igual si empiezas con un sitio web o necesitas automatizar todo.
             <span className="font-medium text-primary-foreground"> Te acompañamos en cada paso.</span>
           </p>
           
