@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History } from "lucide-react";
 import { GrandSlamGenerator } from "@/components/quotations/GrandSlamGenerator";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -78,6 +78,9 @@ export default function ClientPages() {
   const [editPassword, setEditPassword] = useState("");
   const [editUsePassword, setEditUsePassword] = useState(false);
   const [replacingPageId, setReplacingPageId] = useState<string | null>(null);
+  const [savedQuotations, setSavedQuotations] = useState<any[]>([]);
+  const [viewingSavedResult, setViewingSavedResult] = useState<any | null>(null);
+  const [viewingSavedId, setViewingSavedId] = useState<string | null>(null);
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -129,12 +132,14 @@ export default function ClientPages() {
 
   const loadData = async () => {
     setLoading(true);
-    const [pagesRes, customersRes] = await Promise.all([
+    const [pagesRes, customersRes, savedRes] = await Promise.all([
       supabase.from('client_pages').select('*, customers(name, company)').order('created_at', { ascending: false }),
       supabase.from('customers').select('id, name, company').order('name'),
+      supabase.from('generated_quotations').select('*').order('created_at', { ascending: false }),
     ]);
     setPages((pagesRes.data as any[]) || []);
     setCustomers(customersRes.data || []);
+    setSavedQuotations(savedRes.data || []);
     setLoading(false);
   };
 
@@ -520,11 +525,30 @@ export default function ClientPages() {
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
+                      {/* Show saved quotations for this page */}
+                      {savedQuotations.filter(sq => sq.client_page_id === page.id).length > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            const saved = savedQuotations.filter(sq => sq.client_page_id === page.id);
+                            // Open the most recent one
+                            const latest = saved[0];
+                            setViewingSavedResult(latest.result_json);
+                            setViewingSavedId(latest.id);
+                            setGrandSlamPage(page);
+                          }}
+                          title={`Ver cotizaciones guardadas (${savedQuotations.filter(sq => sq.client_page_id === page.id).length})`}
+                          className="text-muted-foreground"
+                        >
+                          <History className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => openGrandSlam(page)}
-                        title="Generar Cotización Grand Slam"
+                        title="Generar Cotizacion"
                         className="text-primary"
                       >
                         <Sparkles className="h-4 w-4" />
@@ -599,11 +623,14 @@ export default function ClientPages() {
         {/* Grand Slam Generator Modal */}
         <GrandSlamGenerator
           open={!!grandSlamPage}
-          onClose={() => { setGrandSlamPage(null); setGrandSlamHtml(null); }}
+          onClose={() => { setGrandSlamPage(null); setGrandSlamHtml(null); setViewingSavedResult(null); setViewingSavedId(null); loadData(); }}
           onApply={handleGrandSlamApply}
           htmlContent={grandSlamHtml}
           customerName={grandSlamPage?.customers?.name}
           customerCompany={grandSlamPage?.customers?.company || undefined}
+          clientPageId={grandSlamPage?.id}
+          savedResult={viewingSavedResult}
+          savedId={viewingSavedId}
         />
         {/* Edit Password Modal */}
         <Dialog open={!!editPasswordPage} onOpenChange={(open) => !open && setEditPasswordPage(null)}>
