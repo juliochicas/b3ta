@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { FileText, Mail } from "lucide-react";
+import { FileText, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ClientPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -11,13 +13,17 @@ export default function ClientPage() {
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [needsPassword, setNeedsPassword] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [pageData, setPageData] = useState<{ html_storage_path: string; page_password: string | null } | null>(null);
 
   useEffect(() => {
     const load = async () => {
       try {
         const { data, error: fetchError } = await supabase
           .from('client_pages')
-          .select('html_storage_path')
+          .select('html_storage_path, page_password')
           .eq('slug', slug)
           .eq('is_active', true)
           .maybeSingle();
@@ -27,17 +33,15 @@ export default function ClientPage() {
           return;
         }
 
-        const { data: fileData, error: downloadError } = await supabase.storage
-          .from('client-pages')
-          .download(data.html_storage_path);
-
-        if (downloadError || !fileData) {
-          setError(true);
+        // Check if password protected
+        if ((data as any).page_password) {
+          setPageData(data as any);
+          setNeedsPassword(true);
           return;
         }
 
-        const text = await fileData.text();
-        setHtmlContent(text);
+        // No password, load directly
+        await loadHtml(data.html_storage_path);
       } catch {
         setError(true);
       } finally {
@@ -47,6 +51,34 @@ export default function ClientPage() {
     load();
   }, [slug]);
 
+  const loadHtml = async (storagePath: string) => {
+    const { data: fileData, error: downloadError } = await supabase.storage
+      .from('client-pages')
+      .download(storagePath);
+
+    if (downloadError || !fileData) {
+      setError(true);
+      return;
+    }
+
+    const text = await fileData.text();
+    setHtmlContent(text);
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pageData) return;
+
+    if (passwordInput === pageData.page_password) {
+      setNeedsPassword(false);
+      setLoading(true);
+      await loadHtml(pageData.html_storage_path);
+      setLoading(false);
+    } else {
+      setPasswordError(true);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -54,6 +86,39 @@ export default function ClientPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Cargando página...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (needsPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="max-w-sm w-full">
+          <CardContent className="py-8 text-center">
+            <Lock className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-xl font-bold mb-2">Página protegida</h2>
+            <p className="text-muted-foreground mb-6 text-sm">
+              Ingresa la contraseña para acceder a este contenido.
+            </p>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div className="space-y-2 text-left">
+                <Label htmlFor="password">Contraseña</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false); }}
+                  placeholder="••••••••"
+                  autoFocus
+                />
+                {passwordError && (
+                  <p className="text-sm text-destructive">Contraseña incorrecta</p>
+                )}
+              </div>
+              <Button type="submit" className="w-full">Acceder</Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     );
   }
