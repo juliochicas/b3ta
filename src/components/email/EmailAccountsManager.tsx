@@ -121,7 +121,7 @@ export const EmailAccountsManager = ({
           <Card
             key={account.id}
             className={`cursor-pointer transition-all hover:shadow-md ${
-              selectedAccountId === account.id ? "ring-2 ring-primary" : ""
+              selectedAccountId === account.id ? "border-primary border-2 shadow-sm" : ""
             }`}
             onClick={() => onSelectAccount?.(account.id)}
           >
