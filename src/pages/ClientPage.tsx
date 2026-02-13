@@ -159,7 +159,7 @@ export default function ClientPage() {
       srcDoc={htmlContent}
       title="Página del cliente"
       className="w-full h-screen border-0"
-      sandbox="allow-scripts allow-same-origin allow-popups"
+      sandbox="allow-scripts allow-same-origin allow-popups allow-downloads allow-forms allow-popups-to-escape-sandbox"
     />
   );
 }
