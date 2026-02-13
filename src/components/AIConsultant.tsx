@@ -241,8 +241,8 @@ export const AIConsultant = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Consultor IA de B3TA
             </h2>
-            <p className="text-xl text-muted-foreground">
-              Diagnóstico inteligente 24/7 powered by Lovable Cloud AI
+             <p className="text-xl text-muted-foreground">
+              Diagnóstico inteligente 24/7
             </p>
           </div>
 
