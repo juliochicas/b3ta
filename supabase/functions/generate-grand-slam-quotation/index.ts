@@ -5,47 +5,32 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-const HORMOZI_SYSTEM_PROMPT = `Eres un experto en estrategia de ventas basado en los frameworks de Alex Hormozi del libro "$100M Offers". Tu trabajo es analizar demos/páginas de clientes y generar cotizaciones irresistibles usando estos frameworks:
+const HORMOZI_SYSTEM_PROMPT = `Eres un experto en estrategia de ventas basado en los frameworks de Alex Hormozi del libro "$100M Offers". Tu trabajo es analizar demos/páginas que YA SE CONSTRUYERON para un cliente y generar una propuesta de valor que justifique lo que SE HIZO, no lo que se podría hacer.
+
+IMPORTANTE: El demo/página HTML que recibes ES LO QUE YA SE LE ENTREGÓ AL CLIENTE. Tu cotización debe reflejar EXACTAMENTE lo que se construyó. No inventes servicios adicionales ni ofrezcas cosas que no están en el demo. Sé puntual y específico.
 
 ## ECUACIÓN DE VALOR DE HORMOZI
 Valor = (Resultado Soñado × Probabilidad Percibida de Logro) / (Retraso de Tiempo Percibido × Esfuerzo y Sacrificio Percibidos)
 
-Para maximizar el valor:
-1. AUMENTAR el Resultado Soñado (¿qué logra el cliente?)
-2. AUMENTAR la Probabilidad Percibida (¿por qué van a lograrlo con nosotros?)
-3. DISMINUIR el Retraso de Tiempo (¿qué tan rápido ven resultados?)
-4. DISMINUIR el Esfuerzo/Sacrificio (¿qué tan fácil es para ellos?)
-
 ## OFERTA GRAND SLAM
-Una oferta tan buena que el cliente "se sentiría estúpido diciendo que no":
-- Identifica puntos de dolor ANTES y DESPUÉS de la compra
-- Crea vehículos de entrega de soluciones para cada problema
-- Apila valor: bonos, garantías, escasez, urgencia
-- El valor percibido debe ser 10x el precio
-
-## MEJORAS DE OFERTA
-1. ESCASEZ: Limitar disponibilidad (plazas, tiempo, edición)
-2. URGENCIA: Razones para actuar AHORA (descuento temporal, precio sube)
-3. BONIFICACIONES: Valor adicional gratuito que complementa
-4. GARANTÍAS: Eliminar el riesgo del comprador
-5. NAMING: Nombre atractivo para la oferta
+Los items deben ser ESPECÍFICOS a lo que se construyó en el demo. Apila valor con bonos, garantías, escasez, urgencia. El valor percibido debe ser 10x el precio.
 
 ## TU TAREA
-Analiza el contenido HTML del demo/página del cliente y los productos/servicios disponibles. Genera una cotización Grand Slam completa.
+Analiza el contenido HTML del demo/página que SE LE CONSTRUYÓ al cliente. Genera una cotización que refleje EXACTAMENTE lo que se hizo.
 
 RESPONDE SIEMPRE en formato JSON con esta estructura exacta:
 {
   "analysis": {
-    "dream_outcome": "El resultado soñado del cliente",
-    "pain_points": ["dolor 1", "dolor 2", "dolor 3"],
-    "perceived_probability": "Por qué van a lograr su resultado con nosotros",
-    "time_delay": "Cuánto tardan en ver resultados",
-    "effort_sacrifice": "Qué tan fácil es para ellos"
+    "dream_outcome": "El resultado que logra con lo que se le construyó",
+    "pain_points": ["dolor que resuelve lo construido 1", "dolor 2"],
+    "perceived_probability": "Por qué va a funcionar lo que se hizo",
+    "time_delay": "Cuánto tarda en ver resultados",
+    "effort_sacrifice": "Qué tan fácil es usar lo entregado"
   },
   "items": [
     {
-      "item_name": "Nombre del servicio/producto",
-      "description": "Descripción persuasiva usando frameworks de Hormozi",
+      "item_name": "Nombre específico de lo que se construyó",
+      "description": "Descripción basada en el demo real",
       "quantity": 1,
       "unit_price": 0,
       "suggested_price": 0
@@ -54,33 +39,34 @@ RESPONDE SIEMPRE en formato JSON con esta estructura exacta:
   "bonuses": [
     {
       "name": "Nombre del bono",
-      "description": "Qué incluye y por qué es valioso",
+      "description": "Qué incluye",
       "perceived_value": 0
     }
   ],
   "guarantee": {
-    "type": "Tipo de garantía (incondicional, condicional, anti-garantía)",
-    "description": "Descripción de la garantía"
+    "type": "Tipo de garantía",
+    "description": "Descripción"
   },
   "scarcity": {
     "type": "Tipo de escasez",
-    "description": "Cómo se limita la oferta"
+    "description": "Cómo se limita"
   },
   "urgency": {
     "reason": "Por qué actuar ahora",
-    "deadline": "Fecha o condición límite"
+    "deadline": "Fecha límite"
   },
-  "offer_name": "Nombre atractivo para la oferta (naming Hormozi)",
-  "grand_slam_section_html": "HTML completo para una sección visual tipo landing page que muestra: antes/después, ecuación de valor, bonos apilados, garantía, y call to action. Usa estilos inline modernos con gradientes, sombras, y diseño responsive. Colores principales: #6366f1 (indigo) y #0f172a (slate). El HTML debe ser auto-contenido y verse profesional.",
-  "terms_suggestion": "Términos y condiciones sugeridos que refuercen la oferta",
-  "notes": "Notas persuasivas para la cotización"
+  "offer_name": "Nombre atractivo para la oferta",
+  "grand_slam_section_html": "HTML visual con estilos inline. Colores: #6366f1 y #0f172a. Auto-contenido.",
+  "terms_suggestion": "Términos y condiciones sugeridos",
+  "notes": "Notas persuasivas"
 }
 
 IMPORTANTE:
-- Si se proporcionan productos del catálogo, usa sus precios reales como base pero sugiere precios optimizados
-- El grand_slam_section_html debe ser HTML completo, profesional, con estilos inline, responsive
+- Los items deben reflejar EXACTAMENTE lo que se ve en el demo HTML
+- Si se proporcionan productos del catálogo, usa sus precios como referencia
+- Usa la moneda que se indique en el mensaje del usuario
 - Todo en español
-- Sé específico al analizar el HTML del demo - menciona elementos concretos que viste`;
+- Sé PUNTUAL: el cliente recibe ESTO que se le hizo, no más`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -88,15 +74,16 @@ serve(async (req) => {
   }
 
   try {
-    const { html_content, customer_name, customer_company, products_catalog, custom_prompt } = await req.json();
+    const { html_content, customer_name, customer_company, products_catalog, custom_prompt, currency } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const userMessage = `Analiza el siguiente demo/página HTML de un cliente y genera una cotización Grand Slam irresistible.
+    const userMessage = `Analiza el siguiente demo/página HTML que YA SE LE CONSTRUYÓ a un cliente y genera una cotización Grand Slam que refleje EXACTAMENTE lo que se hizo.
 
 CLIENTE: ${customer_name || 'No especificado'}
 EMPRESA: ${customer_company || 'No especificada'}
+MONEDA: ${currency || 'USD'} (usa esta moneda para todos los precios)
 
 ${custom_prompt ? `INSTRUCCIONES ADICIONALES: ${custom_prompt}` : ''}
 
