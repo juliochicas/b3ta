@@ -63,13 +63,14 @@ interface ClientPage {
   next_payment_date: string | null;
   custom_domain: string | null;
   domain_status: string;
-  customers?: { name: string; company: string | null } | null;
+  customers?: { name: string; company: string | null; customer_number: number } | null;
 }
 
 interface Customer {
   id: string;
   name: string;
   company: string | null;
+  customer_number: number;
 }
 
 export default function ClientPages() {
@@ -173,8 +174,8 @@ export default function ClientPages() {
   const loadData = async () => {
     setLoading(true);
     const [pagesRes, customersRes, savedRes] = await Promise.all([
-      supabase.from('client_pages').select('*, customers(name, company)').order('created_at', { ascending: false }),
-      supabase.from('customers').select('id, name, company').order('name'),
+      supabase.from('client_pages').select('*, customers(name, company, customer_number)').order('created_at', { ascending: false }),
+      supabase.from('customers').select('id, name, company, customer_number').order('name'),
       supabase.from('generated_quotations').select('*').order('created_at', { ascending: false }),
     ]);
     setPages((pagesRes.data as ClientPage[]) || []);
@@ -528,7 +529,7 @@ export default function ClientPages() {
                   <PopoverTrigger asChild>
                     <Button variant="outline" role="combobox" aria-expanded={customerComboOpen} className="w-full justify-between font-normal">
                       {selectedCustomer
-                        ? (() => { const c = customers.find(c => c.id === selectedCustomer); return c ? `${c.name}${c.company ? ` (${c.company})` : ''}` : 'Seleccionar cliente...'; })()
+                        ? (() => { const c = customers.find(c => c.id === selectedCustomer); return c ? `#${c.customer_number} - ${c.name}${c.company ? ` (${c.company})` : ''}` : 'Seleccionar cliente...'; })()
                         : 'Seleccionar cliente...'}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -540,9 +541,9 @@ export default function ClientPages() {
                         <CommandEmpty>No se encontró cliente.</CommandEmpty>
                         <CommandGroup>
                           {customers.map((c) => (
-                            <CommandItem key={c.id} value={`${c.name} ${c.company || ''}`} onSelect={() => { setSelectedCustomer(c.id); setCustomerComboOpen(false); }}>
+                            <CommandItem key={c.id} value={`${c.customer_number} ${c.name} ${c.company || ''}`} onSelect={() => { setSelectedCustomer(c.id); setCustomerComboOpen(false); }}>
                               <Check className={cn("mr-2 h-4 w-4", selectedCustomer === c.id ? "opacity-100" : "opacity-0")} />
-                              {c.name} {c.company ? `(${c.company})` : ''}
+                              <span className="text-muted-foreground mr-1.5">#{c.customer_number}</span> {c.name} {c.company ? `(${c.company})` : ''}
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -680,7 +681,7 @@ export default function ClientPages() {
                       <p className="text-sm text-muted-foreground">/p/{page.slug}</p>
                       {page.customers && (
                         <p className="text-sm text-muted-foreground">
-                          Cliente: {page.customers.name}
+                          Cliente: #{page.customers.customer_number} - {page.customers.name}
                           {page.customers.company ? ` (${page.customers.company})` : ''}
                         </p>
                       )}
@@ -905,7 +906,7 @@ export default function ClientPages() {
                   <SelectItem value="none">Sin cliente</SelectItem>
                   {customers.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
-                      {c.name} {c.company ? `(${c.company})` : ''}
+                      #{c.customer_number} - {c.name} {c.company ? `(${c.company})` : ''}
                     </SelectItem>
                   ))}
                 </SelectContent>
