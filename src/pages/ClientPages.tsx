@@ -4,13 +4,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw, MoreVertical } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw, MoreVertical, Search, Check, ChevronsUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -103,6 +105,8 @@ export default function ClientPages() {
   const [quickCompany, setQuickCompany] = useState("");
   const [quickPhone, setQuickPhone] = useState("");
   const [creatingCustomer, setCreatingCustomer] = useState(false);
+  const [searchPages, setSearchPages] = useState("");
+  const [customerComboOpen, setCustomerComboOpen] = useState(false);
   const [deleteConfirmPage, setDeleteConfirmPage] = useState<ClientPage | null>(null);
   // Service management state
   const [servicePageEdit, setServicePageEdit] = useState<ClientPage | null>(null);
@@ -520,18 +524,32 @@ export default function ClientPages() {
                     Crear nuevo
                   </Button>
                 </div>
-                <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar cliente..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {customers.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name} {c.company ? `(${c.company})` : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={customerComboOpen} onOpenChange={setCustomerComboOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" aria-expanded={customerComboOpen} className="w-full justify-between font-normal">
+                      {selectedCustomer
+                        ? (() => { const c = customers.find(c => c.id === selectedCustomer); return c ? `${c.name}${c.company ? ` (${c.company})` : ''}` : 'Seleccionar cliente...'; })()
+                        : 'Seleccionar cliente...'}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Buscar cliente..." />
+                      <CommandList>
+                        <CommandEmpty>No se encontró cliente.</CommandEmpty>
+                        <CommandGroup>
+                          {customers.map((c) => (
+                            <CommandItem key={c.id} value={`${c.name} ${c.company || ''}`} onSelect={() => { setSelectedCustomer(c.id); setCustomerComboOpen(false); }}>
+                              <Check className={cn("mr-2 h-4 w-4", selectedCustomer === c.id ? "opacity-100" : "opacity-0")} />
+                              {c.name} {c.company ? `(${c.company})` : ''}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="space-y-2">
@@ -600,6 +618,19 @@ export default function ClientPages() {
           </Card>
         )}
 
+        {/* Search Bar */}
+        {pages.length > 0 && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por título, slug o cliente..."
+              value={searchPages}
+              onChange={(e) => setSearchPages(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        )}
+
         {/* Pages List */}
         {pages.length === 0 ? (
           <Card>
@@ -611,7 +642,18 @@ export default function ClientPages() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {pages.map((page) => (
+            {pages
+              .filter((page) => {
+                if (!searchPages.trim()) return true;
+                const q = searchPages.toLowerCase();
+                return (
+                  page.title.toLowerCase().includes(q) ||
+                  page.slug.toLowerCase().includes(q) ||
+                  page.customers?.name?.toLowerCase().includes(q) ||
+                  page.customers?.company?.toLowerCase().includes(q)
+                );
+              })
+              .map((page) => (
               <Card key={page.id}>
                 <CardContent className="py-4">
                   <div className="flex items-center justify-between gap-4">
