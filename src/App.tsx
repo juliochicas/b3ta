@@ -19,6 +19,8 @@ import SAPBusinessOne from "./pages/SAPBusinessOne";
 import ShopifySAPConnector from "./pages/ShopifySAPConnector";
 import ECommerce from "./pages/ECommerce";
 import Industries from "./pages/Industries";
+import ClientPage from "./pages/ClientPage";
+import ClientPages from "./pages/ClientPages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/e-commerce" element={<ECommerce />} />
           <Route path="/industrias" element={<Industries />} />
           <Route path="/informe/:slug" element={<PublicReport />} />
+          <Route path="/p/:slug" element={<ClientPage />} />
+          <Route path="/client-pages" element={<ClientPages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
