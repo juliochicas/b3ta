@@ -370,7 +370,10 @@ export default function ClientPages() {
         if (updateError) throw updateError;
       }
 
-      toast.success("Archivo HTML reemplazado exitosamente");
+      toast.success(`HTML reemplazado correctamente`, {
+        description: `"${page.title}" — archivo actualizado a "${file.name}"`,
+        duration: 5000,
+      });
       loadData();
     } catch (err: any) {
       toast.error(err.message || "Error al reemplazar archivo");
