@@ -10,7 +10,7 @@ const testimonials = [
     name: "Carlos Méndez",
     role: "CEO, RetailCorp LATAM",
     company: "E-commerce $45M/año",
-    content: "B3TA migró nuestro SAP a Business One for HANA en 4 meses. El ROI fue del 340% en el primer año. Nuestros procesos son 60% más rápidos.",
+    content: "B3TA automatizó todos nuestros procesos operativos en 4 meses. El ROI fue del 340% en el primer año. Nuestros procesos son 60% más rápidos.",
     rating: 5,
     metric: "+340% ROI",
     image: testimonial1

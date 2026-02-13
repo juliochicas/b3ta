@@ -161,7 +161,7 @@ export const ContactForm = () => {
                     <SelectValue placeholder="¿En qué servicio estás interesado?" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sap">SAP Consulting</SelectItem>
+                    <SelectItem value="web">Páginas Web</SelectItem>
                     <SelectItem value="mvp">MVP & Desarrollo de Producto</SelectItem>
                     <SelectItem value="ecommerce">E-commerce</SelectItem>
                     <SelectItem value="automation">Automatización</SelectItem>

@@ -166,7 +166,7 @@ const ECommerce = () => {
     },
     {
       q: "¿Puedo integrar con mi ERP/inventario actual?",
-      a: "Sí, integramos tu tienda con SAP, WMS, sistemas de inventario, CRM y cualquier plataforma con API. Sincronización automática de stock, precios y órdenes para evitar sobreventa y agilizar fulfillment."
+      a: "Sí, integramos tu tienda con ERP, WMS, sistemas de inventario, CRM y cualquier plataforma con API. Sincronización automática de stock, precios y órdenes para evitar sobreventa y agilizar fulfillment."
     }
   ];
 

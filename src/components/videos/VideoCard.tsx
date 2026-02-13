@@ -28,7 +28,7 @@ interface VideoCardProps {
 const getCategoryLabel = (category: string) => {
   const labels: Record<string, string> = {
     shopify: 'Shopify',
-    sap: 'SAP',
+    sap: 'Procesos',
     automation: 'Automatización',
     ai: 'IA',
     'landing-pages': 'Landing Pages',
