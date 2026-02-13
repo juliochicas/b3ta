@@ -1,4 +1,6 @@
 import { lazy, Suspense } from "react";
+import { Link } from "react-router-dom";
+import { LogIn } from "lucide-react";
 import { HeroAIDA } from "@/components/HeroAIDA";
 import { ProblemSection } from "@/components/ProblemSection";
 import { SolutionsByProblem } from "@/components/SolutionsByProblem";
@@ -40,17 +42,26 @@ const Index = () => {
             </a>
           </nav>
 
-          {/* CTA Mobile-friendly */}
-          <a 
-            href="#ai-consultant"
-            className="text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors py-2 px-4 rounded-lg"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('ai-consultant')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          >
-            Consultor IA
-          </a>
+          <div className="flex items-center gap-3">
+            {/* CTA Mobile-friendly */}
+            <a 
+              href="#ai-consultant"
+              className="text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors py-2 px-4 rounded-lg hidden sm:inline-flex"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('ai-consultant')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Consultor IA
+            </a>
+            <Link
+              to="/auth"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+            >
+              <LogIn className="h-4 w-4" />
+              <span className="hidden sm:inline">Iniciar Sesión</span>
+            </Link>
+          </div>
         </div>
       </header>
 
