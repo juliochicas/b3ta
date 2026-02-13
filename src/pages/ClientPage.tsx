@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function ClientPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
+  const [htmlContent, setHtmlContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -20,18 +20,24 @@ export default function ClientPage() {
           .select('html_storage_path')
           .eq('slug', slug)
           .eq('is_active', true)
-          .single();
+          .maybeSingle();
 
         if (fetchError || !data) {
           setError(true);
           return;
         }
 
-        const { data: urlData } = supabase.storage
+        const { data: fileData, error: downloadError } = await supabase.storage
           .from('client-pages')
-          .getPublicUrl(data.html_storage_path);
+          .download(data.html_storage_path);
 
-        setHtmlUrl(urlData.publicUrl);
+        if (downloadError || !fileData) {
+          setError(true);
+          return;
+        }
+
+        const text = await fileData.text();
+        setHtmlContent(text);
       } catch {
         setError(true);
       } finally {
@@ -52,7 +58,7 @@ export default function ClientPage() {
     );
   }
 
-  if (error || !htmlUrl) {
+  if (error || !htmlContent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
@@ -77,7 +83,7 @@ export default function ClientPage() {
 
   return (
     <iframe
-      src={htmlUrl}
+      srcDoc={htmlContent}
       title="Página del cliente"
       className="w-full h-screen border-0"
       sandbox="allow-scripts allow-same-origin allow-popups"
