@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 export default function ClientPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [htmlContent, setHtmlContent] = useState<string | null>(null);
+  const [pageUrl, setPageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [needsPassword, setNeedsPassword] = useState(false);
@@ -33,15 +33,13 @@ export default function ClientPage() {
           return;
         }
 
-        // Check if password protected
         if ((data as any).page_password) {
           setPageData(data as any);
           setNeedsPassword(true);
           return;
         }
 
-        // No password, load directly
-        await loadHtml(data.html_storage_path);
+        loadPage(data.html_storage_path);
       } catch {
         setError(true);
       } finally {
@@ -51,8 +49,7 @@ export default function ClientPage() {
     load();
   }, [slug]);
 
-  const loadHtml = async (storagePath: string) => {
-    // Use public URL with cache-busting to ensure clients always see latest version
+  const loadPage = (storagePath: string) => {
     const { data: urlData } = supabase.storage
       .from('client-pages')
       .getPublicUrl(storagePath);
@@ -62,15 +59,8 @@ export default function ClientPage() {
       return;
     }
 
-    try {
-      const cacheBuster = `?t=${Date.now()}`;
-      const response = await fetch(urlData.publicUrl + cacheBuster, { cache: 'no-store' });
-      if (!response.ok) throw new Error('Failed to fetch');
-      const text = await response.text();
-      setHtmlContent(text);
-    } catch {
-      setError(true);
-    }
+    // Use cache-busting to ensure latest version
+    setPageUrl(urlData.publicUrl + `?t=${Date.now()}`);
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -80,7 +70,7 @@ export default function ClientPage() {
     if (passwordInput === pageData.page_password) {
       setNeedsPassword(false);
       setLoading(true);
-      await loadHtml(pageData.html_storage_path);
+      loadPage(pageData.html_storage_path);
       setLoading(false);
     } else {
       setPasswordError(true);
@@ -131,7 +121,7 @@ export default function ClientPage() {
     );
   }
 
-  if (error || !htmlContent) {
+  if (error || !pageUrl) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
@@ -156,10 +146,10 @@ export default function ClientPage() {
 
   return (
     <iframe
-      srcDoc={htmlContent}
+      src={pageUrl}
       title="Página del cliente"
       className="w-full h-screen border-0"
-      sandbox="allow-scripts allow-same-origin allow-popups allow-downloads allow-forms allow-popups-to-escape-sandbox"
+      allow="downloads"
     />
   );
 }
