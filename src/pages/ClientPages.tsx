@@ -95,6 +95,7 @@ export default function ClientPages() {
   const [editPassword, setEditPassword] = useState("");
   const [editUsePassword, setEditUsePassword] = useState(false);
   const [replacingPageId, setReplacingPageId] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [savedQuotations, setSavedQuotations] = useState<any[]>([]);
   const [viewingSavedResult, setViewingSavedResult] = useState<any | null>(null);
   const [viewingSavedId, setViewingSavedId] = useState<string | null>(null);
@@ -350,9 +351,20 @@ export default function ClientPages() {
 
   const replaceFile = async (page: ClientPage, file: File) => {
     setReplacingPageId(page.id);
+    setUploadProgress(0);
+
+    // Simulate progress while uploading
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 90) { clearInterval(progressInterval); return 90; }
+        return prev + Math.random() * 15;
+      });
+    }, 200);
+
     try {
       // Delete old file
       await supabase.storage.from('client-pages').remove([page.html_storage_path]);
+      setUploadProgress(30);
 
       // Upload new file with same path
       const storagePath = `${page.slug}/${file.name}`;
@@ -360,6 +372,7 @@ export default function ClientPages() {
         .from('client-pages')
         .upload(storagePath, file, { contentType: 'text/html', upsert: true });
       if (uploadError) throw uploadError;
+      setUploadProgress(80);
 
       // Update path in DB if filename changed
       if (storagePath !== page.html_storage_path) {
@@ -370,15 +383,22 @@ export default function ClientPages() {
         if (updateError) throw updateError;
       }
 
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
       toast.success(`HTML reemplazado correctamente`, {
         description: `"${page.title}" — archivo actualizado a "${file.name}"`,
         duration: 5000,
       });
       loadData();
     } catch (err: any) {
+      clearInterval(progressInterval);
       toast.error(err.message || "Error al reemplazar archivo");
     } finally {
-      setReplacingPageId(null);
+      setTimeout(() => {
+        setReplacingPageId(null);
+        setUploadProgress(0);
+      }, 800);
     }
   };
 
@@ -895,6 +915,23 @@ export default function ClientPages() {
                       </DropdownMenu>
                     </div>
                   </div>
+                  {replacingPageId === page.id && (
+                    <div className="mt-3 space-y-1">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <FileUp className="h-3 w-3 animate-pulse" />
+                          Subiendo archivo...
+                        </span>
+                        <span>{Math.round(uploadProgress)}%</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all duration-300 ease-out"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
