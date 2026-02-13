@@ -52,17 +52,25 @@ export default function ClientPage() {
   }, [slug]);
 
   const loadHtml = async (storagePath: string) => {
-    const { data: fileData, error: downloadError } = await supabase.storage
+    // Use public URL with cache-busting to ensure clients always see latest version
+    const { data: urlData } = supabase.storage
       .from('client-pages')
-      .download(storagePath);
+      .getPublicUrl(storagePath);
 
-    if (downloadError || !fileData) {
+    if (!urlData?.publicUrl) {
       setError(true);
       return;
     }
 
-    const text = await fileData.text();
-    setHtmlContent(text);
+    try {
+      const cacheBuster = `?t=${Date.now()}`;
+      const response = await fetch(urlData.publicUrl + cacheBuster, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Failed to fetch');
+      const text = await response.text();
+      setHtmlContent(text);
+    } catch {
+      setError(true);
+    }
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {

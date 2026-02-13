@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Target, Download, CheckCircle2, Save, Pencil, X, Check } from "lucide-react";
+import { Sparkles, Loader2, Target, Download, CheckCircle2, Save, Pencil, X, Check, FileText } from "lucide-react";
 import jsPDF from "jspdf";
 
 interface QuotationSection {
@@ -336,7 +336,115 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
 
     const fileName = `Cotizacion-${stripEmoji(editCompany || editName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
     doc.save(fileName);
-    toast.success("PDF exportado correctamente");
+    toast.success("PDF profesional exportado");
+  };
+
+  const exportSalesPDF = () => {
+    if (!result) return;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 20;
+
+    const checkPage = (needed: number) => {
+      if (y + needed > pageHeight - 15) { doc.addPage(); y = 20; }
+    };
+
+    const addTitle = (text: string, size = 14) => {
+      checkPage(12);
+      doc.setFontSize(size);
+      doc.setFont("helvetica", "bold");
+      doc.text(stripEmoji(text), margin, y);
+      y += size * 0.5 + 4;
+    };
+
+    const addText = (text: string, size = 10) => {
+      doc.setFontSize(size);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(stripEmoji(text), maxWidth);
+      checkPage(lines.length * (size * 0.4 + 1));
+      doc.text(lines, margin, y);
+      y += lines.length * (size * 0.4 + 1) + 2;
+    };
+
+    const addBullet = (text: string) => {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(`- ${stripEmoji(text)}`, maxWidth - 5);
+      checkPage(lines.length * 5);
+      doc.text(lines, margin + 3, y);
+      y += lines.length * 5 + 1;
+    };
+
+    // Header
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(150, 0, 0);
+    doc.text("DOCUMENTO INTERNO - TECNICAS DE VENTA", margin, y);
+    y += 8;
+    doc.setTextColor(0);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Cliente: ${editName || "No especificado"}`, margin, y);
+    y += 5;
+    if (editCompany) { doc.text(`Empresa: ${editCompany}`, margin, y); y += 5; }
+    doc.text(`Precio propuesto: ${currency} ${formatPrice(result.quotation.pricing.base_price)}`, margin, y);
+    y += 10;
+
+    // Analisis Hormozi
+    addTitle("Analisis de Valor (Framework Hormozi)", 14);
+    y += 2;
+
+    if (result.analysis.dream_outcome) {
+      addTitle("Dream Outcome", 11);
+      addText(result.analysis.dream_outcome);
+      y += 3;
+    }
+
+    if (result.analysis.pain_points?.length) {
+      addTitle("Puntos de Dolor Identificados", 11);
+      result.analysis.pain_points.forEach(p => addBullet(p));
+      y += 3;
+    }
+
+    if (result.analysis.perceived_probability) {
+      addTitle("Probabilidad Percibida de Exito", 11);
+      addText(result.analysis.perceived_probability);
+      y += 3;
+    }
+
+    if (result.analysis.time_delay) {
+      addTitle("Tiempo de Implementacion", 11);
+      addText(result.analysis.time_delay);
+      y += 3;
+    }
+
+    if (result.analysis.effort_sacrifice) {
+      addTitle("Esfuerzo / Sacrificio del Cliente", 11);
+      addText(result.analysis.effort_sacrifice);
+      y += 3;
+    }
+
+    // Secciones de la cotización (resumen)
+    checkPage(15);
+    addTitle("Resumen de Secciones de la Cotizacion", 12);
+    result.quotation.sections.forEach((section) => {
+      checkPage(10);
+      addBullet(`${stripEmoji(section.title)}: ${stripEmoji(section.description || '')}`);
+    });
+
+    // Terms
+    if (result.quotation.pricing.terms) {
+      y += 5;
+      addTitle("Terminos Propuestos", 11);
+      addText(result.quotation.pricing.terms);
+    }
+
+    const fileName = `Ventas-${stripEmoji(editCompany || editName || "Analisis")}.pdf`.replace(/\s+/g, "-");
+    doc.save(fileName);
+    toast.success("PDF de ventas exportado");
   };
 
   return (
@@ -594,7 +702,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
             </Card>
 
             {/* Actions */}
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button variant="outline" onClick={onClose} className="flex-1">
                 Cerrar
               </Button>
@@ -604,7 +712,11 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
               </Button>
               <Button onClick={exportPDF} className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
-                Descargar PDF
+                PDF Cliente
+              </Button>
+              <Button variant="secondary" onClick={exportSalesPDF} className="flex-1">
+                <FileText className="mr-2 h-4 w-4" />
+                PDF Ventas
               </Button>
             </div>
           </div>
