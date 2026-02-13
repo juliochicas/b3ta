@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp } from "lucide-react";
 import { GrandSlamGenerator } from "@/components/quotations/GrandSlamGenerator";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -77,6 +77,7 @@ export default function ClientPages() {
   const [editPasswordPage, setEditPasswordPage] = useState<ClientPage | null>(null);
   const [editPassword, setEditPassword] = useState("");
   const [editUsePassword, setEditUsePassword] = useState(false);
+  const [replacingPageId, setReplacingPageId] = useState<string | null>(null);
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -241,6 +242,37 @@ export default function ClientPages() {
     const url = `${publishedDomain}/p/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("URL copiada al portapapeles");
+  };
+
+  const replaceFile = async (page: ClientPage, file: File) => {
+    setReplacingPageId(page.id);
+    try {
+      // Delete old file
+      await supabase.storage.from('client-pages').remove([page.html_storage_path]);
+
+      // Upload new file with same path
+      const storagePath = `${page.slug}/${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('client-pages')
+        .upload(storagePath, file, { contentType: 'text/html', upsert: true });
+      if (uploadError) throw uploadError;
+
+      // Update path in DB if filename changed
+      if (storagePath !== page.html_storage_path) {
+        const { error: updateError } = await supabase
+          .from('client_pages')
+          .update({ html_storage_path: storagePath })
+          .eq('id', page.id);
+        if (updateError) throw updateError;
+      }
+
+      toast.success("Archivo HTML reemplazado exitosamente");
+      loadData();
+    } catch (err: any) {
+      toast.error(err.message || "Error al reemplazar archivo");
+    } finally {
+      setReplacingPageId(null);
+    }
   };
 
   const openGrandSlam = async (page: ClientPage) => {
@@ -452,6 +484,26 @@ export default function ClientPages() {
                         checked={page.is_active}
                         onCheckedChange={() => toggleActive(page)}
                       />
+                      {/* Replace file button */}
+                      <label title="Reemplazar archivo HTML" className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept=".html,.htm"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) replaceFile(page, file);
+                            e.target.value = '';
+                          }}
+                        />
+                        <div className="inline-flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent hover:text-accent-foreground">
+                          {replacingPageId === page.id ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <FileUp className="h-4 w-4" />
+                          )}
+                        </div>
+                      </label>
                       <Button
                         variant="ghost"
                         size="icon"
