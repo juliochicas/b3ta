@@ -9,7 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw, MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { GrandSlamGenerator } from "@/components/quotations/GrandSlamGenerator";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -101,6 +108,7 @@ export default function ClientPages() {
   const [quickCompany, setQuickCompany] = useState("");
   const [quickPhone, setQuickPhone] = useState("");
   const [creatingCustomer, setCreatingCustomer] = useState(false);
+  const [deleteConfirmPage, setDeleteConfirmPage] = useState<ClientPage | null>(null);
   // Service management state
   const [servicePageEdit, setServicePageEdit] = useState<ClientPage | null>(null);
   const [svcType, setSvcType] = useState("test");
@@ -656,91 +664,13 @@ export default function ClientPages() {
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0">
+                      {/* Primary: Toggle active */}
                       <Switch
                         checked={page.is_active}
                         onCheckedChange={() => toggleActive(page)}
                       />
-                      {/* Replace file button */}
-                      <label title="Reemplazar archivo HTML" className="cursor-pointer">
-                        <input
-                          type="file"
-                          accept=".html,.htm"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) replaceFile(page, file);
-                            e.target.value = '';
-                          }}
-                        />
-                        <div className="inline-flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent hover:text-accent-foreground">
-                          {replacingPageId === page.id ? (
-                            <RefreshCw className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <FileUp className="h-4 w-4" />
-                          )}
-                        </div>
-                      </label>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEditPassword(page)}
-                        title="Editar contraseña"
-                      >
-                        {page.page_password ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEditCustomer(page)}
-                        title="Editar cliente asignado"
-                      >
-                        <UserPen className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openServiceEdit(page)}
-                        title="Gestionar servicio de hosting"
-                      >
-                        <Settings2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => copyUrl(page.slug)}
-                        title="Copiar URL"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      {/* Show saved quotations for this page */}
-                      {savedQuotations.filter(sq => sq.client_page_id === page.id).length > 0 && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            const saved = savedQuotations.filter(sq => sq.client_page_id === page.id);
-                            // Open the most recent one
-                            const latest = saved[0];
-                            setViewingSavedResult(latest.result_json);
-                            setViewingSavedId(latest.id);
-                            setGrandSlamPage(page);
-                          }}
-                          title={`Ver cotizaciones guardadas (${savedQuotations.filter(sq => sq.client_page_id === page.id).length})`}
-                          className="text-muted-foreground"
-                        >
-                          <History className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openGrandSlam(page)}
-                        title="Generar Cotizacion"
-                        className="text-primary"
-                      >
-                        <Sparkles className="h-4 w-4" />
-                      </Button>
+                      {/* Primary: View page */}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -749,29 +679,82 @@ export default function ClientPages() {
                       >
                         <ExternalLink className="h-4 w-4" />
                       </Button>
-                      {isAdmin && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>¿Eliminar página?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Se eliminará "{page.title}" permanentemente.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => deletePage(page)}>
-                                Eliminar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
+                      {/* Primary: Copy URL */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => copyUrl(page.slug)}
+                        title="Copiar URL"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      {/* Dropdown for all other actions */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuItem onClick={() => openServiceEdit(page)}>
+                            <Settings2 className="h-4 w-4 mr-2" />
+                            Gestionar servicio
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEditCustomer(page)}>
+                            <UserPen className="h-4 w-4 mr-2" />
+                            Editar cliente
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEditPassword(page)}>
+                            {page.page_password ? <Lock className="h-4 w-4 mr-2" /> : <LockOpen className="h-4 w-4 mr-2" />}
+                            {page.page_password ? "Cambiar contraseña" : "Agregar contraseña"}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem asChild>
+                            <label className="cursor-pointer flex items-center">
+                              <FileUp className="h-4 w-4 mr-2" />
+                              {replacingPageId === page.id ? "Subiendo..." : "Reemplazar HTML"}
+                              <input
+                                type="file"
+                                accept=".html,.htm"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) replaceFile(page, file);
+                                  e.target.value = '';
+                                }}
+                              />
+                            </label>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openGrandSlam(page)}>
+                            <Sparkles className="h-4 w-4 mr-2" />
+                            Generar cotización
+                          </DropdownMenuItem>
+                          {savedQuotations.filter(sq => sq.client_page_id === page.id).length > 0 && (
+                            <DropdownMenuItem onClick={() => {
+                              const saved = savedQuotations.filter(sq => sq.client_page_id === page.id);
+                              const latest = saved[0];
+                              setViewingSavedResult(latest.result_json);
+                              setViewingSavedId(latest.id);
+                              setGrandSlamPage(page);
+                            }}>
+                              <History className="h-4 w-4 mr-2" />
+                              Ver cotizaciones ({savedQuotations.filter(sq => sq.client_page_id === page.id).length})
+                            </DropdownMenuItem>
+                          )}
+                          {isAdmin && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => setDeleteConfirmPage(page)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Eliminar página
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </CardContent>
@@ -1075,6 +1058,23 @@ export default function ClientPages() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        {/* Delete Confirmation */}
+        <AlertDialog open={!!deleteConfirmPage} onOpenChange={(open) => !open && setDeleteConfirmPage(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar página?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Se eliminará "{deleteConfirmPage?.title}" permanentemente.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={() => { if (deleteConfirmPage) { deletePage(deleteConfirmPage); setDeleteConfirmPage(null); } }}>
+                Eliminar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
