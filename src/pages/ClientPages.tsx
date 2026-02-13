@@ -668,7 +668,7 @@ export default function ClientPages() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => window.open(`/p/${page.slug}`, '_blank')}
+                        onClick={() => window.open(`https://www.b3ta.us/p/${page.slug}`, '_blank')}
                         title="Ver página"
                       >
                         <ExternalLink className="h-4 w-4" />
