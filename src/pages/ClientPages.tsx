@@ -96,6 +96,7 @@ export default function ClientPages() {
   const [editUsePassword, setEditUsePassword] = useState(false);
   const [replacingPageId, setReplacingPageId] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [dragOverPageId, setDragOverPageId] = useState<string | null>(null);
   const [savedQuotations, setSavedQuotations] = useState<any[]>([]);
   const [viewingSavedResult, setViewingSavedResult] = useState<any | null>(null);
   const [viewingSavedId, setViewingSavedId] = useState<string | null>(null);
@@ -776,8 +777,43 @@ export default function ClientPages() {
         ) : (
           <div className="space-y-3">
             {paginatedPages.map((page) => (
-              <Card key={page.id}>
-                <CardContent className="py-4">
+              <Card
+                key={page.id}
+                className={cn(
+                  "transition-all duration-200",
+                  dragOverPageId === page.id && "ring-2 ring-primary bg-primary/5 scale-[1.01]"
+                )}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDragOverPageId(page.id);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDragOverPageId(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDragOverPageId(null);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file && (file.name.endsWith('.html') || file.name.endsWith('.htm'))) {
+                    replaceFile(page, file);
+                  } else if (file) {
+                    toast.error("Solo se aceptan archivos .html o .htm");
+                  }
+                }}
+              >
+                <CardContent className="py-4 relative">
+                  {dragOverPageId === page.id && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-primary/10 rounded-lg border-2 border-dashed border-primary pointer-events-none">
+                      <div className="flex flex-col items-center gap-1 text-primary">
+                        <FileUp className="h-8 w-8 animate-bounce" />
+                        <span className="font-medium text-sm">Soltar archivo HTML aquí</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
