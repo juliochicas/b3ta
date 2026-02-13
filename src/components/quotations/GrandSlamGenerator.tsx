@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Target, Gift, Shield, Clock, Zap, Eye, CheckCircle2 } from "lucide-react";
+import { Sparkles, Loader2, Target, Gift, Shield, Clock, Zap, Eye, CheckCircle2, Download } from "lucide-react";
+import jsPDF from "jspdf";
 
 interface GrandSlamResult {
   analysis: {
@@ -57,12 +59,25 @@ interface Props {
   customerCompany?: string;
 }
 
+const CURRENCIES = [
+  { value: "USD", label: "USD ($)" },
+  { value: "MXN", label: "MXN ($)" },
+  { value: "EUR", label: "EUR (€)" },
+  { value: "COP", label: "COP ($)" },
+  { value: "ARS", label: "ARS ($)" },
+];
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: "$", MXN: "$", EUR: "€", COP: "$", ARS: "$",
+};
+
 export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, customerName, customerCompany }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GrandSlamResult | null>(null);
   const [customPrompt, setCustomPrompt] = useState("");
   const [products, setProducts] = useState<any[]>([]);
   const [showPreview, setShowPreview] = useState(false);
+  const [currency, setCurrency] = useState("USD");
 
   useEffect(() => {
     if (open) {
@@ -90,6 +105,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
           customer_company: customerCompany,
           products_catalog: products,
           custom_prompt: customPrompt,
+          currency,
         },
       });
 
@@ -103,6 +119,168 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     } finally {
       setLoading(false);
     }
+  };
+
+  const sym = CURRENCY_SYMBOLS[currency] || "$";
+
+  const formatPrice = (amount: number) => {
+    return `${sym}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const exportPDF = () => {
+    if (!result) return;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 20;
+
+    const checkPage = (needed: number) => {
+      if (y + needed > doc.internal.pageSize.getHeight() - 15) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    const addTitle = (text: string, size = 14) => {
+      checkPage(12);
+      doc.setFontSize(size);
+      doc.setFont("helvetica", "bold");
+      doc.text(text, margin, y);
+      y += size * 0.5 + 4;
+    };
+
+    const addText = (text: string, size = 10) => {
+      doc.setFontSize(size);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(text, maxWidth);
+      checkPage(lines.length * (size * 0.4 + 1));
+      doc.text(lines, margin, y);
+      y += lines.length * (size * 0.4 + 1) + 2;
+    };
+
+    const addBullet = (text: string) => {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(`• ${text}`, maxWidth - 5);
+      checkPage(lines.length * 5);
+      doc.text(lines, margin + 3, y);
+      y += lines.length * 5 + 1;
+    };
+
+    // Header
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100);
+    doc.text(`Propuesta para: ${customerName || "Cliente"} - ${customerCompany || ""}`, margin, y);
+    y += 6;
+    doc.text(`Moneda: ${currency}`, margin, y);
+    y += 10;
+    doc.setTextColor(0);
+
+    // Offer Name
+    addTitle(result.offer_name, 16);
+    y += 4;
+
+    // Analysis
+    addTitle("Análisis de Valor");
+    addText(`Resultado Soñado: ${result.analysis.dream_outcome}`);
+    y += 2;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    checkPage(8);
+    doc.text("Puntos de Dolor:", margin, y);
+    y += 6;
+    result.analysis.pain_points.forEach(p => addBullet(p));
+    y += 3;
+
+    addText(`Probabilidad: ${result.analysis.perceived_probability}`);
+    addText(`Tiempo: ${result.analysis.time_delay}`);
+    addText(`Esfuerzo: ${result.analysis.effort_sacrifice}`);
+    y += 4;
+
+    // Items
+    addTitle("Detalle de la Propuesta");
+    let subtotal = 0;
+    result.items.forEach(item => {
+      checkPage(20);
+      const price = item.suggested_price || item.unit_price;
+      const total = price * item.quantity;
+      subtotal += total;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text(item.item_name, margin, y);
+      doc.text(formatPrice(total), pageWidth - margin, y, { align: "right" });
+      y += 5;
+      if (item.description) {
+        addText(item.description);
+      }
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(100);
+      doc.text(`Cant: ${item.quantity} × ${formatPrice(price)}`, margin + 3, y);
+      y += 6;
+      doc.setTextColor(0);
+    });
+
+    // Total
+    checkPage(15);
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 6;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Total:", margin, y);
+    doc.text(`${currency} ${formatPrice(subtotal)}`, pageWidth - margin, y, { align: "right" });
+    y += 10;
+
+    // Bonuses
+    if (result.bonuses?.length > 0) {
+      addTitle("Bonos Incluidos");
+      result.bonuses.forEach(bonus => {
+        checkPage(15);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text(`🎁 ${bonus.name}`, margin, y);
+        doc.text(`Valor: ${formatPrice(bonus.perceived_value)}`, pageWidth - margin, y, { align: "right" });
+        y += 5;
+        addText(bonus.description);
+        y += 2;
+      });
+      y += 3;
+    }
+
+    // Guarantee
+    if (result.guarantee) {
+      addTitle("Garantía");
+      addText(`${result.guarantee.type}: ${result.guarantee.description}`);
+      y += 3;
+    }
+
+    // Scarcity & Urgency
+    if (result.scarcity || result.urgency) {
+      addTitle("Condiciones Especiales");
+      if (result.scarcity) addText(`Escasez: ${result.scarcity.description}`);
+      if (result.urgency) addText(`Urgencia: ${result.urgency.reason} - ${result.urgency.deadline}`);
+      y += 3;
+    }
+
+    // Notes
+    if (result.notes) {
+      addTitle("Notas");
+      addText(result.notes);
+    }
+
+    // Terms
+    if (result.terms_suggestion) {
+      checkPage(20);
+      addTitle("Términos y Condiciones Sugeridos");
+      addText(result.terms_suggestion);
+    }
+
+    const fileName = `Grand-Slam-${customerCompany || customerName || "Propuesta"}.pdf`.replace(/\s+/g, "-");
+    doc.save(fileName);
+    toast.success("PDF exportado correctamente");
   };
 
   return (
@@ -142,6 +320,20 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
                 </div>
               </div>
             </Card>
+
+            <div className="space-y-2">
+              <Label>Moneda</Label>
+              <Select value={currency} onValueChange={setCurrency}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCIES.map(c => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="space-y-2">
               <Label>Instrucciones adicionales (opcional)</Label>
@@ -247,7 +439,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
                       <p className="text-xs text-muted-foreground">{item.description}</p>
                     </div>
                     <div className="text-right shrink-0 ml-3">
-                      <p className="font-semibold">${item.suggested_price || item.unit_price}</p>
+                      <p className="font-semibold">{currency} {formatPrice(item.suggested_price || item.unit_price)}</p>
                       <p className="text-xs text-muted-foreground">×{item.quantity}</p>
                     </div>
                   </div>
@@ -270,7 +462,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
                         <p className="text-xs text-muted-foreground">{bonus.description}</p>
                       </div>
                       <Badge variant="outline" className="shrink-0 ml-2">
-                        Valor: ${bonus.perceived_value}
+                        Valor: {formatPrice(bonus.perceived_value)}
                       </Badge>
                     </div>
                   ))}
@@ -329,6 +521,10 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
             <DialogFooter className="flex gap-2">
               <Button variant="outline" onClick={() => { setResult(null); }}>
                 🔄 Regenerar
+              </Button>
+              <Button variant="outline" onClick={exportPDF}>
+                <Download className="mr-2 h-4 w-4" />
+                Exportar PDF
               </Button>
               <Button onClick={() => onApply(result)}>
                 <Sparkles className="mr-2 h-4 w-4" />
