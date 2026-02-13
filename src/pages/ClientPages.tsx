@@ -237,7 +237,8 @@ export default function ClientPages() {
   };
 
   const copyUrl = (slug: string) => {
-    const url = `${window.location.origin}/p/${slug}`;
+    const publishedDomain = 'https://b3ta.lovable.app';
+    const url = `${publishedDomain}/p/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("URL copiada al portapapeles");
   };
