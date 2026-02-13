@@ -8,13 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { format, parseISO } from "date-fns";
-import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw, MoreVertical, CalendarIcon } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw, MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -948,43 +944,11 @@ export default function ClientPages() {
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Inicio</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-9 text-sm", !svcStartDate && "text-muted-foreground")}>
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {svcStartDate ? format(parseISO(svcStartDate), "dd/MM/yyyy") : "Seleccionar"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={svcStartDate ? parseISO(svcStartDate) : undefined}
-                          onSelect={(d) => setSvcStartDate(d ? format(d, "yyyy-MM-dd") : "")}
-                          locale={es}
-                          className="p-3 pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input type="date" value={svcStartDate} onChange={(e) => setSvcStartDate(e.target.value)} className="h-9 text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Expiración</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-9 text-sm", !svcExpirationDate && "text-muted-foreground")}>
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {svcExpirationDate ? format(parseISO(svcExpirationDate), "dd/MM/yyyy") : "Seleccionar"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={svcExpirationDate ? parseISO(svcExpirationDate) : undefined}
-                          onSelect={(d) => setSvcExpirationDate(d ? format(d, "yyyy-MM-dd") : "")}
-                          locale={es}
-                          className="p-3 pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input type="date" value={svcExpirationDate} onChange={(e) => setSvcExpirationDate(e.target.value)} className="h-9 text-sm" />
                   </div>
                 </div>
               </div>
@@ -1014,43 +978,11 @@ export default function ClientPages() {
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Último pago</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-9 text-sm", !svcLastPayment && "text-muted-foreground")}>
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {svcLastPayment ? format(parseISO(svcLastPayment), "dd/MM/yyyy") : "Seleccionar"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={svcLastPayment ? parseISO(svcLastPayment) : undefined}
-                          onSelect={(d) => setSvcLastPayment(d ? format(d, "yyyy-MM-dd") : "")}
-                          locale={es}
-                          className="p-3 pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input type="date" value={svcLastPayment} onChange={(e) => setSvcLastPayment(e.target.value)} className="h-9 text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Próximo cobro</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-9 text-sm", !svcNextPayment && "text-muted-foreground")}>
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {svcNextPayment ? format(parseISO(svcNextPayment), "dd/MM/yyyy") : "Seleccionar"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={svcNextPayment ? parseISO(svcNextPayment) : undefined}
-                          onSelect={(d) => setSvcNextPayment(d ? format(d, "yyyy-MM-dd") : "")}
-                          locale={es}
-                          className="p-3 pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input type="date" value={svcNextPayment} onChange={(e) => setSvcNextPayment(e.target.value)} className="h-9 text-sm" />
                   </div>
                 </div>
               </div>
