@@ -152,21 +152,48 @@ Genera la cotización Grand Slam completa en formato JSON.`;
       throw new Error("No content in AI response");
     }
 
-    // Parse JSON from the response (handle markdown code blocks)
+    // Parse JSON from the response
     let parsedContent;
+    const extractJson = (text: string): string => {
+      const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/```\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) return jsonMatch[1].trim();
+      const jsonStart = text.indexOf('{');
+      const jsonEnd = text.lastIndexOf('}');
+      if (jsonStart !== -1 && jsonEnd !== -1) return text.substring(jsonStart, jsonEnd + 1);
+      return text.trim();
+    };
+
+    const jsonStr = extractJson(content);
+
     try {
-      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
-      const jsonStr = jsonMatch ? jsonMatch[1] : content;
-      parsedContent = JSON.parse(jsonStr.trim());
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError, "Content:", content.substring(0, 500));
-      // Try to extract JSON object directly
-      const jsonStart = content.indexOf('{');
-      const jsonEnd = content.lastIndexOf('}');
-      if (jsonStart !== -1 && jsonEnd !== -1) {
-        parsedContent = JSON.parse(content.substring(jsonStart, jsonEnd + 1));
-      } else {
-        throw new Error("Could not parse AI response as JSON");
+      parsedContent = JSON.parse(jsonStr);
+    } catch (_e1) {
+      console.error("First parse failed, retrying with AI fix...");
+      // Ask AI to fix the JSON
+      const retryResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            { role: "system", content: "Fix the following broken JSON. Return ONLY valid JSON, no markdown, no explanation. Escape all quotes inside string values." },
+            { role: "user", content: jsonStr.substring(0, 30000) },
+          ],
+        }),
+      });
+
+      if (!retryResponse.ok) throw new Error("No se pudo procesar la respuesta. Intenta de nuevo.");
+      const retryData = await retryResponse.json();
+      const retryContent = retryData.choices?.[0]?.message?.content || "";
+      const retryJson = extractJson(retryContent);
+      try {
+        parsedContent = JSON.parse(retryJson);
+      } catch (_e2) {
+        console.error("All parse attempts failed. Content:", content.substring(0, 500));
+        throw new Error("No se pudo procesar la respuesta de la IA. Intenta de nuevo.");
       }
     }
 
