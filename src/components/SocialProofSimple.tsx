@@ -16,7 +16,7 @@ const testimonials = [
     gradient: "from-blue-500 to-cyan-500"
   },
   {
-    quote: "SAP nos permitió escalar de 5 a 50 empleados sin caos",
+    quote: "Nuestro MVP validó la idea en 6 semanas y ahora facturamos $200K/año",
     author: "Ana Martínez",
     role: "CFO, GrowthCorp",
     result: "10x crecimiento",

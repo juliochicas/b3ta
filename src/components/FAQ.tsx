@@ -10,11 +10,11 @@ import { MessageCircle } from "lucide-react";
 const faqs = [
   {
     question: "¿Cuánto tiempo toma implementar una solución?",
-    answer: "Los tiempos varían según la dimensión y complejidad del proyecto. Tenemos proyectos express desde 24 horas hasta implementaciones enterprise de 1 año. Para soluciones SAP: PyMEs 8-12 semanas, Enterprise 16-24 semanas. Para automatizaciones: 1-8 semanas. Usamos metodologías ágiles para máxima eficiencia."
+    answer: "Los tiempos varían según la dimensión y complejidad del proyecto. Tenemos proyectos express desde 24 horas hasta implementaciones enterprise de varios meses. Para páginas web: 2-4 semanas. Para MVPs: 4-8 semanas. Para automatizaciones: 1-8 semanas. Usamos metodologías ágiles para máxima eficiencia."
   },
   {
     question: "¿Qué incluye el precio? ¿Hay costos ocultos?",
-    answer: "100% transparencia. El precio incluye: consultoría, desarrollo, testing, capacitación y soporte post go-live (duración según el plan contratado). Los únicos costos adicionales son licencias de terceros (SAP, Shopify, etc.) que te informamos desde el día 1. Sin sorpresas."
+    answer: "100% transparencia. El precio incluye: consultoría, desarrollo, testing, capacitación y soporte post go-live (duración según el plan contratado). Los únicos costos adicionales son licencias de terceros (Shopify, APIs, hosting, etc.) que te informamos desde el día 1. Sin sorpresas."
   },
   {
     question: "¿Trabajan con empresas pequeñas o solo corporativos?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "¿Qué tecnologías usan? ¿Son modernas?",
-    answer: "Stack enterprise actual: SAP Business One for HANA, Shopify (todos los planes) y Shopify Plus, n8n/Make para automatización, OpenAI GPT-4 + RAG para IA, React + TypeScript para frontends. Todo cloud-native, escalable y con las mejores prácticas de 2025."
+    answer: "Stack moderno: React + TypeScript para frontends y apps web, Shopify para e-commerce, n8n/Make para automatización, OpenAI GPT-4 + RAG para IA, Node.js y Supabase para backends. Todo cloud-native, escalable y con las mejores prácticas de 2025."
   },
   {
     question: "¿Ofrecen financiamiento o pagos flexibles?",

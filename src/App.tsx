@@ -43,8 +43,9 @@ const App = () => (
           <Route path="/importaciones-china" element={<ChinaImports />} />
           <Route path="/mvp-desarrollo-producto" element={<MVPDevelopment />} />
           <Route path="/soluciones-por-presupuesto" element={<SolutionsByBudget />} />
-          <Route path="/sap-business-one" element={<SAPBusinessOne />} />
-          <Route path="/conector-shopify-sap" element={<ShopifySAPConnector />} />
+          {/* SAP pages hidden temporarily */}
+          {/* <Route path="/sap-business-one" element={<SAPBusinessOne />} /> */}
+          {/* <Route path="/conector-shopify-sap" element={<ShopifySAPConnector />} /> */}
           <Route path="/e-commerce" element={<ECommerce />} />
           <Route path="/industrias" element={<Industries />} />
           <Route path="/informe/:slug" element={<PublicReport />} />
