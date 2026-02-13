@@ -959,7 +959,7 @@ export default function ClientPages() {
                   <DollarSign className="h-4 w-4" />
                   Facturación
                 </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">Cuota mensual</Label>
                     <Input type="number" step="0.01" value={svcMonthlyFee} onChange={(e) => setSvcMonthlyFee(e.target.value)} placeholder="0.00" />
