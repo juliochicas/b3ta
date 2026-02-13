@@ -16,37 +16,64 @@ export type Database = {
     Tables: {
       client_pages: {
         Row: {
+          auto_renew: boolean
           created_at: string
           created_by: string
+          currency: string
           customer_id: string | null
           html_storage_path: string
           id: string
           is_active: boolean
+          last_payment_date: string | null
+          monthly_fee: number | null
+          next_payment_date: string | null
           page_password: string | null
+          renewal_conditions: string | null
+          service_expiration_date: string | null
+          service_start_date: string | null
+          service_type: string
           slug: string
           title: string
           updated_at: string
         }
         Insert: {
+          auto_renew?: boolean
           created_at?: string
           created_by?: string
+          currency?: string
           customer_id?: string | null
           html_storage_path: string
           id?: string
           is_active?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number | null
+          next_payment_date?: string | null
           page_password?: string | null
+          renewal_conditions?: string | null
+          service_expiration_date?: string | null
+          service_start_date?: string | null
+          service_type?: string
           slug: string
           title: string
           updated_at?: string
         }
         Update: {
+          auto_renew?: boolean
           created_at?: string
           created_by?: string
+          currency?: string
           customer_id?: string | null
           html_storage_path?: string
           id?: string
           is_active?: boolean
+          last_payment_date?: string | null
+          monthly_fee?: number | null
+          next_payment_date?: string | null
           page_password?: string | null
+          renewal_conditions?: string | null
+          service_expiration_date?: string | null
+          service_start_date?: string | null
+          service_type?: string
           slug?: string
           title?: string
           updated_at?: string

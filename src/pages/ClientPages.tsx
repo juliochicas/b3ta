@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { GrandSlamGenerator } from "@/components/quotations/GrandSlamGenerator";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -41,6 +42,15 @@ interface ClientPage {
   is_active: boolean;
   created_at: string;
   page_password: string | null;
+  service_type: string;
+  service_start_date: string | null;
+  service_expiration_date: string | null;
+  monthly_fee: number | null;
+  currency: string;
+  renewal_conditions: string | null;
+  auto_renew: boolean;
+  last_payment_date: string | null;
+  next_payment_date: string | null;
   customers?: { name: string; company: string | null } | null;
 }
 
@@ -89,6 +99,17 @@ export default function ClientPages() {
   const [quickCompany, setQuickCompany] = useState("");
   const [quickPhone, setQuickPhone] = useState("");
   const [creatingCustomer, setCreatingCustomer] = useState(false);
+  // Service management state
+  const [servicePageEdit, setServicePageEdit] = useState<ClientPage | null>(null);
+  const [svcType, setSvcType] = useState("test");
+  const [svcStartDate, setSvcStartDate] = useState("");
+  const [svcExpirationDate, setSvcExpirationDate] = useState("");
+  const [svcMonthlyFee, setSvcMonthlyFee] = useState("");
+  const [svcCurrency, setSvcCurrency] = useState("USD");
+  const [svcRenewalConditions, setSvcRenewalConditions] = useState("");
+  const [svcAutoRenew, setSvcAutoRenew] = useState(false);
+  const [svcLastPayment, setSvcLastPayment] = useState("");
+  const [svcNextPayment, setSvcNextPayment] = useState("");
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -363,6 +384,53 @@ export default function ClientPages() {
     }
   };
 
+  const openServiceEdit = (page: ClientPage) => {
+    setServicePageEdit(page);
+    setSvcType(page.service_type || "test");
+    setSvcStartDate(page.service_start_date || "");
+    setSvcExpirationDate(page.service_expiration_date || "");
+    setSvcMonthlyFee(page.monthly_fee?.toString() || "");
+    setSvcCurrency(page.currency || "USD");
+    setSvcRenewalConditions(page.renewal_conditions || "");
+    setSvcAutoRenew(page.auto_renew || false);
+    setSvcLastPayment(page.last_payment_date || "");
+    setSvcNextPayment(page.next_payment_date || "");
+  };
+
+  const saveService = async () => {
+    if (!servicePageEdit) return;
+    const { error } = await supabase
+      .from('client_pages')
+      .update({
+        service_type: svcType,
+        service_start_date: svcStartDate || null,
+        service_expiration_date: svcExpirationDate || null,
+        monthly_fee: svcMonthlyFee ? parseFloat(svcMonthlyFee) : 0,
+        currency: svcCurrency,
+        renewal_conditions: svcRenewalConditions || null,
+        auto_renew: svcAutoRenew,
+        last_payment_date: svcLastPayment || null,
+        next_payment_date: svcNextPayment || null,
+      } as any)
+      .eq('id', servicePageEdit.id);
+    if (error) {
+      toast.error("Error al actualizar servicio");
+    } else {
+      toast.success("Información de servicio actualizada");
+      setServicePageEdit(null);
+      loadData();
+    }
+  };
+
+  const getServiceBadge = (type: string) => {
+    switch (type) {
+      case 'active': return <Badge className="bg-primary text-primary-foreground">Servicio Activo</Badge>;
+      case 'expired': return <Badge variant="destructive">Expirado</Badge>;
+      case 'cancelled': return <Badge variant="secondary">Cancelado</Badge>;
+      default: return <Badge variant="outline">Prueba</Badge>;
+    }
+  };
+
   const handleGrandSlamApply = (result: any) => {
     // Navigate to quotations with the grand slam data
     setGrandSlamPage(null);
@@ -542,6 +610,7 @@ export default function ClientPages() {
                         <Badge variant={page.is_active ? "default" : "secondary"}>
                           {page.is_active ? "Activa" : "Inactiva"}
                         </Badge>
+                        {getServiceBadge(page.service_type)}
                       {page.page_password && (
                         <Badge variant="outline" className="gap-1 cursor-pointer" onClick={() => { navigator.clipboard.writeText(page.page_password!); toast.success("Contraseña copiada"); }} title="Clic para copiar contraseña">
                           <Lock className="h-3 w-3" />
@@ -558,6 +627,19 @@ export default function ClientPages() {
                       )}
                       {!page.customers && (
                         <p className="text-sm text-muted-foreground italic">Sin cliente asignado</p>
+                      )}
+                      {page.service_type === 'active' && page.next_payment_date && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                          <CalendarDays className="h-3 w-3" />
+                          Próximo cobro: {new Date(page.next_payment_date).toLocaleDateString('es-GT')}
+                          {page.monthly_fee ? ` — $${page.monthly_fee} ${page.currency}` : ''}
+                        </p>
+                      )}
+                      {page.service_type === 'expired' && page.service_expiration_date && (
+                        <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                          <CalendarDays className="h-3 w-3" />
+                          Expiró: {new Date(page.service_expiration_date).toLocaleDateString('es-GT')}
+                        </p>
                       )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -600,6 +682,14 @@ export default function ClientPages() {
                         title="Editar cliente asignado"
                       >
                         <UserPen className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openServiceEdit(page)}
+                        title="Gestionar servicio de hosting"
+                      >
+                        <Settings2 className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -828,6 +918,96 @@ export default function ClientPages() {
               <Button onClick={createQuickCustomer} disabled={creatingCustomer}>
                 {creatingCustomer ? "Creando..." : "Crear Cliente"}
               </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        {/* Service Management Modal */}
+        <Dialog open={!!servicePageEdit} onOpenChange={(open) => !open && setServicePageEdit(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Settings2 className="h-5 w-5" />
+                Gestión de Servicio
+              </DialogTitle>
+              <DialogDescription>
+                {servicePageEdit?.title} — Configura los detalles del servicio de hosting
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto">
+              <div className="space-y-2">
+                <Label>Tipo de servicio</Label>
+                <Select value={svcType} onValueChange={setSvcType}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="test">Prueba / Demo</SelectItem>
+                    <SelectItem value="active">Servicio Activo</SelectItem>
+                    <SelectItem value="expired">Expirado</SelectItem>
+                    <SelectItem value="cancelled">Cancelado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Fecha inicio del servicio</Label>
+                  <Input type="date" value={svcStartDate} onChange={(e) => setSvcStartDate(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Fecha de expiración</Label>
+                  <Input type="date" value={svcExpirationDate} onChange={(e) => setSvcExpirationDate(e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> Cuota mensual</Label>
+                  <Input type="number" step="0.01" value={svcMonthlyFee} onChange={(e) => setSvcMonthlyFee(e.target.value)} placeholder="0.00" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Moneda</Label>
+                  <Select value={svcCurrency} onValueChange={setSvcCurrency}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD</SelectItem>
+                      <SelectItem value="GTQ">GTQ</SelectItem>
+                      <SelectItem value="MXN">MXN</SelectItem>
+                      <SelectItem value="EUR">EUR</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Último pago</Label>
+                  <Input type="date" value={svcLastPayment} onChange={(e) => setSvcLastPayment(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Próximo cobro</Label>
+                  <Input type="date" value={svcNextPayment} onChange={(e) => setSvcNextPayment(e.target.value)} />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch checked={svcAutoRenew} onCheckedChange={setSvcAutoRenew} />
+                <Label className="flex items-center gap-2">
+                  <RotateCw className="h-4 w-4" />
+                  Renovación automática
+                </Label>
+              </div>
+              <div className="space-y-2">
+                <Label>Condiciones de renovación</Label>
+                <Textarea
+                  value={svcRenewalConditions}
+                  onChange={(e) => setSvcRenewalConditions(e.target.value)}
+                  placeholder="Ej: Pago mensual de $50 USD. Renovación cada 12 meses. Incluye hosting y mantenimiento básico."
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setServicePageEdit(null)}>Cancelar</Button>
+              <Button onClick={saveService}>Guardar</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
