@@ -69,12 +69,6 @@ interface Customer {
   company: string | null;
 }
 
-interface Customer {
-  id: string;
-  name: string;
-  company: string | null;
-}
-
 export default function ClientPages() {
   const navigate = useNavigate();
   const { isAdmin, isSales, loading: roleLoading } = useUserRole();
@@ -178,7 +172,7 @@ export default function ClientPages() {
       supabase.from('customers').select('id, name, company').order('name'),
       supabase.from('generated_quotations').select('*').order('created_at', { ascending: false }),
     ]);
-    setPages((pagesRes.data as any[]) || []);
+    setPages((pagesRes.data as ClientPage[]) || []);
     setCustomers(customersRes.data || []);
     setSavedQuotations(savedRes.data || []);
     setLoading(false);
@@ -236,7 +230,7 @@ export default function ClientPages() {
           customer_id: selectedCustomer || null,
           html_storage_path: storagePath,
           page_password: usePassword && pagePassword ? pagePassword : null,
-        } as any);
+        });
 
       if (insertError) throw insertError;
 
@@ -427,7 +421,7 @@ export default function ClientPages() {
         next_payment_date: svcNextPayment || null,
         custom_domain: svcCustomDomain || null,
         domain_status: svcDomainStatus,
-      } as any)
+      })
       .eq('id', servicePageEdit.id);
     if (error) {
       toast.error("Error al actualizar servicio");
