@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 export default function ClientPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [pageUrl, setPageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [needsPassword, setNeedsPassword] = useState(false);
@@ -39,7 +38,8 @@ export default function ClientPage() {
           return;
         }
 
-        loadPage(data.html_storage_path);
+        // No password - redirect directly to the HTML file
+        redirectToPage(data.html_storage_path);
       } catch {
         setError(true);
       } finally {
@@ -49,7 +49,7 @@ export default function ClientPage() {
     load();
   }, [slug]);
 
-  const loadPage = (storagePath: string) => {
+  const redirectToPage = (storagePath: string) => {
     const { data: urlData } = supabase.storage
       .from('client-pages')
       .getPublicUrl(storagePath);
@@ -59,8 +59,8 @@ export default function ClientPage() {
       return;
     }
 
-    // Use cache-busting to ensure latest version
-    setPageUrl(urlData.publicUrl + `?t=${Date.now()}`);
+    // Redirect to the actual HTML file - all scripts, exports, downloads work natively
+    window.location.href = urlData.publicUrl + `?t=${Date.now()}`;
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -69,9 +69,7 @@ export default function ClientPage() {
 
     if (passwordInput === pageData.page_password) {
       setNeedsPassword(false);
-      setLoading(true);
-      loadPage(pageData.html_storage_path);
-      setLoading(false);
+      redirectToPage(pageData.html_storage_path);
     } else {
       setPasswordError(true);
     }
@@ -121,7 +119,7 @@ export default function ClientPage() {
     );
   }
 
-  if (error || !pageUrl) {
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
@@ -144,12 +142,5 @@ export default function ClientPage() {
     );
   }
 
-  return (
-    <iframe
-      src={pageUrl}
-      title="Página del cliente"
-      className="w-full h-screen border-0"
-      allow="downloads"
-    />
-  );
+  return null;
 }
