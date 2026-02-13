@@ -416,6 +416,50 @@ export type Database = {
         }
         Relationships: []
       }
+      generated_quotations: {
+        Row: {
+          client_page_id: string | null
+          created_at: string
+          created_by: string
+          currency: string
+          customer_company: string | null
+          customer_name: string | null
+          id: string
+          result_json: Json
+          updated_at: string
+        }
+        Insert: {
+          client_page_id?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          customer_company?: string | null
+          customer_name?: string | null
+          id?: string
+          result_json: Json
+          updated_at?: string
+        }
+        Update: {
+          client_page_id?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          customer_company?: string | null
+          customer_name?: string | null
+          id?: string
+          result_json?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_quotations_client_page_id_fkey"
+            columns: ["client_page_id"]
+            isOneToOne: false
+            referencedRelation: "client_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoice_items: {
         Row: {
           created_at: string

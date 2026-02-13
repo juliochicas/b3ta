@@ -79,8 +79,21 @@ Para proceder con esta cotización, por favor realice el pago a través del link
   }, [grandSlamResult]);
 
   const applyGrandSlam = (result: any) => {
-    // Apply items
-    if (result.items?.length > 0) {
+    // New format: quotation.sections
+    if (result.quotation?.sections?.length > 0) {
+      const newItems: QuotationItem[] = result.quotation.sections.map((section: any) => ({
+        product_service_id: null,
+        item_name: section.title,
+        description: section.description + (section.features?.length > 0 ? '\n' + section.features.map((f: string) => `- ${f}`).join('\n') : ''),
+        quantity: 1,
+        unit_price: result.quotation.pricing?.base_price ? result.quotation.pricing.base_price / result.quotation.sections.length : 0,
+        discount_percentage: 0,
+        total: result.quotation.pricing?.base_price ? result.quotation.pricing.base_price / result.quotation.sections.length : 0,
+      }));
+      setItems(newItems);
+    }
+    // Legacy format: items
+    else if (result.items?.length > 0) {
       const newItems: QuotationItem[] = result.items.map((item: any) => ({
         product_service_id: null,
         item_name: item.item_name,
@@ -90,31 +103,21 @@ Para proceder con esta cotización, por favor realice el pago a través del link
         discount_percentage: 0,
         total: (item.suggested_price || item.unit_price || 0) * (item.quantity || 1),
       }));
-      // Add bonuses as items with $0 price
-      if (result.bonuses?.length > 0) {
-        result.bonuses.forEach((bonus: any) => {
-          newItems.push({
-            product_service_id: null,
-            item_name: `🎁 BONO: ${bonus.name}`,
-            description: `${bonus.description} (Valor: $${bonus.perceived_value})`,
-            quantity: 1,
-            unit_price: 0,
-            discount_percentage: 0,
-            total: 0,
-          });
-        });
-      }
       setItems(newItems);
     }
-    // Apply notes
-    if (result.notes) {
-      setFormData(prev => ({ ...prev, notes: result.notes }));
-    }
-    // Apply terms
-    if (result.terms_suggestion) {
+    // Apply terms from new format
+    if (result.quotation?.pricing?.terms) {
+      setFormData(prev => ({ ...prev, terms_conditions: result.quotation.pricing.terms }));
+    } else if (result.terms_suggestion) {
       setFormData(prev => ({ ...prev, terms_conditions: result.terms_suggestion }));
     }
-    toast({ title: "Oferta Grand Slam aplicada", description: `"${result.offer_name}" - Items, bonos y términos cargados` });
+    // Apply notes
+    if (result.professional_summary) {
+      setFormData(prev => ({ ...prev, notes: result.professional_summary }));
+    } else if (result.notes) {
+      setFormData(prev => ({ ...prev, notes: result.notes }));
+    }
+    toast({ title: "Cotizacion aplicada", description: `"${result.quotation?.title || result.offer_name || 'Cotizacion'}" cargada` });
   };
 
   useEffect(() => {
