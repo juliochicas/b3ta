@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus } from "lucide-react";
 import { GrandSlamGenerator } from "@/components/quotations/GrandSlamGenerator";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -83,6 +83,12 @@ export default function ClientPages() {
   const [viewingSavedId, setViewingSavedId] = useState<string | null>(null);
   const [editCustomerPage, setEditCustomerPage] = useState<ClientPage | null>(null);
   const [editCustomerId, setEditCustomerId] = useState<string>("");
+  const [showQuickCustomer, setShowQuickCustomer] = useState(false);
+  const [quickName, setQuickName] = useState("");
+  const [quickEmail, setQuickEmail] = useState("");
+  const [quickCompany, setQuickCompany] = useState("");
+  const [quickPhone, setQuickPhone] = useState("");
+  const [creatingCustomer, setCreatingCustomer] = useState(false);
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -318,6 +324,45 @@ export default function ClientPages() {
     }
   };
 
+  const createQuickCustomer = async () => {
+    if (!quickName || !quickEmail) {
+      toast.error("Nombre y email son requeridos");
+      return;
+    }
+    setCreatingCustomer(true);
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error("No autenticado");
+
+      const { data, error } = await supabase
+        .from('customers')
+        .insert({
+          name: quickName,
+          email: quickEmail,
+          company: quickCompany || null,
+          phone: quickPhone || null,
+          created_by: user.user.id,
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+
+      toast.success("Cliente creado");
+      if (editCustomerPage) {
+        setEditCustomerId(data.id);
+      } else {
+        setSelectedCustomer(data.id);
+      }
+      setShowQuickCustomer(false);
+      setQuickName(""); setQuickEmail(""); setQuickCompany(""); setQuickPhone("");
+      loadData();
+    } catch (err: any) {
+      toast.error(err.message || "Error al crear cliente");
+    } finally {
+      setCreatingCustomer(false);
+    }
+  };
+
   const handleGrandSlamApply = (result: any) => {
     // Navigate to quotations with the grand slam data
     setGrandSlamPage(null);
@@ -389,7 +434,13 @@ export default function ClientPages() {
               </div>
 
               <div className="space-y-2">
-                <Label>Cliente (opcional)</Label>
+                <div className="flex items-center justify-between">
+                  <Label>Cliente (opcional)</Label>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setShowQuickCustomer(true)} className="h-7 text-xs gap-1">
+                    <UserPlus className="h-3 w-3" />
+                    Crear nuevo
+                  </Button>
+                </div>
                 <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar cliente..." />
@@ -715,7 +766,13 @@ export default function ClientPages() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              <Label>Cliente</Label>
+              <div className="flex items-center justify-between">
+                <Label>Cliente</Label>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setShowQuickCustomer(true)} className="h-7 text-xs gap-1">
+                  <UserPlus className="h-3 w-3" />
+                  Crear nuevo
+                </Button>
+              </div>
               <Select value={editCustomerId} onValueChange={setEditCustomerId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar cliente..." />
@@ -733,6 +790,44 @@ export default function ClientPages() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setEditCustomerPage(null)}>Cancelar</Button>
               <Button onClick={saveCustomer}>Guardar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        {/* Quick Customer Creation Modal */}
+        <Dialog open={showQuickCustomer} onOpenChange={setShowQuickCustomer}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <UserPlus className="h-5 w-5" />
+                Crear cliente rápido
+              </DialogTitle>
+              <DialogDescription>
+                Agrega un nuevo cliente al sistema
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="space-y-1">
+                <Label>Nombre *</Label>
+                <Input value={quickName} onChange={(e) => setQuickName(e.target.value)} placeholder="Nombre completo" />
+              </div>
+              <div className="space-y-1">
+                <Label>Email *</Label>
+                <Input type="email" value={quickEmail} onChange={(e) => setQuickEmail(e.target.value)} placeholder="email@ejemplo.com" />
+              </div>
+              <div className="space-y-1">
+                <Label>Empresa</Label>
+                <Input value={quickCompany} onChange={(e) => setQuickCompany(e.target.value)} placeholder="Nombre de la empresa" />
+              </div>
+              <div className="space-y-1">
+                <Label>Teléfono</Label>
+                <Input value={quickPhone} onChange={(e) => setQuickPhone(e.target.value)} placeholder="+502 1234 5678" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowQuickCustomer(false)}>Cancelar</Button>
+              <Button onClick={createQuickCustomer} disabled={creatingCustomer}>
+                {creatingCustomer ? "Creando..." : "Crear Cliente"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
