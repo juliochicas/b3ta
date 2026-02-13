@@ -920,139 +920,152 @@ export default function ClientPages() {
         </Dialog>
         {/* Service Management Modal */}
         <Dialog open={!!servicePageEdit} onOpenChange={(open) => !open && setServicePageEdit(null)}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Settings2 className="h-5 w-5" />
                 Gestión de Servicio
               </DialogTitle>
               <DialogDescription>
-                {servicePageEdit?.title} — Configura los detalles del servicio de hosting
+                {servicePageEdit?.title}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto">
-              <div className="space-y-2">
-                <Label>Tipo de servicio</Label>
-                <Select value={svcType} onValueChange={setSvcType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="test">Prueba / Demo</SelectItem>
-                    <SelectItem value="active">Servicio Activo</SelectItem>
-                    <SelectItem value="expired">Expirado</SelectItem>
-                    <SelectItem value="cancelled">Cancelado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Fecha inicio del servicio</Label>
-                  <Input type="date" value={svcStartDate} onChange={(e) => setSvcStartDate(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Fecha de expiración</Label>
-                  <Input type="date" value={svcExpirationDate} onChange={(e) => setSvcExpirationDate(e.target.value)} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> Cuota mensual</Label>
-                  <Input type="number" step="0.01" value={svcMonthlyFee} onChange={(e) => setSvcMonthlyFee(e.target.value)} placeholder="0.00" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Moneda</Label>
-                  <Select value={svcCurrency} onValueChange={setSvcCurrency}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USD">USD</SelectItem>
-                      <SelectItem value="GTQ">GTQ</SelectItem>
-                      <SelectItem value="MXN">MXN</SelectItem>
-                      <SelectItem value="EUR">EUR</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <div className="flex-1 overflow-y-auto space-y-6 py-2 pr-1">
+              {/* Section 1: Service Type & Status */}
+              <div className="rounded-lg border p-4 space-y-4">
+                <h4 className="text-sm font-semibold text-foreground">Estado del Servicio</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Tipo</Label>
+                    <Select value={svcType} onValueChange={setSvcType}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="test">Prueba / Demo</SelectItem>
+                        <SelectItem value="active">Servicio Activo</SelectItem>
+                        <SelectItem value="expired">Expirado</SelectItem>
+                        <SelectItem value="cancelled">Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Inicio</Label>
+                    <Input type="date" value={svcStartDate} onChange={(e) => setSvcStartDate(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Expiración</Label>
+                    <Input type="date" value={svcExpirationDate} onChange={(e) => setSvcExpirationDate(e.target.value)} />
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Último pago</Label>
-                  <Input type="date" value={svcLastPayment} onChange={(e) => setSvcLastPayment(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Próximo cobro</Label>
-                  <Input type="date" value={svcNextPayment} onChange={(e) => setSvcNextPayment(e.target.value)} />
+
+              {/* Section 2: Billing */}
+              <div className="rounded-lg border p-4 space-y-4">
+                <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" />
+                  Facturación
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Cuota mensual</Label>
+                    <Input type="number" step="0.01" value={svcMonthlyFee} onChange={(e) => setSvcMonthlyFee(e.target.value)} placeholder="0.00" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Moneda</Label>
+                    <Select value={svcCurrency} onValueChange={setSvcCurrency}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USD">USD</SelectItem>
+                        <SelectItem value="GTQ">GTQ</SelectItem>
+                        <SelectItem value="MXN">MXN</SelectItem>
+                        <SelectItem value="EUR">EUR</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Último pago</Label>
+                    <Input type="date" value={svcLastPayment} onChange={(e) => setSvcLastPayment(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Próximo cobro</Label>
+                    <Input type="date" value={svcNextPayment} onChange={(e) => setSvcNextPayment(e.target.value)} />
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Switch checked={svcAutoRenew} onCheckedChange={setSvcAutoRenew} />
-                <Label className="flex items-center gap-2">
+
+              {/* Section 3: Renewal */}
+              <div className="rounded-lg border p-4 space-y-4">
+                <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <RotateCw className="h-4 w-4" />
-                  Renovación automática
-                </Label>
-              </div>
-              <div className="space-y-2">
-                <Label>Condiciones de renovación</Label>
+                  Renovación
+                </h4>
+                <div className="flex items-center gap-3">
+                  <Switch checked={svcAutoRenew} onCheckedChange={setSvcAutoRenew} />
+                  <Label className="text-sm">Renovación automática</Label>
+                </div>
                 <Textarea
                   value={svcRenewalConditions}
                   onChange={(e) => setSvcRenewalConditions(e.target.value)}
                   placeholder="Ej: Pago mensual de $50 USD. Renovación cada 12 meses. Incluye hosting y mantenimiento básico."
-                  rows={3}
+                  rows={2}
+                  className="text-sm"
                 />
               </div>
-              {/* Custom Domain Section */}
-              <div className="border-t pt-4 space-y-3">
-                <Label className="text-sm font-semibold flex items-center gap-2">
+
+              {/* Section 4: Custom Domain */}
+              <div className="rounded-lg border p-4 space-y-4">
+                <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Globe className="h-4 w-4" />
                   Dominio Personalizado
-                </Label>
-                <div className="space-y-2">
-                  <Input
-                    value={svcCustomDomain}
-                    onChange={(e) => setSvcCustomDomain(e.target.value)}
-                    placeholder="Ej: micliente.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Estado del dominio</Label>
-                  <Select value={svcDomainStatus} onValueChange={setSvcDomainStatus}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Sin dominio</SelectItem>
-                      <SelectItem value="pending">Pendiente de configuración</SelectItem>
-                      <SelectItem value="active">Activo</SelectItem>
-                      <SelectItem value="offline">Offline</SelectItem>
-                    </SelectContent>
-                  </Select>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Dominio</Label>
+                    <Input
+                      value={svcCustomDomain}
+                      onChange={(e) => setSvcCustomDomain(e.target.value)}
+                      placeholder="micliente.com"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Estado</Label>
+                    <Select value={svcDomainStatus} onValueChange={setSvcDomainStatus}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Sin dominio</SelectItem>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="active">Activo</SelectItem>
+                        <SelectItem value="offline">Offline</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 {svcCustomDomain && (
-                  <div className="rounded-md bg-muted p-3 text-xs space-y-1">
-                    <p className="font-semibold">Instrucciones DNS para el cliente:</p>
-                    <p>1. En su registrador de dominio, crear un registro <strong>CNAME</strong>:</p>
-                    <p className="font-mono bg-background p-1 rounded">@ → www.b3ta.us</p>
-                    <p>2. O un <strong>redirect/frame</strong> hacia:</p>
-                    <p className="font-mono bg-background p-1 rounded">https://www.b3ta.us/p/{servicePageEdit?.slug}</p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => {
-                        navigator.clipboard.writeText(`https://www.b3ta.us/p/${servicePageEdit?.slug}`);
-                        toast.success("URL copiada");
-                      }}
-                    >
-                      <Copy className="h-3 w-3 mr-1" />
-                      Copiar URL
-                    </Button>
+                  <div className="rounded-md bg-muted p-3 text-xs space-y-1.5">
+                    <p className="font-semibold">Instrucciones DNS:</p>
+                    <p>Crear registro <strong>CNAME</strong> o <strong>redirect</strong> hacia:</p>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 bg-background p-1.5 rounded text-xs font-mono truncate">
+                        https://www.b3ta.us/p/{servicePageEdit?.slug}
+                      </code>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="shrink-0 h-7 text-xs"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://www.b3ta.us/p/${servicePageEdit?.slug}`);
+                          toast.success("URL copiada");
+                        }}
+                      >
+                        <Copy className="h-3 w-3 mr-1" />
+                        Copiar
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="pt-4 border-t">
               <Button variant="outline" onClick={() => setServicePageEdit(null)}>Cancelar</Button>
               <Button onClick={saveService}>Guardar</Button>
             </DialogFooter>
