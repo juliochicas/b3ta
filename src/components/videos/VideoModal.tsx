@@ -257,7 +257,7 @@ export const VideoModal = ({ video, onClose }: VideoModalProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="shopify">Shopify</SelectItem>
-                  <SelectItem value="sap">SAP Business One</SelectItem>
+                  <SelectItem value="sap">Procesos</SelectItem>
                   <SelectItem value="automation">Automatización</SelectItem>
                   <SelectItem value="ai">Inteligencia Artificial</SelectItem>
                   <SelectItem value="landing-pages">Landing Pages</SelectItem>

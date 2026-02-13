@@ -18,7 +18,7 @@ export const Hero = () => {
       <div className="absolute inset-0">
         <OptimizedImage
           src={heroBanner}
-          alt="B3TA Transformación Digital LATAM - Consultoría SAP, E-commerce y Automatización"
+          alt="B3TA Transformación Digital LATAM - Procesos, MVPs, E-commerce y Automatización"
           className="absolute inset-0 w-full h-full object-cover"
           priority={true}
           width={1920}
@@ -46,7 +46,7 @@ export const Hero = () => {
           </h2>
           
           <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            Desde sitios web y automatizaciones hasta implementaciones SAP completas. Soluciones escalables para cada etapa de crecimiento de tu empresa en LATAM.
+            Desde sitios web y automatizaciones hasta MVPs y productos digitales. Soluciones escalables para cada etapa de crecimiento de tu empresa en LATAM.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-8">

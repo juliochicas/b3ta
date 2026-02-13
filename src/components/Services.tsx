@@ -48,17 +48,17 @@ const services = [
   },
   {
     icon: Database,
-    title: "SAP Business One",
-    description: "Implementación, migración SAP Business One for HANA, optimización y soporte 24/7 para empresas en crecimiento",
-    features: ["Migración a HANA", "Desarrollo Custom", "Integración ERP"],
-    priceUSD: 15000
+    title: "Páginas Web Profesionales",
+    description: "Sitios web modernos, rápidos y optimizados para SEO que convierten visitantes en clientes",
+    features: ["Diseño Responsive", "SEO Optimizado", "CMS Integrado"],
+    priceUSD: 500
   },
   {
     icon: LinkIcon,
-    title: "Conector Shopify-SAP",
-    description: "Sincronización automática en tiempo real entre Shopify y SAP Business One vía Service Layer. Elimina errores manuales",
-    features: ["Sync Tiempo Real", "Service Layer API", "Stock Automático"],
-    priceUSD: 5000
+    title: "Integraciones & APIs",
+    description: "Conecta tus sistemas y herramientas para que trabajen juntos de forma automática y sin errores manuales",
+    features: ["APIs REST", "Webhooks", "Sync Automático"],
+    priceUSD: 1000
   }
 ];
 
@@ -109,8 +109,9 @@ export const Services = () => {
                     navigate('/importaciones-china');
                   } else if (service.title === "MVP & Desarrollo de Producto") {
                     navigate('/mvp-desarrollo-producto');
-                  } else if (service.title === "Conector Shopify-SAP") {
-                    navigate('/conector-shopify-sap');
+                  } else if (service.title === "Integraciones & APIs") {
+                    const contactElement = document.getElementById('contact');
+                    contactElement?.scrollIntoView({ behavior: 'smooth' });
                   } else {
                     const contactElement = document.getElementById('contact');
                     contactElement?.scrollIntoView({ behavior: 'smooth' });
@@ -122,8 +123,8 @@ export const Services = () => {
                   ? "Ver Servicios Completos →"
                   : service.title === "MVP & Desarrollo de Producto"
                     ? "Ver Metodología Completa →"
-                    : service.title === "Conector Shopify-SAP"
-                      ? "Ver Demo y Detalles →"
+                    : service.title === "Integraciones & APIs"
+                      ? "Consultar →"
                       : service.priceUSD === null 
                         ? "Sin Inversión Inicial"
                         : loading 

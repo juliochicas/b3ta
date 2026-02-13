@@ -4,7 +4,7 @@ import partnersBg from "@/assets/partners-bg.jpg";
 import { OptimizedImage } from "./OptimizedImage";
 
 const partners = [
-  { name: "SAP", type: "Technology Partner", logo: "SAP" },
+  { name: "Vercel", type: "Technology Partner", logo: "Vercel" },
   { name: "Shopify", type: "Partner", logo: "Shopify" },
   { name: "Make", type: "Automation Partner", logo: "Make" },
   { name: "n8n", type: "Integration Partner", logo: "n8n" },

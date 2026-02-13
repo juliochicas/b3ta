@@ -9,13 +9,13 @@ const cases = [
     company: "Grupo Industrial LATAM",
     industry: "Manufactura",
     challenge: "Procesos manuales y desconectados en operación multi-país",
-    solution: "Implementación SAP Business One HANA + Automatización RPA",
+    solution: "Automatización de procesos RPA + Integración de sistemas ERP",
     results: [
       { icon: TrendingUp, metric: "300%", label: "Aumento en eficiencia operativa" },
       { icon: Clock, metric: "70%", label: "Reducción en tiempo de reportes" },
       { icon: Users, metric: "50K+", label: "Transacciones mensuales procesadas" }
     ],
-    tags: ["SAP", "Automatización", "ERP"],
+    tags: ["Procesos", "Automatización", "ERP"],
     testimonial: "B3TA transformó completamente nuestra operación. El ROI fue visible en los primeros 3 meses."
   },
   {

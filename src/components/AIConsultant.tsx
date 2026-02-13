@@ -33,7 +33,7 @@ export const AIConsultant = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "¡Hola! Soy el consultor virtual de B3TA. ¿En qué área necesitas ayuda? (SAP, E-commerce, Automatización, IA)"
+      content: "¡Hola! Soy el consultor virtual de B3TA. ¿En qué área necesitas ayuda? (Páginas Web, MVPs, E-commerce, Automatización, IA)"
     }
   ]);
   const [input, setInput] = useState("");

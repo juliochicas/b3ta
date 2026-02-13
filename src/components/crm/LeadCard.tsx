@@ -42,7 +42,8 @@ export const LeadCard = ({ lead, onClick }: LeadCardProps) => {
   };
 
   const serviceLabels: Record<string, string> = {
-    sap: "SAP",
+    sap: "Procesos",
+    web: "Páginas Web",
     mvp: "MVP",
     ecommerce: "E-commerce",
     automation: "Automatización",

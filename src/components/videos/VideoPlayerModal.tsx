@@ -49,7 +49,7 @@ const getEmbedUrl = (url: string): string | null => {
 const getCategoryLabel = (category: string) => {
   const labels: Record<string, string> = {
     shopify: 'Shopify',
-    sap: 'SAP',
+    sap: 'Procesos',
     automation: 'Automatización',
     ai: 'IA',
     'landing-pages': 'Landing Pages',
@@ -62,7 +62,7 @@ const getCategoryLabel = (category: string) => {
 const getCategoryColor = (category: string) => {
   const colors: Record<string, string> = {
     shopify: 'bg-green-500',
-    sap: 'bg-blue-500',
+    sap: 'bg-blue-500', // legacy key kept for existing data
     automation: 'bg-purple-500',
     ai: 'bg-orange-500',
     'landing-pages': 'bg-cyan-500',

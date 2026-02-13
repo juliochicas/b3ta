@@ -14,8 +14,8 @@ const industries = [
   {
     icon: Factory,
     name: "Manufactura",
-    description: "ERP, automatización de producción y control de inventario en tiempo real",
-    solutions: ["SAP B1", "MES", "IoT Industrial"]
+    description: "Automatización de producción, control de inventario y procesos en tiempo real",
+    solutions: ["ERP", "MES", "IoT Industrial"]
   },
   {
     icon: ShoppingBag,

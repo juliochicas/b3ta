@@ -83,16 +83,16 @@ const SolutionsByBudget = () => {
       budget: "> $10,000 USD",
       description: "Transformación digital completa con ERP enterprise, integración multicanal y consultoría estratégica. Para empresas que operan a escala.",
       features: [
-        "SAP Business One implementación completa",
-        "Migración a SAP HANA",
+        "Plataformas SaaS a medida",
+        "IA Corporativa avanzada",
         "Integración con sistemas legacy",
         "Consultoría estratégica dedicada",
         "Soporte y mantenimiento 24/7/365",
         "SLA garantizado 99.9%"
       ],
       services: [
-        { name: "SAP Business One HANA", price: 15000 },
-        { name: "Desarrollo Custom SAP", price: null },
+        { name: "Plataforma SaaS Custom", price: 15000 },
+        { name: "IA Corporativa", price: null },
         { name: "Integración Multi-sistema", price: null },
         { name: "Consultoría Estratégica", price: null }
       ],

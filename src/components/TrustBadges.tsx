@@ -9,8 +9,8 @@ const badges = [
   },
   {
     icon: Award,
-    title: "SAP Partner",
-    subtitle: "Silver"
+    title: "Google Partner",
+    subtitle: "Certificado"
   },
   {
     icon: Zap,

@@ -50,7 +50,7 @@ const Industries = () => {
       ],
       solutions: [
         {
-          title: "SAP Business One para Manufactura",
+          title: "ERP para Manufactura",
           description: "MRP, órdenes de producción, BOMs multinivel, control de calidad y costeo estándar vs real integrado."
         },
         {
@@ -150,7 +150,7 @@ const Industries = () => {
       solutions: [
         {
           title: "Project Management ERP",
-          description: "SAP B1 con módulo de proyectos: presupuestos vs reales, órdenes de cambio, billing milestones y reportes por obra."
+          description: "ERP con módulo de proyectos: presupuestos vs reales, órdenes de cambio, billing milestones y reportes por obra."
         },
         {
           title: "Gestión de Subcontratistas",

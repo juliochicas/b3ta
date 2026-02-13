@@ -77,8 +77,8 @@ const tiers = [
     color: "from-purple-500/20 to-indigo-500/5",
     solutions: [
       {
-        name: "SAP Business One HANA",
-        description: "Implementación completa + migraciones",
+        name: "Plataforma SaaS Custom",
+        description: "Desarrollo a medida + infraestructura",
         time: "3-6 meses"
       },
       {
@@ -126,7 +126,7 @@ export const SolutionsByBudget = () => {
             Desde Emprendedores hasta Enterprise
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            No necesitas SAP para comenzar. Tenemos soluciones tecnológicas profesionales para cada etapa de tu negocio.
+            No importa tu presupuesto. Tenemos soluciones tecnológicas profesionales para cada etapa de tu negocio.
           </p>
         </div>
 
