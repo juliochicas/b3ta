@@ -295,7 +295,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(180, 200, 220);
-    doc.text("Tecnologia que escala contigo", margin, 22);
+    doc.text("Tecnolog\u00eda que escala contigo", margin, 22);
 
     // Client info in header
     doc.setTextColor(255, 255, 255);
@@ -363,7 +363,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     doc.setTextColor(180, 200, 220);
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("Inversion Total", margin + 10, y + 8);
+    doc.text("Inversi\u00f3n Total", margin + 10, y + 8);
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
@@ -372,7 +372,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
 
     // Terms
     if (result.quotation.pricing.terms) {
-      addTitle("Terminos", 11);
+      addTitle("T\u00e9rminos", 11);
       addText(result.quotation.pricing.terms);
     }
 
@@ -388,10 +388,10 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       doc.setFontSize(7);
       doc.setFont("helvetica", "normal");
       doc.text("consulting@b3ta.us | b3ta.us | +1 435 534 8065", margin, pageHeight - 9);
-      doc.text(`Pagina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: "right" });
+      doc.text(`P\u00e1gina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: "right" });
       doc.setFontSize(6);
       doc.setTextColor(120, 140, 160);
-      doc.text("Consultoria en infraestructura, automatizacion y soluciones digitales", margin, pageHeight - 5);
+      doc.text("Consultor\u00eda en infraestructura, automatizaci\u00f3n y soluciones digitales", margin, pageHeight - 5);
     }
 
     const fileName = `Cotizacion-${stripEmoji(editCompany || editName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
@@ -460,15 +460,18 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       doc.setTextColor(60, 60, 60);
       doc.text(stripEmoji(section.title), margin, y);
       y += 5;
-      // Features as inline comma list
+      // Features as bullet list (no truncation)
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 100, 100);
-      const featuresText = section.features.map(f => stripEmoji(f).replace(/^\*\*[^*]+\*\*:?\s*/, '').substring(0, 60)).join(" · ");
-      const lines = doc.splitTextToSize(featuresText, maxWidth);
-      if (y + lines.length * 4 > pageHeight - 40) { doc.addPage(); y = 20; }
-      doc.text(lines, margin, y);
-      y += lines.length * 4 + 4;
+      section.features.forEach(f => {
+        const clean = stripEmoji(f).replace(/^\*\*([^*]+)\*\*:?\s*/, '$1: ');
+        const fLines = doc.splitTextToSize(`- ${clean}`, maxWidth - 4);
+        if (y + fLines.length * 3.8 > pageHeight - 40) { doc.addPage(); y = 20; }
+        doc.text(fLines, margin + 2, y);
+        y += fLines.length * 3.8 + 1;
+      });
+      y += 3;
     });
 
     // Price block
@@ -480,7 +483,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100);
-    doc.text("Inversion Total", margin, y);
+    doc.text("Inversi\u00f3n Total", margin, y);
     y += 7;
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
@@ -594,7 +597,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...brandBlue);
-    doc.text("Analisis de Valor (Framework Hormozi)", margin, y + 2);
+    doc.text("An\u00e1lisis de Valor (Framework Hormozi)", margin, y + 2);
     y += 14;
 
     if (result.analysis.dream_outcome) {
@@ -610,13 +613,13 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     }
 
     if (result.analysis.perceived_probability) {
-      addTitle("Probabilidad Percibida de Exito", 11);
+      addTitle("Probabilidad Percibida de \u00c9xito", 11);
       addText(result.analysis.perceived_probability);
       y += 3;
     }
 
     if (result.analysis.time_delay) {
-      addTitle("Tiempo de Implementacion", 11);
+      addTitle("Tiempo de Implementaci\u00f3n", 11);
       addText(result.analysis.time_delay);
       y += 3;
     }
@@ -628,7 +631,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     }
 
     checkPage(15);
-    addTitle("Resumen de Secciones de la Cotizacion", 12);
+    addTitle("Resumen de Secciones de la Cotizaci\u00f3n", 12);
     result.quotation.sections.forEach((section) => {
       checkPage(10);
       addBullet(`${stripEmoji(section.title)}: ${stripEmoji(section.description || '')}`);
@@ -636,7 +639,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
 
     if (result.quotation.pricing.terms) {
       y += 5;
-      addTitle("Terminos Propuestos", 11);
+      addTitle("T\u00e9rminos Propuestos", 11);
       addText(result.quotation.pricing.terms);
     }
 
@@ -652,7 +655,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       doc.setFontSize(7);
       doc.text("CONFIDENCIAL - USO INTERNO", margin, pageHeight - 9);
       doc.setTextColor(180, 200, 220);
-      doc.text(`Pagina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: "right" });
+      doc.text(`P\u00e1gina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: "right" });
     }
 
     const fileName = `Ventas-${stripEmoji(editCompany || editName || "Analisis")}.pdf`.replace(/\s+/g, "-");
@@ -756,7 +759,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-3">
-                El resultado sera una cotizacion profesional limpia, sin frameworks visibles.
+                El resultado será una cotización profesional limpia, sin frameworks visibles.
               </p>
             </Card>
 
@@ -764,12 +767,12 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Generando Cotizacion...
+                  Generando Cotización...
                 </>
               ) : (
                 <>
                   <Sparkles className="mr-2 h-5 w-5" />
-                  Generar Cotizacion
+                  Generar Cotización
                 </>
               )}
             </Button>
@@ -822,7 +825,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
                     value={section.title}
                     onChange={(e) => updateSectionTitle(i, e.target.value)}
                     className="font-semibold"
-                    placeholder="Titulo de seccion"
+                    placeholder="Título de sección"
                   />
                   <Textarea
                     value={section.description}
@@ -850,7 +853,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
             <Card className="p-4 border-2 border-primary bg-primary/5">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-muted-foreground text-sm mb-1">Inversion Total</p>
+                  <p className="text-muted-foreground text-sm mb-1">Inversión Total</p>
                   {editingPrice ? (
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-bold text-primary">{sym}</span>
