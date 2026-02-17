@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Target, Download, CheckCircle2, Save, Pencil, X, Check, FileText } from "lucide-react";
+import { Sparkles, Loader2, Target, Download, CheckCircle2, Save, Pencil, X, Check, FileText, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
 
 interface QuotationSection {
@@ -397,6 +397,121 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     const fileName = `Cotizacion-${stripEmoji(editCompany || editName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
     doc.save(fileName);
     toast.success("PDF profesional exportado");
+  };
+
+  const exportConcisePDF = () => {
+    if (!result) return;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 0;
+
+    const brandDark = [26, 31, 46] as const;
+    const brandCyan = [0, 201, 167] as const;
+
+    // ── Minimal header ──
+    doc.setFillColor(...brandDark);
+    doc.rect(0, 0, pageWidth, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("B3TA", margin, 14);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(180, 200, 220);
+    doc.text(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - margin, 14, { align: "right" });
+    doc.setFillColor(...brandCyan);
+    doc.rect(0, 28, pageWidth, 1.5, 'F');
+
+    y = 38;
+
+    // Client & title
+    doc.setTextColor(...brandDark);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(stripEmoji(result.quotation.title), margin, y);
+    y += 8;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Para: ${editName || "Cliente"}${editCompany ? ` — ${editCompany}` : ""}`, margin, y);
+    y += 10;
+
+    // Thin separator
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 8;
+
+    // Sections as compact list
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...brandDark);
+    doc.text("Alcance del Proyecto", margin, y);
+    y += 7;
+
+    result.quotation.sections.forEach((section) => {
+      if (y + 12 > pageHeight - 40) { doc.addPage(); y = 20; }
+      // Section title
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(60, 60, 60);
+      doc.text(stripEmoji(section.title), margin, y);
+      y += 5;
+      // Features as inline comma list
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 100, 100);
+      const featuresText = section.features.map(f => stripEmoji(f).replace(/^\*\*[^*]+\*\*:?\s*/, '').substring(0, 60)).join(" · ");
+      const lines = doc.splitTextToSize(featuresText, maxWidth);
+      if (y + lines.length * 4 > pageHeight - 40) { doc.addPage(); y = 20; }
+      doc.text(lines, margin, y);
+      y += lines.length * 4 + 4;
+    });
+
+    // Price block
+    if (y + 30 > pageHeight - 40) { doc.addPage(); y = 20; }
+    y += 4;
+    doc.setDrawColor(220, 220, 220);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 10;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    doc.text("Inversion Total", margin, y);
+    y += 7;
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...brandDark);
+    doc.text(`${currency} ${formatPrice(result.quotation.pricing.base_price)}`, margin, y);
+    y += 10;
+
+    // Terms (compact)
+    if (result.quotation.pricing.terms) {
+      y += 4;
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(130, 130, 130);
+      const termLines = doc.splitTextToSize(stripEmoji(result.quotation.pricing.terms), maxWidth);
+      if (y + termLines.length * 3.5 > pageHeight - 25) { doc.addPage(); y = 20; }
+      doc.text(termLines, margin, y);
+    }
+
+    // Minimal footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setTextColor(160, 160, 160);
+      doc.setFontSize(7);
+      doc.text("consulting@b3ta.us | b3ta.us | +1 435 534 8065", margin, pageHeight - 8);
+      doc.text(`${i}/${pageCount}`, pageWidth - margin, pageHeight - 8, { align: "right" });
+    }
+
+    const fileName = `Cotizacion-Concisa-${stripEmoji(editCompany || editName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
+    doc.save(fileName);
+    toast.success("PDF conciso exportado");
   };
 
   const exportSalesPDF = () => {
@@ -811,6 +926,10 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
               <Button onClick={exportPDF} className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
                 PDF Cliente
+              </Button>
+              <Button variant="outline" onClick={exportConcisePDF} className="flex-1">
+                <FileDown className="mr-2 h-4 w-4" />
+                PDF Conciso
               </Button>
               <Button variant="secondary" onClick={exportSalesPDF} className="flex-1">
                 <FileText className="mr-2 h-4 w-4" />
