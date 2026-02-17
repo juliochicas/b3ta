@@ -408,108 +408,133 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
     const maxWidth = pageWidth - margin * 2;
     let y = 0;
 
-    const brandDark = [26, 31, 46] as const;
+    const brandBlue = [43, 79, 224] as const;
     const brandCyan = [0, 201, 167] as const;
+    const brandDark = [26, 31, 46] as const;
 
-    // ── Minimal header ──
+    const checkPage = (needed: number) => {
+      if (y + needed > pageHeight - 22) { doc.addPage(); y = 20; }
+    };
+
+    // ── Elegant header ──
     doc.setFillColor(...brandDark);
-    doc.rect(0, 0, pageWidth, 28, 'F');
+    doc.rect(0, 0, pageWidth, 32, 'F');
+    // Gradient accent line
+    doc.setFillColor(...brandCyan);
+    doc.rect(0, 32, pageWidth * 0.6, 1.5, 'F');
+    doc.setFillColor(...brandBlue);
+    doc.rect(pageWidth * 0.6, 32, pageWidth * 0.4, 1.5, 'F');
+
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
+    doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    doc.text("B3TA", margin, 14);
+    doc.text("B3TA", margin, 16);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(180, 200, 220);
-    doc.text(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - margin, 14, { align: "right" });
-    doc.setFillColor(...brandCyan);
-    doc.rect(0, 28, pageWidth, 1.5, 'F');
+    doc.text("Tecnolog\u00eda que escala contigo", margin, 22);
 
-    y = 38;
+    // Right side: date & currency
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - margin, 16, { align: "right" });
+    doc.setTextColor(180, 200, 220);
+    doc.setFontSize(8);
+    doc.text(`Moneda: ${currency}`, pageWidth - margin, 22, { align: "right" });
 
-    // Client & title
-    doc.setTextColor(...brandDark);
-    doc.setFontSize(14);
+    y = 42;
+
+    // ── Title block ──
+    doc.setFontSize(15);
     doc.setFont("helvetica", "bold");
-    doc.text(stripEmoji(result.quotation.title), margin, y);
-    y += 8;
+    doc.setTextColor(...brandDark);
+    const titleLines = doc.splitTextToSize(stripEmoji(result.quotation.title), maxWidth);
+    doc.text(titleLines, margin, y);
+    y += titleLines.length * 7 + 3;
+
+    // Client info pill
+    doc.setFillColor(240, 244, 255);
+    doc.roundedRect(margin, y - 4, maxWidth, 12, 2, 2, 'F');
+    doc.setFillColor(...brandBlue);
+    doc.rect(margin, y - 4, 3, 12, 'F');
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Para: ${editName || "Cliente"}${editCompany ? ` — ${editCompany}` : ""}`, margin, y);
-    y += 10;
+    doc.setTextColor(80, 80, 80);
+    doc.text(`Para: ${editName || "Cliente"}${editCompany ? `  \u2014  ${editCompany}` : ""}`, margin + 7, y + 3);
+    y += 16;
 
-    // Thin separator
-    doc.setDrawColor(220, 220, 220);
-    doc.setLineWidth(0.3);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 8;
-
-    // Sections as compact list
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...brandDark);
-    doc.text("Alcance del Proyecto", margin, y);
-    y += 7;
-
+    // ── Sections ──
     result.quotation.sections.forEach((section) => {
-      if (y + 12 > pageHeight - 40) { doc.addPage(); y = 20; }
-      // Section title
-      doc.setFontSize(10);
+      checkPage(18);
+
+      // Section header with accent bar
+      doc.setFillColor(...brandBlue);
+      doc.roundedRect(margin, y - 3, 3, 8, 1, 1, 'F');
+      doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(60, 60, 60);
-      doc.text(stripEmoji(section.title), margin, y);
-      y += 5;
-      // Features as bullet list (no truncation)
+      doc.setTextColor(...brandDark);
+      doc.text(stripEmoji(section.title), margin + 7, y + 2);
+      y += 10;
+
+      // Features with cyan bullet dots
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(100, 100, 100);
+      doc.setTextColor(70, 70, 70);
       section.features.forEach(f => {
         const clean = stripEmoji(f).replace(/^\*\*([^*]+?):?\*\*:?\s*/, '$1: ').replace(/:\s*:\s*/g, ': ');
-        const fLines = doc.splitTextToSize(`- ${clean}`, maxWidth - 4);
-        if (y + fLines.length * 3.8 > pageHeight - 40) { doc.addPage(); y = 20; }
-        doc.text(fLines, margin + 2, y);
-        y += fLines.length * 3.8 + 1;
+        const fLines = doc.splitTextToSize(clean, maxWidth - 10);
+        checkPage(fLines.length * 4 + 1);
+        // Cyan bullet dot
+        doc.setFillColor(...brandCyan);
+        doc.circle(margin + 3, y - 1.2, 1, 'F');
+        doc.text(fLines, margin + 8, y);
+        y += fLines.length * 4 + 1.5;
       });
-      y += 3;
+      y += 4;
     });
 
-    // Price block
-    if (y + 30 > pageHeight - 40) { doc.addPage(); y = 20; }
-    y += 4;
-    doc.setDrawColor(220, 220, 220);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 10;
-    doc.setFontSize(10);
+    // ── Price block ──
+    checkPage(28);
+    y += 2;
+    doc.setFillColor(...brandDark);
+    doc.roundedRect(margin, y, maxWidth, 24, 3, 3, 'F');
+    doc.setFillColor(...brandCyan);
+    doc.rect(margin, y, 4, 24, 'F');
+    doc.setTextColor(180, 200, 220);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-    doc.text("Inversi\u00f3n Total", margin, y);
-    y += 7;
-    doc.setFontSize(20);
+    doc.text("Inversi\u00f3n Total", margin + 10, y + 8);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(...brandDark);
-    doc.text(`${currency} ${formatPrice(result.quotation.pricing.base_price)}`, margin, y);
-    y += 10;
+    doc.text(`${currency} ${formatPrice(result.quotation.pricing.base_price)}`, margin + 10, y + 18);
+    y += 32;
 
-    // Terms (compact)
+    // ── Terms ──
     if (result.quotation.pricing.terms) {
-      y += 4;
+      checkPage(12);
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(130, 130, 130);
+      doc.setTextColor(140, 140, 140);
       const termLines = doc.splitTextToSize(stripEmoji(result.quotation.pricing.terms), maxWidth);
-      if (y + termLines.length * 3.5 > pageHeight - 25) { doc.addPage(); y = 20; }
+      checkPage(termLines.length * 3.3 + 4);
       doc.text(termLines, margin, y);
+      y += termLines.length * 3.3 + 4;
     }
 
-    // Minimal footer
+    // ── Branded footer on all pages ──
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      doc.setTextColor(160, 160, 160);
+      doc.setFillColor(...brandDark);
+      doc.rect(0, pageHeight - 14, pageWidth, 14, 'F');
+      doc.setFillColor(...brandCyan);
+      doc.rect(0, pageHeight - 14, pageWidth, 1, 'F');
+      doc.setTextColor(180, 200, 220);
       doc.setFontSize(7);
-      doc.text("consulting@b3ta.us | b3ta.us | +1 435 534 8065", margin, pageHeight - 8);
-      doc.text(`${i}/${pageCount}`, pageWidth - margin, pageHeight - 8, { align: "right" });
+      doc.setFont("helvetica", "normal");
+      doc.text("consulting@b3ta.us | b3ta.us | +1 435 534 8065", margin, pageHeight - 5);
+      doc.text(`P\u00e1gina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 5, { align: "right" });
     }
 
     const fileName = `Cotizacion-Concisa-${stripEmoji(editCompany || editName || "Propuesta")}.pdf`.replace(/\s+/g, "-");
