@@ -465,7 +465,7 @@ export function GrandSlamGenerator({ open, onClose, onApply, htmlContent, custom
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 100, 100);
       section.features.forEach(f => {
-        const clean = stripEmoji(f).replace(/^\*\*([^*]+)\*\*:?\s*/, '$1: ');
+        const clean = stripEmoji(f).replace(/^\*\*([^*]+?):?\*\*:?\s*/, '$1: ').replace(/:\s*:\s*/g, ': ');
         const fLines = doc.splitTextToSize(`- ${clean}`, maxWidth - 4);
         if (y + fLines.length * 3.8 > pageHeight - 40) { doc.addPage(); y = 20; }
         doc.text(fLines, margin + 2, y);
