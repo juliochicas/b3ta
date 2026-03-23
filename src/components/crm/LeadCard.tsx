@@ -36,9 +36,9 @@ export const LeadCard = ({ lead, onClick }: LeadCardProps) => {
   };
 
   const priorityColors = {
-    high: "border-priority-high bg-priority-high-bg",
-    medium: "border-priority-medium bg-priority-medium-bg",
-    low: "border-priority-low bg-priority-low-bg"
+    high: "border-l-priority-high",
+    medium: "border-l-priority-medium",
+    low: "border-l-priority-low"
   };
 
   const serviceLabels: Record<string, string> = {

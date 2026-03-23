@@ -11,19 +11,13 @@ import Reports from "./pages/Reports";
 import PublicReport from "./pages/PublicReport";
 import Meetings from "./pages/Meetings";
 import Email from "./pages/Email";
-import Videos from "./pages/Videos";
-import ChinaImports from "./pages/ChinaImports";
-import MVPDevelopment from "./pages/MVPDevelopment";
-import SolutionsByBudget from "./pages/SolutionsByBudget";
-import SAPBusinessOne from "./pages/SAPBusinessOne";
-import ShopifySAPConnector from "./pages/ShopifySAPConnector";
-import ECommerce from "./pages/ECommerce";
-import Industries from "./pages/Industries";
 import ClientPage from "./pages/ClientPage";
 import ClientPages from "./pages/ClientPages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -34,23 +28,14 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/crm" element={<CRM />} />
-          <Route path="/quotations" element={<Quotations />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/meetings" element={<Meetings />} />
-          <Route path="/email" element={<Email />} />
-          <Route path="/videos" element={<Videos />} />
-          <Route path="/importaciones-china" element={<ChinaImports />} />
-          <Route path="/mvp-desarrollo-producto" element={<MVPDevelopment />} />
-          <Route path="/soluciones-por-presupuesto" element={<SolutionsByBudget />} />
-          {/* SAP pages hidden temporarily */}
-          {/* <Route path="/sap-business-one" element={<SAPBusinessOne />} /> */}
-          {/* <Route path="/conector-shopify-sap" element={<ShopifySAPConnector />} /> */}
-          <Route path="/e-commerce" element={<ECommerce />} />
-          <Route path="/industrias" element={<Industries />} />
+          <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
+          <Route path="/quotations" element={<ProtectedRoute><Quotations /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+          <Route path="/meetings" element={<ProtectedRoute><Meetings /></ProtectedRoute>} />
+          <Route path="/email" element={<ProtectedRoute><Email /></ProtectedRoute>} />
           <Route path="/informe/:slug" element={<PublicReport />} />
           <Route path="/p/:slug" element={<ClientPage />} />
-          <Route path="/client-pages" element={<ClientPages />} />
+          <Route path="/client-pages" element={<ProtectedRoute><ClientPages /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -59,4 +44,4 @@ const App = () => (
   </QueryClientProvider>
 );
 
-export default App; // build: 2025-11-05T06:10:00Z
+export default App;

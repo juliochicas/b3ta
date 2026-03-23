@@ -30,9 +30,9 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY not configured");
     }
 
     const { leadId } = await req.json();
@@ -56,7 +56,7 @@ serve(async (req) => {
     }
 
     // Analizar el lead con IA
-    const aiPrompt = `Analiza este lead y dame:
+    const aiPrompt = `Eres un experto en calificación de leads B2B. Analiza este lead y dame:
 1. Score de calidad (0-100)
 2. Prioridad sugerida (high/medium/low)
 3. Resumen breve (2-3 líneas)
@@ -70,35 +70,32 @@ Lead:
 - Servicio de interés: ${lead.service_interest || 'No especificado'}
 - Mensaje: ${lead.message || 'Sin mensaje'}
 
-Responde en formato JSON con:
-{
-  "score": number,
-  "priority": "high" | "medium" | "low",
-  "summary": string,
-  "next_steps": string
-}`;
+Responde ESTRICTAMENTE en este formato JSON (sin markdown, solo el JSON raw):
+{"score": 85, "priority": "high", "summary": "Este lead busca...", "next_steps": "Contactar..."}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: "Eres un experto en calificación de leads B2B. Responde SOLO con JSON válido." },
-          { role: "user", content: aiPrompt }
-        ],
+        contents: [{
+          parts: [{ text: aiPrompt }]
+        }],
+        generationConfig: {
+            temperature: 0.2,
+            responseMimeType: "application/json"
+        }
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`AI Gateway error: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
     const aiData = await response.json();
-    let aiContent = aiData.choices[0].message.content;
+    let aiContent = aiData.candidates[0].content.parts[0].text;
     
     // Limpiar markdown code blocks si existen
     aiContent = aiContent.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
@@ -114,7 +111,7 @@ Responde en formato JSON con:
         score: 50,
         priority: 'medium',
         summary: aiContent.substring(0, 200),
-        next_steps: 'Contactar al lead para calificación'
+        next_steps: 'Contactar al lead para calificación manual'
       };
     }
 

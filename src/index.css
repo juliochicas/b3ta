@@ -7,206 +7,120 @@ All colors MUST be HSL.
 */
 
 @layer base {
-  :root {
-    --background: 220 20% 97%;
-    --foreground: 220 25% 10%;
+  :root, .dark {
+    --background: 240 10% 4%; /* Obsidian dark / Zinc 950 */
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card: 240 5% 7%; /* Dark gray card */
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover: 240 5% 7%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Deep Electric Blue - Bold and Modern */
-    --primary: 230 85% 55%;
+    --primary: 239 84% 67%; /* Keep signature indigo */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 230 85% 65%;
+    --primary-glow: 239 84% 77%;
 
-    /* Vibrant Cyan Accent */
-    --secondary: 175 95% 45%;
-    --secondary-foreground: 220 25% 10%;
+    --secondary: 330 81% 60%; /* Neon pink accent */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 15% 92%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 220 15% 65%;
 
-    /* Electric Green for CTAs */
-    --accent: 155 85% 45%;
-    --accent-foreground: 220 25% 10%;
+    --accent: 160 84% 39%; /* Emerald success */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%; /* Warning red */
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 230 85% 55%;
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
+    --ring: 239 84% 67%;
 
     /* Sidebar tokens */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 25% 10%;
-    --sidebar-primary: 230 85% 55%;
+    --sidebar-background: 240 10% 4%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 239 84% 67%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 92%;
-    --sidebar-accent-foreground: 220 25% 10%;
-    --sidebar-border: 220 15% 88%;
-    --sidebar-ring: 230 85% 55%;
+    --sidebar-accent: 240 5% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 5% 15%;
+    --sidebar-ring: 239 84% 67%;
 
     /* Special use colors */
     --whatsapp: 145 70% 45%;
     --whatsapp-hover: 145 70% 40%;
-    --overlay: 220 30% 8%;
-    --success: 155 85% 45%;
-    --success-hover: 155 85% 40%;
+    --overlay: 240 40% 5%;
+    --success: 160 84% 39%;
+    --success-hover: 160 84% 34%;
 
     /* Status colors */
-    --status-new: 230 85% 55%;
-    --status-scheduled: 230 85% 55%;
+    --status-new: 239 84% 67%;
+    --status-scheduled: 239 84% 67%;
     --status-contacted: 25 95% 53%;
-    --status-completed: 155 85% 45%;
-    --status-qualified: 155 85% 45%;
+    --status-completed: 160 84% 39%;
+    --status-qualified: 160 84% 39%;
     --status-converted: 270 70% 55%;
     --status-cancelled: 0 84% 60%;
     --status-pending: 45 93% 47%;
     --status-overdue: 0 84% 60%;
-    --status-paid: 155 85% 45%;
-    --status-sent: 155 85% 45%;
-    --status-lost: 220 15% 50%;
-    --status-no-show: 220 15% 50%;
+    --status-paid: 160 84% 39%;
+    --status-sent: 160 84% 39%;
+    --status-lost: 244 47% 30%;
+    --status-no-show: 244 47% 30%;
 
     /* Priority colors */
     --priority-high: 0 84% 60%;
-    --priority-high-bg: 0 84% 97%;
+    --priority-high-bg: 0 84% 20%;
     --priority-medium: 25 95% 53%;
-    --priority-medium-bg: 25 95% 97%;
-    --priority-low: 230 85% 55%;
-    --priority-low-bg: 230 85% 97%;
+    --priority-medium-bg: 25 95% 20%;
+    --priority-low: 239 84% 67%;
+    --priority-low-bg: 239 84% 20%;
 
     /* Info & highlights */
-    --info: 230 85% 55%;
-    --info-bg: 230 85% 97%;
+    --info: 239 84% 67%;
+    --info-bg: 239 84% 20%;
     --warning: 45 93% 47%;
-    --warning-bg: 45 93% 97%;
+    --warning-bg: 45 93% 20%;
     --error: 0 84% 60%;
-    --error-bg: 0 84% 97%;
-    --profit-positive: 155 85% 45%;
+    --error-bg: 0 84% 20%;
+    --profit-positive: 160 84% 39%;
     --profit-negative: 0 84% 60%;
 
     --radius: 1rem;
 
-    /* Modern Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(230 85% 15%) 0%, hsl(260 75% 20%) 50%, hsl(230 85% 25%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 20% 98%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(175 95% 45%) 0%, hsl(230 85% 55%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.05) 100%);
-    --gradient-mesh: radial-gradient(at 40% 20%, hsl(175 95% 45% / 0.3) 0px, transparent 50%),
-                     radial-gradient(at 80% 0%, hsl(260 75% 50% / 0.2) 0px, transparent 50%),
-                     radial-gradient(at 0% 50%, hsl(230 85% 55% / 0.2) 0px, transparent 50%),
-                     radial-gradient(at 80% 50%, hsl(155 85% 45% / 0.15) 0px, transparent 50%),
-                     radial-gradient(at 0% 100%, hsl(260 75% 50% / 0.2) 0px, transparent 50%);
+    /* WOW Gradients */
+    --gradient-hero: linear-gradient(135deg, #0f0f23 0%, #1e1b4b 100%);
+    --gradient-card: linear-gradient(145deg, hsl(244 47% 15%) 0%, hsl(240 40% 12%) 100%);
+    --gradient-accent: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.05) 0%, hsl(0 0% 100% / 0.01) 100%);
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(239 84% 67% / 0.15) 0px, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(330 81% 60% / 0.15) 0px, transparent 50%),
+                     radial-gradient(at 0% 50%, hsl(160 84% 39% / 0.1) 0px, transparent 50%),
+                     radial-gradient(at 80% 50%, hsl(239 84% 67% / 0.1) 0px, transparent 50%),
+                     radial-gradient(at 0% 100%, hsl(330 81% 60% / 0.15) 0px, transparent 50%);
     
     /* Shadows */
-    --shadow-elegant: 0 25px 50px -12px hsl(230 85% 20% / 0.25);
-    --shadow-card: 0 4px 20px -2px hsl(220 20% 20% / 0.08);
-    --shadow-glow: 0 0 80px hsl(175 95% 45% / 0.4);
-    --shadow-neon: 0 0 40px hsl(175 95% 45% / 0.5), 0 0 80px hsl(175 95% 45% / 0.3);
+    --shadow-elegant: 0 25px 50px -12px hsl(240 40% 5% / 0.5);
+    --shadow-card: 0 4px 20px -2px hsl(240 40% 5% / 0.3);
+    --shadow-glow: 0 0 80px hsl(239 84% 67% / 0.2);
+    --shadow-neon: 0 0 20px hsl(330 81% 60% / 0.4), 0 0 60px hsl(330 81% 60% / 0.2);
 
-    /* Animations */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .dark {
-    --background: 230 25% 7%;
-    --foreground: 0 0% 98%;
+  
 
-    --card: 230 25% 10%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 230 25% 10%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 230 85% 60%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 230 85% 70%;
-
-    --secondary: 175 95% 55%;
-    --secondary-foreground: 230 25% 7%;
-
-    --muted: 230 20% 15%;
-    --muted-foreground: 220 15% 65%;
-
-    --accent: 155 85% 55%;
-    --accent-foreground: 230 25% 7%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 230 20% 15%;
-    --input: 230 20% 15%;
-    --ring: 230 85% 60%;
-
-    /* Sidebar tokens dark mode */
-    --sidebar-background: 230 25% 10%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 230 85% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 20% 15%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 230 20% 15%;
-    --sidebar-ring: 230 85% 60%;
-
-    /* Special use colors dark mode */
-    --whatsapp: 145 70% 55%;
-    --whatsapp-hover: 145 70% 50%;
-    --overlay: 230 30% 5%;
-    --success: 155 85% 55%;
-    --success-hover: 155 85% 50%;
-
-    /* Status colors dark mode */
-    --status-new: 230 85% 65%;
-    --status-scheduled: 230 85% 65%;
-    --status-contacted: 25 95% 60%;
-    --status-completed: 155 85% 55%;
-    --status-qualified: 155 85% 55%;
-    --status-converted: 270 70% 65%;
-    --status-cancelled: 0 84% 70%;
-    --status-pending: 45 93% 60%;
-    --status-overdue: 0 84% 70%;
-    --status-paid: 155 85% 55%;
-    --status-sent: 155 85% 55%;
-    --status-lost: 220 15% 60%;
-    --status-no-show: 220 15% 60%;
-
-    /* Priority colors dark mode */
-    --priority-high: 0 84% 70%;
-    --priority-high-bg: 0 84% 15%;
-    --priority-medium: 25 95% 60%;
-    --priority-medium-bg: 25 95% 15%;
-    --priority-low: 230 85% 65%;
-    --priority-low-bg: 230 85% 15%;
-
-    /* Info & highlights dark mode */
-    --info: 230 85% 65%;
-    --info-bg: 230 85% 12%;
-    --warning: 45 93% 60%;
-    --warning-bg: 45 93% 12%;
-    --error: 0 84% 70%;
-    --error-bg: 0 84% 12%;
-    --profit-positive: 155 85% 55%;
-    --profit-negative: 0 84% 70%;
-
-    --gradient-hero: linear-gradient(135deg, hsl(230 85% 8%) 0%, hsl(260 75% 12%) 50%, hsl(230 85% 15%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(230 25% 12%) 0%, hsl(230 25% 10%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(175 95% 45%) 0%, hsl(230 85% 55%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.05) 0%, hsl(0 0% 100% / 0.02) 100%);
-    
-    --shadow-elegant: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
-    --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
-    --shadow-glow: 0 0 80px hsl(175 95% 45% / 0.3);
-  }
+  
 }
 
 @layer base {
   * {
     @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {

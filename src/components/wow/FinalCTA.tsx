@@ -1,0 +1,125 @@
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Zap, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+export const FinalCTA = () => {
+  const [pain, setPain] = useState("");
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pain.trim() || !email.trim()) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const { error } = await supabase.from('leads_b3ta').insert([
+        {
+          email: email.trim(),
+          message: pain.trim(),
+          status: 'new',
+          priority: 'medium',
+          name: email.split('@')[0] // auto-extract simple name
+        }
+      ]);
+
+      if (error) throw error;
+
+      // Disparar las notificaciones por correo automáticamente
+      await supabase.functions.invoke('send-lead-notifications', {
+        body: { email: email.trim(), name: email.split('@')[0], message: pain.trim() }
+      });
+
+      toast({
+        title: "¡Solicitud Enviada Exitosamente!",
+        description: "Nuestro equipo analizará tus requerimientos y te contactará en breve.",
+      });
+      
+      setPain("");
+      setEmail("");
+    } catch (err: any) {
+      toast({
+        title: "Error al enviar la solicitud",
+        description: err.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <section id="contact" className="py-32 bg-background relative overflow-hidden">
+      {/* Dynamic Background Patterns */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+      <div className="container mx-auto px-4 max-w-5xl relative z-10 text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl glass-dark mb-8 border border-primary/20 shadow-2xl">
+          <Zap className="w-10 h-10 text-primary animate-bounce" />
+        </div>
+        
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight tracking-tighter">
+          ¡Acelera tu operación hoy!
+        </h2>
+        
+        <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-12 max-w-3xl mx-auto">
+          ¿Tienes procesos atascados o quieres lanzar un nuevo MVP? Diseñamos la solución que te faltaba.
+        </p>
+
+        <form onSubmit={handleSubmit} className="glass p-6 md:p-10 rounded-3xl border border-border/50 shadow- elegant mx-auto max-w-4xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0 pointer-events-none" />
+          <div className="space-y-6 text-left relative z-10">
+            <label className="block text-foreground font-bold text-lg md:text-xl">
+              Dinos cuál es tu cuello de botella:
+            </label>
+            <div className="flex flex-col md:flex-row gap-4">
+              <Input 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="tu@empresa.com" 
+                className="h-16 text-lg bg-background/50 border-border text-foreground placeholder:text-muted-foreground rounded-2xl px-6 focus-visible:ring-primary md:w-1/3"
+                required
+                disabled={isLoading}
+              />
+              <Input 
+                value={pain}
+                onChange={(e) => setPain(e.target.value)}
+                placeholder="Ej. Necesito una web, o quiero automatizar mis procesos..." 
+                className="h-16 text-lg bg-background/50 border-border text-foreground placeholder:text-muted-foreground rounded-2xl px-6 focus-visible:ring-primary md:w-2/3"
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4">
+              <Button 
+                type="button"
+                onClick={() => window.open(`https://wa.me/14355348065?text=${encodeURIComponent("Hola, me interesa transformar mi negocio con B3TA")}`, '_blank')}
+                className="w-full sm:w-auto h-16 px-8 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold text-base rounded-2xl border border-[#25D366]/20 transition-all"
+              >
+                <MessageCircle className="mr-2 w-5 h-5" />
+                WhatsApp Directo
+              </Button>
+              <Button 
+                type="submit"
+                disabled={isLoading}
+                className="w-full sm:w-auto h-16 px-10 bg-primary hover:bg-primary-glow text-primary-foreground font-black text-lg rounded-2xl shadow-glow transition-all hover:scale-105"
+              >
+                {isLoading ? "PROCESANDO..." : "ENVIAR SOLICITUD"}
+                <ArrowRight className="ml-2 w-6 h-6" />
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground font-medium text-center">
+              🔒 100% Confidencial. El diagnóstico te llegará a tu correo.
+            </p>
+          </div>
+        </form>
+      </div>
+    </section>
+  );
+};

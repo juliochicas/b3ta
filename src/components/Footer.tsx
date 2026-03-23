@@ -4,7 +4,7 @@ export const Footer = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-5 gap-12 mb-16">
           <div className="md:col-span-2">
-            <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-sans tracking-normal">
+            <h3 className="text-3xl font-black font-sans tracking-tighter mb-4 text-foreground">
               B3TA
             </h3>
             <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
@@ -24,38 +24,34 @@ export const Footer = () => {
           </div>
           
           <div>
-            <h4 className="font-bold mb-4 text-lg text-foreground">Soluciones</h4>
+            <h4 className="font-bold mb-4 text-lg text-foreground">Soluciones Core</h4>
             <ul className="space-y-3 text-muted-foreground">
-              <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Emprendedor</a></li>
-              <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Crecimiento</a></li>
-              <li><a href="/soluciones-por-presupuesto" className="hover:text-primary transition-colors">Enterprise</a></li>
-              <li><a href="/mvp-desarrollo-producto" className="hover:text-primary transition-colors">MVP Desarrollo</a></li>
-              <li><a href="/e-commerce" className="hover:text-primary transition-colors">E-commerce</a></li>
-              <li><a href="/importaciones-china" className="hover:text-primary transition-colors">Importaciones China</a></li>
+              <li><a href="/#precios" className="hover:text-primary transition-colors">Flujos Inteligentes IA</a></li>
+              <li><a href="/#precios" className="hover:text-primary transition-colors">Implementación SAP B1</a></li>
+              <li><a href="/#precios" className="hover:text-primary transition-colors">Modularis.pro ERP/CRM</a></li>
+              <li><a href="/#precios" className="hover:text-primary transition-colors">Desarrollo Shopify Plus</a></li>
+              <li><a href="/#precios" className="hover:text-primary transition-colors">Puntos de Venta (POS)</a></li>
+              <li><a href="/#precios" className="hover:text-primary transition-colors">SEO Automático</a></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-bold mb-4 text-lg text-foreground">Industrias</h4>
+            <h4 className="font-bold mb-4 text-lg text-foreground">Agencia</h4>
             <ul className="space-y-3 text-muted-foreground">
-              <li><a href="/industrias#manufactura" className="hover:text-primary transition-colors">Manufactura</a></li>
-              <li><a href="/industrias#retail" className="hover:text-primary transition-colors">Retail & E-commerce</a></li>
-              <li><a href="/industrias#distribucion" className="hover:text-primary transition-colors">Distribución</a></li>
-              <li><a href="/industrias#construccion" className="hover:text-primary transition-colors">Construcción</a></li>
-              <li><a href="/industrias#salud" className="hover:text-primary transition-colors">Salud</a></li>
-              <li><a href="/industrias#educacion" className="hover:text-primary transition-colors">Educación</a></li>
+              <li><a href="/#proceso" className="hover:text-primary transition-colors">Nuestra Metodología</a></li>
+              <li><a href="/#casos" className="hover:text-primary transition-colors">Casos de Éxito Reales</a></li>
+              <li><a href="/#problema" className="hover:text-primary transition-colors">Auditoría Operativa</a></li>
+              <li><a href="/#contact" className="hover:text-primary transition-colors">Diagnóstico Gratuito</a></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-bold mb-4 text-lg text-foreground">Recursos</h4>
+            <h4 className="font-bold mb-4 text-lg text-foreground">Clientes & Tech</h4>
             <ul className="space-y-3 text-muted-foreground">
-              <li><a href="/#casos" className="hover:text-primary transition-colors">Casos de Éxito</a></li>
-              <li><a href="/videos" className="hover:text-primary transition-colors">Videos</a></li>
-              <li><a href="/crm" className="hover:text-primary transition-colors">Portal CRM</a></li>
-              <li><a href="/#ai-consultant" className="hover:text-primary transition-colors">Consultor IA</a></li>
-              <li><a href="/#faq" className="hover:text-primary transition-colors">FAQ</a></li>
-              <li><a href="/#contact" className="hover:text-primary transition-colors">Contacto</a></li>
+              <li><a href="/auth" className="hover:text-primary transition-colors text-secondary font-medium">Acceso Clientes (CRM)</a></li>
+              <li><a href="https://supabase.com" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors">Infraestructura Real-time</a></li>
+              <li><a href="https://n8n.io" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors">Motor n8n Enterprise</a></li>
+              <li><a href="/#contact" className="hover:text-primary transition-colors">Contacto / Soporte</a></li>
             </ul>
           </div>
         </div>

@@ -29,7 +29,6 @@ const navItems: NavItem[] = [
   { label: "Cotizaciones", path: "/quotations", icon: <DollarSign className="h-4 w-4" /> },
   { label: "Reuniones", path: "/meetings", icon: <Clock className="h-4 w-4" /> },
   { label: "Correo", path: "/email", icon: <Mail className="h-4 w-4" /> },
-  { label: "Videos", path: "/videos", icon: <Video className="h-4 w-4" /> },
   { label: "Páginas", path: "/client-pages", icon: <Globe className="h-4 w-4" /> },
 ];
 
@@ -66,7 +65,7 @@ export const CRMNavigation = ({ userEmail, userRole }: CRMNavigationProps) => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 bg-clip-text text-transparent">
+            <div className="text-2xl font-black text-foreground tracking-tighter">
               B3TA
             </div>
           </div>

@@ -50,7 +50,8 @@ export const ProblemSection = () => {
           {problems.map((problem, idx) => (
             <Card 
               key={idx}
-              className={`p-8 border-2 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer bg-gradient-to-br ${problem.color}`}
+              className={`p-8 border-2 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer bg-gradient-to-br ${problem.color} animate-fade-up opacity-0`}
+              style={{ animationDelay: `${0.2 + idx * 0.15}s`, animationFillMode: 'forwards' }}
             >
               <problem.icon className="h-12 w-12 text-primary mb-6" />
               
