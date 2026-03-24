@@ -113,10 +113,31 @@ serve(async (req) => {
       });
     }
 
+    // Append Tax Line Item (IVA) if applicable
+    if (quotation.tax_amount > 0) {
+      console.log("[PAYMENT-LINK] Creating tax line item for", quotation.tax_amount);
+      const taxProduct = await stripe.products.create({
+        name: `IVA (${quotation.tax_rate}%)`,
+        description: 'Impuesto al Valor Agregado',
+        metadata: {
+          quotation_id: quotation.id,
+        },
+      });
+      const taxPrice = await stripe.prices.create({
+        product: taxProduct.id,
+        currency: quotation.currency.toLowerCase(),
+        unit_amount: Math.round(quotation.tax_amount * 100),
+      });
+      lineItems.push({
+        price: taxPrice.id,
+        quantity: 1,
+      });
+    }
+
     console.log("[PAYMENT-LINK] Creating payment link with", lineItems.length, "items");
 
     // Create payment link (no expira)
-    const paymentLink = await stripe.paymentLinks.create({
+    let paymentLink = await stripe.paymentLinks.create({
       line_items: lineItems,
       after_completion: {
         type: 'redirect',
@@ -144,16 +165,39 @@ serve(async (req) => {
       },
     });
 
-    console.log("[PAYMENT-LINK] Payment link created:", paymentLink.url);
+    let finalUrl = paymentLink.url;
+
+    // Handle Discounts by generating and appending a Promotion Code
+    if (quotation.discount_amount > 0) {
+      console.log("[PAYMENT-LINK] Creating discount coupon for", quotation.discount_amount);
+      try {
+        const coupon = await stripe.coupons.create({
+          amount_off: Math.round(quotation.discount_amount * 100),
+          currency: quotation.currency.toLowerCase(),
+          duration: 'once',
+          name: 'Descuento Aplicado',
+        });
+        const promoCode = await stripe.promotionCodes.create({
+          coupon: coupon.id,
+          code: `DESC-${quotation.quotation_number}-${Date.now().toString().slice(-4)}`,
+        });
+        finalUrl = `${paymentLink.url}?prefilled_promo_code=${promoCode.code}`;
+        console.log("[PAYMENT-LINK] Discount appended to URL");
+      } catch (e) {
+        console.error("[PAYMENT-LINK] Failed to generate promo code", e);
+      }
+    }
+
+    console.log("[PAYMENT-LINK] Payment link created:", finalUrl);
 
     // Update quotation with payment link
     await supabaseClient
       .from('quotations')
-      .update({ stripe_payment_link: paymentLink.url })
+      .update({ stripe_payment_link: finalUrl })
       .eq('id', quotation_id);
 
     return new Response(
-      JSON.stringify({ url: paymentLink.url }), 
+      JSON.stringify({ url: finalUrl }), 
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
