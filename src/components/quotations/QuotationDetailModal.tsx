@@ -97,6 +97,10 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const [notes, setNotes] = useState(quotation.notes || "");
   const [isEditingTerms, setIsEditingTerms] = useState(false);
   const [termsConditions, setTermsConditions] = useState(quotation.terms_conditions || "");
+  const initialBankTag = quotation.tags?.find((t: string) => t.startsWith("bank:"));
+  const initialBank = initialBankTag ? decodeURIComponent(initialBankTag.substring(5)) : "";
+  const [bankAccounts, setBankAccounts] = useState(initialBank);
+  const [isEditingBank, setIsEditingBank] = useState(false);
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -283,6 +287,40 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       toast({
         title: "Error",
         description: "No se pudieron actualizar los términos y condiciones",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateBankAccounts = async () => {
+    try {
+      const currentTags = quotation.tags || [];
+      const nonBankTags = currentTags.filter((t: string) => !t.startsWith("bank:"));
+      
+      let newTags = [...nonBankTags];
+      if (bankAccounts.trim()) {
+        newTags.push(`bank:${encodeURIComponent(bankAccounts.trim())}`);
+      }
+      
+      const { error } = await supabase
+        .from('quotations')
+        .update({ tags: newTags })
+        .eq('id', quotation.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Cuentas guardadas",
+        description: "Las cuentas bancarias se han actualizado exitosamente.",
+        className: "bg-success text-success-foreground"
+      });
+      setIsEditingBank(false);
+      onUpdate();
+    } catch (error) {
+      console.error("Error updating bank accounts:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar las cuentas",
         variant: "destructive",
       });
     }
@@ -493,29 +531,40 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       yPos += 8;
 
       // Total box
+      const exTag = quotation.tags?.find((tag: string) => tag.startsWith("exchange:"));
+      let rate = 0;
+      let targetCurrency = "";
+      if (exTag) {
+        const [, r, c] = exTag.split(":");
+        rate = parseFloat(r);
+        if (!isNaN(rate) && rate > 0 && c) {
+          targetCurrency = c;
+        }
+      }
+
+      const hasExchange = rate > 0 && targetCurrency !== "";
+      const boxHeight = hasExchange ? 24 : 16;
+
       doc.setFillColor(...brandDark);
-      doc.roundedRect(totalsX, yPos - 5, contentWidth * 0.5, 16, 2, 2, 'F');
+      doc.roundedRect(totalsX, yPos - 5, contentWidth * 0.5, boxHeight, 2, 2, 'F');
       doc.setFillColor(...brandCyan);
-      doc.rect(totalsX, yPos - 5, 3, 16, 'F');
+      doc.rect(totalsX, yPos - 5, 3, boxHeight, 'F');
+      
       doc.setTextColor(180, 200, 220);
       doc.setFontSize(10);
       doc.setFont(undefined!, 'normal');
       doc.text('Total:', totalsX + 8, yPos + 2);
+      
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(16);
       doc.setFont(undefined!, 'bold');
       doc.text(`${formatCurrencyForPDF(quotation.total, quotation.currency)}`, totalsX + 8, yPos + 9);
 
-      const exTag = quotation.tags?.find(tag => tag.startsWith("exchange:"));
-      if (exTag) {
-        const [, r, c] = exTag.split(":");
-        const rate = parseFloat(r);
-        if (!isNaN(rate) && rate > 0 && c) {
-          doc.setFontSize(8);
-          doc.setTextColor(150, 150, 150);
-          doc.setFont(undefined!, 'normal');
-          doc.text(`Aprx. ${formatCurrencyForPDF(quotation.total * rate, c)} (${r} ${c}/${quotation.currency})`, totalsX + 8, yPos + 15);
-        }
+      if (hasExchange) {
+        doc.setFontSize(9);
+        doc.setTextColor(...brandCyan);
+        doc.setFont(undefined!, 'bold');
+        doc.text(`Equivalente: ${formatCurrencyForPDF(quotation.total * rate, targetCurrency)} (${rate} ${targetCurrency}/${quotation.currency})`, totalsX + 8, yPos + 16);
       }
       
       yPos += 24;
@@ -562,6 +611,30 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
             if (yPos > 255) { doc.addPage(); yPos = 20; }
             doc.text(line, margin, yPos);
             yPos += 4;
+          });
+        }
+      }
+
+      const bankTag = quotation.tags?.find((tag: string) => tag.startsWith("bank:"));
+      if (bankTag) {
+        const banks = decodeURIComponent(bankTag.substring(5));
+        if (banks.trim()) {
+          yPos += 8;
+          if (yPos > 240) { doc.addPage(); yPos = 20; }
+          doc.setFillColor(...brandBlue);
+          doc.rect(margin, yPos - 3, 3, 8, 'F');
+          doc.setFont(undefined!, 'bold');
+          doc.setTextColor(...brandDark);
+          doc.text('DATOS DE DEPOSITO / CUENTAS BANCARIAS', margin + 6, yPos + 2);
+          yPos += 10;
+          doc.setFont(undefined!, 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(40, 40, 40);
+          const bankLines = doc.splitTextToSize(banks, contentWidth);
+          bankLines.forEach((line: string) => {
+            if (yPos > 255) { doc.addPage(); yPos = 20; }
+            doc.text(line, margin, yPos);
+            yPos += 5;
           });
         }
       }
@@ -1398,6 +1471,58 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                   <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                     {quotation.terms_conditions || "Sin términos y condiciones"}
                   </p>
+                )}
+              </Card>
+
+              {/* Cuentas Bancarias */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-primary">Cuentas Bancarias</h3>
+                  {!isEditingBank && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsEditingBank(true)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                {isEditingBank ? (
+                  <div className="space-y-4">
+                    <p className="text-[11px] text-muted-foreground">
+                      Estas cuentas aparecerán automáticamente al final de los PDFs descargados para que el cliente pueda realizar su depósito u orden de compra.
+                    </p>
+                    <Textarea
+                      value={bankAccounts}
+                      onChange={(e) => setBankAccounts(e.target.value)}
+                      rows={4}
+                      placeholder="Ej. BAC 12345678 Monetaria\nBanrural 09876543 Ahorro"
+                    />
+                    <div className="flex gap-2">
+                      <Button onClick={updateBankAccounts} size="sm">
+                        <Save className="h-4 w-4 mr-2" />
+                        Guardar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setBankAccounts(initialBank);
+                          setIsEditingBank(false);
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-primary/5 p-4 rounded-md border border-primary/10">
+                    <p className="text-sm text-foreground whitespace-pre-wrap font-medium">
+                      {initialBank || "No se han configurado datos de depósito para esta cotización."}
+                    </p>
+                  </div>
                 )}
               </Card>
             </TabsContent>
