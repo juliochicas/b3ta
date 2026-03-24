@@ -1,15 +1,24 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
 async function main() {
   const transport = new StdioClientTransport({
     command: "npx",
     args: ["--yes", "hostinger-api-mcp@latest"],
     env: { ...process.env, API_TOKEN: "7FlDciiurWlVqyVIXGv6zEbQ0drsgrdzEr0B0foIaa5a9bf4" }
   });
-  const client = new Client({ name: "cli", version: "1" }, { capabilities: {} });
+
+  const client = new Client({ name: "cli-client", version: "1.0.0" }, { capabilities: {} });
   await client.connect(transport);
-  const tools = await client.listTools();
-  tools.tools.forEach(t => console.log(t.name));
-  process.exit();
+  
+  const toolsResult = await client.listTools();
+  console.log("SSL TOOLS:");
+  for (const t of toolsResult.tools) {
+     if (t.name.toUpperCase().includes('SSL') || t.name.toUpperCase().includes('CERT')) {
+       console.log(t.name, JSON.stringify(t.inputSchema, null, 2));
+     }
+  }
+  process.exit(0);
 }
+
 main().catch(console.error);

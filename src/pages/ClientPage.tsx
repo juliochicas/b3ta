@@ -99,7 +99,7 @@ export default function ClientPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="dark min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Cargando página...</p>
@@ -110,7 +110,7 @@ export default function ClientPage() {
 
   if (needsPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="dark min-h-screen flex items-center justify-center bg-background text-foreground p-4">
         <Card className="max-w-sm w-full">
           <CardContent className="py-8 text-center">
             <Lock className="h-12 w-12 mx-auto mb-4 text-primary" />
@@ -143,7 +143,7 @@ export default function ClientPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="dark min-h-screen flex items-center justify-center bg-background text-foreground p-4">
         <Card className="max-w-md w-full">
           <CardContent className="py-12 text-center">
             <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />

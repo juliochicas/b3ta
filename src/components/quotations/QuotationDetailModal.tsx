@@ -10,13 +10,15 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown, Edit, Trash2 } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown, Edit, Trash2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { InvoiceDetailModal } from "./InvoiceDetailModal";
 import { ExpensesList } from "./ExpensesList";
 import { TermsAIAssistant } from "./TermsAIAssistant";
 import { EditQuotationItemModal } from "./EditQuotationItemModal";
+import { AddQuotationItemModal } from "./AddQuotationItemModal";
+import { formatCurrencyDisplay, formatCurrencyForPDF } from "@/lib/currency";
 
 interface Quotation {
   id: string;
@@ -59,14 +61,34 @@ interface Props {
   quotation: Quotation;
   onClose: () => void;
   onUpdate: () => void;
+  defaultEditMode?: boolean;
 }
 
-export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) => {
+export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEditMode = false }: Props) => {
   const [items, setItems] = useState<QuotationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingPaymentLink, setIsCreatingPaymentLink] = useState(false);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
   const [isDownloadingFinancialPDF, setIsDownloadingFinancialPDF] = useState(false);
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  
+  // States for Global Edit
+  const initialExchangeTag = quotation.tags?.find(tag => tag.startsWith("exchange:"));
+  const [initialExchangeRate, initialSecondaryCurrency] = initialExchangeTag ? initialExchangeTag.split(":").slice(1) : ["", ""];
+
+  const [isEditingGlobals, setIsEditingGlobals] = useState(defaultEditMode);
+  const [globalData, setGlobalData] = useState({
+    customer_name: quotation.customers.name,
+    customer_email: quotation.customers.email,
+    customer_company: quotation.customers.company || "",
+    valid_until: quotation.valid_until || "",
+    currency: quotation.currency,
+    tax_rate: quotation.tax_rate.toString(),
+    discount_percentage: quotation.discount_percentage.toString(),
+    exchange_rate: initialExchangeRate || "",
+    secondary_currency: initialSecondaryCurrency || ""
+  });
+
   const [isEditingTracking, setIsEditingTracking] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState(quotation.tracking_number || "");
   const [isEditingTags, setIsEditingTags] = useState(false);
@@ -425,9 +447,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
         if (yPos > 255) { doc.addPage(); yPos = 20; }
         doc.text(item.item_name.substring(0, 35), margin + 2, yPos);
         doc.text(String(item.quantity), margin + contentWidth * 0.55, yPos);
-        doc.text(`$${item.unit_price.toFixed(2)}`, margin + contentWidth * 0.68, yPos);
+        doc.text(`${formatCurrencyForPDF(item.unit_price, quotation.currency)}`, margin + contentWidth * 0.68, yPos);
         doc.text(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '-', margin + contentWidth * 0.8, yPos);
-        doc.text(`$${item.total.toFixed(2)}`, margin + contentWidth * 0.9, yPos);
+        doc.text(`${formatCurrencyForPDF(item.total, quotation.currency)}`, margin + contentWidth * 0.9, yPos);
         yPos += 6;
 
         if (item.description) {
@@ -451,23 +473,23 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.setFontSize(10);
       doc.setTextColor(60, 60, 60);
       doc.text('Subtotal:', totalsX + 5, yPos);
-      doc.text(`${quotation.currency} $${quotation.subtotal.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+      doc.text(`${formatCurrencyForPDF(quotation.subtotal, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
       yPos += 6;
 
       if (quotation.discount_percentage > 0) {
         doc.setTextColor(220, 38, 38);
         doc.text(`Descuento (${quotation.discount_percentage}%):`, totalsX + 5, yPos);
-        doc.text(`-${quotation.currency} $${quotation.discount_amount.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+        doc.text(`-${formatCurrencyForPDF(quotation.discount_amount, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
         yPos += 6;
         doc.setTextColor(60, 60, 60);
         doc.text('Subtotal con Descuento:', totalsX + 5, yPos);
-        doc.text(`${quotation.currency} $${(quotation.subtotal - quotation.discount_amount).toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+        doc.text(`${formatCurrencyForPDF(quotation.subtotal - quotation.discount_amount, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
         yPos += 6;
       }
 
       doc.setTextColor(100, 100, 100);
       doc.text(`IVA (${quotation.tax_rate}%):`, totalsX + 5, yPos);
-      doc.text(`${quotation.currency} $${quotation.tax_amount.toFixed(2)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
+      doc.text(`${formatCurrencyForPDF(quotation.tax_amount, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
       yPos += 8;
 
       // Total box
@@ -482,8 +504,21 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(16);
       doc.setFont(undefined!, 'bold');
-      doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, totalsX + 8, yPos + 9);
-      yPos += 22;
+      doc.text(`${formatCurrencyForPDF(quotation.total, quotation.currency)}`, totalsX + 8, yPos + 9);
+
+      const exTag = quotation.tags?.find(tag => tag.startsWith("exchange:"));
+      if (exTag) {
+        const [, r, c] = exTag.split(":");
+        const rate = parseFloat(r);
+        if (!isNaN(rate) && rate > 0 && c) {
+          doc.setFontSize(8);
+          doc.setTextColor(150, 150, 150);
+          doc.setFont(undefined!, 'normal');
+          doc.text(`Aprx. ${formatCurrencyForPDF(quotation.total * rate, c)} (${r} ${c}/${quotation.currency})`, totalsX + 8, yPos + 15);
+        }
+      }
+      
+      yPos += 24;
 
       // Notes & Terms
       if (quotation.notes || quotation.terms_conditions) {
@@ -645,12 +680,26 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(11);
       doc.text('Ingresos Totales:', margin + 2, yPos);
-      doc.text(`${quotation.currency} $${quotation.total.toFixed(2)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+      doc.text(`${formatCurrencyForPDF(quotation.total, quotation.currency)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+      
+      const finExTag = quotation.tags?.find(tag => tag.startsWith("exchange:"));
+      if (finExTag) {
+        const [, r, c] = finExTag.split(":");
+        const rate = parseFloat(r);
+        if (!isNaN(rate) && rate > 0 && c) {
+          yPos += 5;
+          doc.setFontSize(8);
+          doc.setTextColor(150, 150, 150);
+          doc.text(`Aprx. ${formatCurrencyForPDF(quotation.total * rate, c)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+          doc.setFontSize(11);
+        }
+      }
+      
       yPos += 8;
 
       doc.setTextColor(220, 38, 38);
       doc.text('Gastos Totales:', margin + 2, yPos);
-      doc.text(`${quotation.currency} $${totalExpenses.toFixed(2)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+      doc.text(`${formatCurrencyForPDF(totalExpenses, quotation.currency)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
       yPos += 8;
 
       doc.setDrawColor(99, 102, 241);
@@ -662,7 +711,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       doc.setFont(undefined, 'bold');
       doc.setFontSize(13);
       doc.text('Utilidad Neta:', margin + 2, yPos);
-      doc.text(`${quotation.currency} $${netProfit.toFixed(2)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
+      doc.text(`${formatCurrencyForPDF(netProfit, quotation.currency)}`, margin + contentWidth * 0.75, yPos, { align: 'right' });
       yPos += 7;
 
       const profitMargin = quotation.total > 0 ? (netProfit / quotation.total) * 100 : 0;
@@ -776,6 +825,74 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
     }
   };
 
+  const updateGlobals = async () => {
+    try {
+      // 1. Update Customer
+      const { error: customerError } = await supabase
+        .from('customers')
+        .update({
+          name: globalData.customer_name,
+          email: globalData.customer_email,
+          company: globalData.customer_company || null
+        })
+        .eq('id', quotation.customer_id);
+      
+      if (customerError) throw customerError;
+
+      // 2. Recalculate Totals based on new tax and discount
+      const taxRateNum = parseFloat(globalData.tax_rate) || 0;
+      const discountPercentageNum = parseFloat(globalData.discount_percentage) || 0;
+      
+      // Calculate Subtotal from existing items
+      const { data: allItems } = await supabase
+        .from('quotation_items')
+        .select('total')
+        .eq('quotation_id', quotation.id);
+        
+      const subtotal = allItems ? allItems.reduce((sum, i) => sum + i.total, 0) : quotation.subtotal;
+      
+      const globalDiscount = subtotal * (discountPercentageNum / 100);
+      const subtotalAfterDiscount = subtotal - globalDiscount;
+      const taxAmount = subtotalAfterDiscount * (taxRateNum / 100);
+      const totalAmount = subtotalAfterDiscount + taxAmount;
+
+      // Handle Exchange Rate tag
+      let currentTags = quotation.tags || [];
+      currentTags = currentTags.filter(tag => !tag.startsWith("exchange:"));
+      
+      const newRate = parseFloat(globalData.exchange_rate);
+      if (!isNaN(newRate) && newRate > 0 && globalData.secondary_currency) {
+        currentTags.push(`exchange:${newRate}:${globalData.secondary_currency}`);
+      }
+
+      // 3. Update Quotation
+      const { error: quotationError } = await supabase
+        .from('quotations')
+        .update({
+          valid_until: globalData.valid_until || null,
+          currency: globalData.currency,
+          tax_rate: taxRateNum,
+          discount_percentage: discountPercentageNum,
+          discount_amount: globalDiscount,
+          tax_amount: taxAmount,
+          total: totalAmount,
+          tags: currentTags
+        })
+        .eq('id', quotation.id);
+
+      if (quotationError) throw quotationError;
+
+      toast({
+        title: "Datos actuales",
+        description: "La cotización ha sido actualizada exitosamente",
+      });
+      setIsEditingGlobals(false);
+      onUpdate();
+    } catch (e) {
+      toast({ title: "Error", description: "No se pudieron actualizar los datos", variant: "destructive" });
+    }
+  };
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -796,39 +913,168 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
             <div className="text-right">
               <div className="text-sm text-muted-foreground mb-1">Total</div>
               <div className="text-3xl font-bold text-primary">
-                ${quotation.total.toFixed(2)} {quotation.currency}
+                {formatCurrencyDisplay(quotation.total, quotation.currency)}
               </div>
             </div>
           </div>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Cliente */}
-          <Card className="p-6">
-            <h3 className="font-semibold mb-4">Cliente</h3>
-            <div className="space-y-2 text-sm">
-              <p className="font-medium text-foreground">{quotation.customers.name}</p>
-              {quotation.customers.company && (
-                <p className="text-muted-foreground">{quotation.customers.company}</p>
-              )}
-              <p className="text-muted-foreground">{quotation.customers.email}</p>
-            </div>
-            <div className="mt-4 pt-4 border-t">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Fecha de creación:</span>
-                <span>{format(new Date(quotation.created_at), "PPP", { locale: es })}</span>
-              </div>
-              {quotation.valid_until && (
-                <div className="flex justify-between text-sm mt-2">
-                  <span className="text-muted-foreground">Válida hasta:</span>
-                  <span className="font-medium">
-                    {format(new Date(quotation.valid_until), "PPP", { locale: es })}
-                  </span>
+          {/* Datos Principales (Cliente, Fechas, Moneda, Impuestos) */}
+          <Card className="p-6 border-2 border-primary/20">
+            <div className="flex justify-between items-center mb-4 pb-2 border-b">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Datos Principales
+              </h3>
+              {!isEditingGlobals ? (
+                <Button variant="ghost" size="sm" onClick={() => setIsEditingGlobals(true)}>
+                  <Edit2 className="h-4 w-4 mr-2" /> Editar Datos
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setIsEditingGlobals(false)}>
+                    Cancelar
+                  </Button>
+                  <Button size="sm" onClick={updateGlobals}>
+                    <Save className="h-4 w-4 mr-2" /> Guardar
+                  </Button>
                 </div>
               )}
-              
-              {/* Tracking Number */}
-              <div className="mt-4 pt-4 border-t">
+            </div>
+            
+            {!isEditingGlobals ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-2">Cliente</p>
+                    <div className="space-y-1 text-sm">
+                      <p className="font-medium text-foreground">{quotation.customers.name}</p>
+                      {quotation.customers.company && (
+                        <p className="text-muted-foreground">{quotation.customers.company}</p>
+                      )}
+                      <p className="text-muted-foreground">{quotation.customers.email}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-2">Configuración</p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Moneda:</span>
+                        <span className="font-medium">{quotation.currency}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">IVA:</span>
+                        <span className="font-medium">{quotation.tax_rate}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Descuento Global:</span>
+                        <span className="font-medium">{quotation.discount_percentage}%</span>
+                      </div>
+                      {initialExchangeRate && initialSecondaryCurrency && (
+                        <div className="flex justify-between mt-2 pt-2 border-t border-border/50">
+                          <span className="text-muted-foreground">Tasa Conv. ({initialSecondaryCurrency}):</span>
+                          <span className="font-medium text-primary">x {initialExchangeRate}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Fecha de creación:</span>
+                    <span>{format(new Date(quotation.created_at), "PPP", { locale: es })}</span>
+                  </div>
+                  {quotation.valid_until && (
+                    <div className="flex justify-between text-sm mt-2">
+                      <span className="text-muted-foreground">Válida hasta:</span>
+                      <span className="font-medium text-amber-600">
+                        {format(new Date(quotation.valid_until), "PPP", { locale: es })}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Nombre del Cliente</Label>
+                    <Input value={globalData.customer_name} onChange={(e) => setGlobalData({...globalData, customer_name: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Email del Cliente</Label>
+                    <Input value={globalData.customer_email} onChange={(e) => setGlobalData({...globalData, customer_email: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Empresa (Opcional)</Label>
+                    <Input value={globalData.customer_company} onChange={(e) => setGlobalData({...globalData, customer_company: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Válida hasta</Label>
+                    <Input type="date" value={globalData.valid_until} onChange={(e) => setGlobalData({...globalData, valid_until: e.target.value})} />
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Moneda</Label>
+                    <select 
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={globalData.currency} 
+                      onChange={(e) => setGlobalData({...globalData, currency: e.target.value})}
+                    >
+                      <option value="USD">USD ($)</option>
+                      <option value="GTQ">GTQ (Q)</option>
+                      <option value="MXN">MXN ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="COP">COP ($)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">IVA / Impuestos (%)</Label>
+                    <Input type="number" step="0.1" value={globalData.tax_rate} onChange={(e) => setGlobalData({...globalData, tax_rate: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Descuento Global (%)</Label>
+                    <Input type="number" step="0.1" value={globalData.discount_percentage} onChange={(e) => setGlobalData({...globalData, discount_percentage: e.target.value})} />
+                  </div>
+                </div>
+
+                <Separator />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/30 p-4 rounded-md border border-border/50">
+                  <div className="space-y-2">
+                    <Label className="text-xs text-primary font-medium">Equivalencia: Tasa de Cambio (Opcional)</Label>
+                    <Input placeholder="Ej. 7.80" type="number" step="0.01" value={globalData.exchange_rate} onChange={(e) => setGlobalData({...globalData, exchange_rate: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs text-primary font-medium">Moneda Secundaria</Label>
+                    <select 
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={globalData.secondary_currency} 
+                      onChange={(e) => setGlobalData({...globalData, secondary_currency: e.target.value})}
+                    >
+                      <option value="">Ninguna</option>
+                      <option value="GTQ">Quetzales (GTQ)</option>
+                      <option value="MXN">Pesos Mexicanos (MXN)</option>
+                      <option value="COP">Pesos Colombianos (COP)</option>
+                      <option value="USD">Dólares (USD)</option>
+                      <option value="EUR">Euros (EUR)</option>
+                    </select>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground md:col-span-2">
+                    Si ingresas una tasa, se mostrará el valor equivalente en esta moneda visible al lado del total real.
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm text-muted-foreground">Número de Tracking:</Label>
                   {!isEditingTracking ? (
@@ -989,7 +1235,6 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                   </div>
                 )}
               </div>
-            </div>
           </Card>
 
           {/* Tabs para Detalles y Gastos */}
@@ -1010,6 +1255,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
               <Card className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">Detalles</h3>
+                  <Button variant="outline" size="sm" onClick={() => setIsAddingItem(true)}>
+                    <Plus className="h-4 w-4 mr-2" /> Añadir Item
+                  </Button>
                 </div>
                 {isLoading ? (
                   <p className="text-center text-muted-foreground">Cargando items...</p>
@@ -1033,13 +1281,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right font-semibold">
-                            ${item.total.toFixed(2)}
+                            {formatCurrencyDisplay(item.total, quotation.currency)}
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setEditingItem(item)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="text-muted-foreground hover:text-primary transition-colors"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -1052,28 +1300,41 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
-                        <span className="font-semibold">${quotation.subtotal.toFixed(2)}</span>
+                        <span className="font-semibold">{formatCurrencyDisplay(quotation.subtotal, quotation.currency)}</span>
                       </div>
                       {quotation.discount_percentage > 0 && (
                         <div className="flex justify-between text-destructive">
                           <span>Descuento Global ({quotation.discount_percentage}%):</span>
-                          <span>-${quotation.discount_amount.toFixed(2)}</span>
+                          <span>-{formatCurrencyDisplay(quotation.discount_amount, quotation.currency)}</span>
                         </div>
                       )}
                       {quotation.discount_percentage > 0 && (
                         <div className="flex justify-between">
                           <span>Subtotal con Descuento:</span>
-                          <span className="font-semibold">${(quotation.subtotal - quotation.discount_amount).toFixed(2)}</span>
+                          <span className="font-semibold">{formatCurrencyDisplay((quotation.subtotal - quotation.discount_amount), quotation.currency)}</span>
                         </div>
                       )}
                       <div className="flex justify-between text-muted-foreground">
                         <span>IVA ({quotation.tax_rate}%):</span>
-                        <span>${quotation.tax_amount.toFixed(2)}</span>
+                        <span>{formatCurrencyDisplay(quotation.tax_amount, quotation.currency)}</span>
                       </div>
                       <Separator />
-                      <div className="flex justify-between text-lg font-bold">
+                      <div className="flex justify-between items-start text-lg font-bold">
                         <span>Total:</span>
-                        <span className="text-primary">${quotation.total.toFixed(2)}</span>
+                        <div className="text-right">
+                          <span className="text-primary">{formatCurrencyDisplay(quotation.total, quotation.currency)}</span>
+                          
+                          {initialExchangeRate && initialSecondaryCurrency && !isNaN(parseFloat(initialExchangeRate)) && (
+                            <div className="mt-1 flex flex-col items-end">
+                              <span className="text-sm font-medium text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                                Aprox. {formatCurrencyDisplay(quotation.total * parseFloat(initialExchangeRate), initialSecondaryCurrency)}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground mt-0.5">
+                                Tasa: {initialExchangeRate} {initialSecondaryCurrency}/{quotation.currency}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1253,9 +1514,22 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate }: Props) =>
       {editingItem && (
         <EditQuotationItemModal
           item={editingItem}
+          quotation={quotation}
           onClose={() => setEditingItem(null)}
           onSuccess={() => {
             setEditingItem(null);
+            loadItems();
+            onUpdate();
+          }}
+        />
+      )}
+
+      {isAddingItem && (
+        <AddQuotationItemModal
+          quotation={quotation}
+          onClose={() => setIsAddingItem(false)}
+          onSuccess={() => {
+            setIsAddingItem(false);
             loadItems();
             onUpdate();
           }}

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical } from "lucide-react";
+import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2 } from "lucide-react";
 import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
 import {
   DropdownMenu,
@@ -52,6 +52,7 @@ export const QuotationsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedQuotation, setSelectedQuotation] = useState<Quotation | null>(null);
+  const [startInEditMode, setStartInEditMode] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -103,6 +104,12 @@ export const QuotationsList = () => {
       setTotalCount(count || 0);
       setQuotations(data as any || []);
       setFilteredQuotations(data as any || []);
+      
+      setSelectedQuotation(current => {
+        if (!current) return null;
+        const updated = (data as any).find((q: any) => q.id === current.id);
+        return updated || current;
+      });
     } catch (error) {
       toast({
         title: "Error",
@@ -275,6 +282,13 @@ export const QuotationsList = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {
+                            setSelectedQuotation(quotation);
+                            setStartInEditMode(true);
+                          }}>
+                            <Edit2 className="h-4 w-4 mr-2" />
+                            Editar Cotización
+                          </DropdownMenuItem>
                           {quotation.status !== 'archived' && quotation.status !== 'accepted' && (
                             <>
                               <DropdownMenuItem onClick={() => handleArchive(quotation.id)}>
@@ -336,8 +350,12 @@ export const QuotationsList = () => {
       {selectedQuotation && (
         <QuotationDetailModal
           quotation={selectedQuotation}
-          onClose={() => setSelectedQuotation(null)}
+          onClose={() => {
+            setSelectedQuotation(null);
+            setStartInEditMode(false);
+          }}
           onUpdate={loadQuotations}
+          defaultEditMode={startInEditMode}
         />
       )}
 

@@ -7,7 +7,94 @@ All colors MUST be HSL.
 */
 
 @layer base {
-  :root, .dark {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 239 84% 77%;
+    --secondary: 330 81% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 239 84% 67%;
+
+    --sidebar-background: 240 5% 96%;
+    --sidebar-foreground: 240 10% 4%;
+    --sidebar-primary: 239 84% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5% 90%;
+    --sidebar-accent-foreground: 240 10% 4%;
+    --sidebar-border: 240 6% 90%;
+    --sidebar-ring: 239 84% 67%;
+
+    --whatsapp: 145 70% 45%;
+    --whatsapp-hover: 145 70% 40%;
+    --overlay: 240 40% 5%;
+    --success: 160 84% 39%;
+    --success-hover: 160 84% 34%;
+
+    --status-new: 239 84% 67%;
+    --status-scheduled: 239 84% 67%;
+    --status-contacted: 25 95% 53%;
+    --status-completed: 160 84% 39%;
+    --status-qualified: 160 84% 39%;
+    --status-converted: 270 70% 55%;
+    --status-cancelled: 0 84% 60%;
+    --status-pending: 45 93% 47%;
+    --status-overdue: 0 84% 60%;
+    --status-paid: 160 84% 39%;
+    --status-sent: 160 84% 39%;
+    --status-lost: 244 47% 30%;
+    --status-no-show: 244 47% 30%;
+
+    --priority-high: 0 84% 60%;
+    --priority-high-bg: 0 84% 96%;
+    --priority-medium: 25 95% 53%;
+    --priority-medium-bg: 25 95% 96%;
+    --priority-low: 239 84% 67%;
+    --priority-low-bg: 239 84% 96%;
+
+    --info: 239 84% 67%;
+    --info-bg: 239 84% 96%;
+    --warning: 45 93% 47%;
+    --warning-bg: 45 93% 96%;
+    --error: 0 84% 60%;
+    --error-bg: 0 84% 96%;
+    --profit-positive: 160 84% 39%;
+    --profit-negative: 0 84% 60%;
+
+    --radius: 1rem;
+
+    --gradient-hero: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(240 5% 98%) 100%);
+    --gradient-accent: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 0% / 0.05) 0%, hsl(0 0% 0% / 0.01) 100%);
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(239 84% 67% / 0.1) 0px, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(330 81% 60% / 0.1) 0px, transparent 50%),
+                     radial-gradient(at 0% 50%, hsl(160 84% 39% / 0.05) 0px, transparent 50%),
+                     radial-gradient(at 80% 50%, hsl(239 84% 67% / 0.05) 0px, transparent 50%),
+                     radial-gradient(at 0% 100%, hsl(330 81% 60% / 0.1) 0px, transparent 50%);
+    
+    --shadow-elegant: 0 25px 50px -12px hsl(240 40% 5% / 0.1);
+    --shadow-card: 0 4px 20px -2px hsl(240 40% 5% / 0.05);
+    --shadow-glow: 0 0 80px hsl(239 84% 67% / 0.2);
+    --shadow-neon: 0 0 20px hsl(330 81% 60% / 0.2), 0 0 60px hsl(330 81% 60% / 0.1);
+
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
     --background: 240 10% 4%; /* Obsidian dark / Zinc 950 */
     --foreground: 0 0% 98%;
 

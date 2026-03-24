@@ -8,29 +8,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-interface QuotationItem {
-  id: string;
-  item_name: string;
-  description: string | null;
-  quantity: number;
-  unit_price: number;
-  discount_percentage: number;
-  total: number;
-}
-
 interface Props {
-  item: QuotationItem;
   quotation: any;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export const EditQuotationItemModal = ({ item, quotation, onClose, onSuccess }: Props) => {
-  const [itemName, setItemName] = useState(item.item_name);
-  const [description, setDescription] = useState(item.description || "");
-  const [quantity, setQuantity] = useState(item.quantity.toString());
-  const [unitPrice, setUnitPrice] = useState(item.unit_price.toString());
-  const [discountPercentage, setDiscountPercentage] = useState(item.discount_percentage.toString());
+export const AddQuotationItemModal = ({ quotation, onClose, onSuccess }: Props) => {
+  const [itemName, setItemName] = useState("");
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState("1");
+  const [unitPrice, setUnitPrice] = useState("");
+  const [discountPercentage, setDiscountPercentage] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -91,15 +80,15 @@ export const EditQuotationItemModal = ({ item, quotation, onClose, onSuccess }: 
 
       const { error } = await supabase
         .from('quotation_items')
-        .update({
+        .insert({
+          quotation_id: quotation.id,
           item_name: itemName.trim(),
           description: description.trim() || null,
           quantity: qty,
           unit_price: price,
           discount_percentage: discount,
           total: total,
-        })
-        .eq('id', item.id);
+        });
 
       if (error) throw error;
 
@@ -125,16 +114,16 @@ export const EditQuotationItemModal = ({ item, quotation, onClose, onSuccess }: 
       }
 
       toast({
-        title: "Item actualizado",
-        description: "El item se ha actualizado exitosamente",
+        title: "Item agregado",
+        description: "El item se ha agregado exitosamente",
       });
 
       onSuccess();
     } catch (error) {
-      console.error("Error updating item:", error);
+      console.error("Error adding item:", error);
       toast({
         title: "Error",
-        description: "No se pudo actualizar el item",
+        description: "No se pudo agregar el item",
         variant: "destructive",
       });
     } finally {
@@ -146,9 +135,9 @@ export const EditQuotationItemModal = ({ item, quotation, onClose, onSuccess }: 
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Editar Item</DialogTitle>
+          <DialogTitle>Añadir Nuevo Item</DialogTitle>
           <DialogDescription>
-            Modifica los detalles del item de la cotización
+            Ingresa los detalles del nuevo item para la cotización
           </DialogDescription>
         </DialogHeader>
 
@@ -239,7 +228,7 @@ export const EditQuotationItemModal = ({ item, quotation, onClose, onSuccess }: 
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Guardar Cambios
+              Agregar Item
             </Button>
           </div>
         </form>

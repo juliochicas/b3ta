@@ -190,18 +190,18 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">{lead.name}</DialogTitle>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto sm:rounded-[32px] p-0 md:p-8 border-none bg-background/95 backdrop-blur-2xl shadow-2xl">
+        <DialogHeader className="px-6 pt-6 md:p-0">
+          <DialogTitle className="text-3xl font-semibold tracking-tight">{lead.name}</DialogTitle>
         </DialogHeader>
         <span className="sr-only">Detalles del lead y opciones de gestión</span>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-6 p-6 md:p-0">
           {/* Información del Lead */}
           <div className="space-y-6">
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <Mail className="h-5 w-5" />
+            <Card className="p-6 rounded-2xl border-border/50 shadow-sm bg-card/50 backdrop-blur-sm">
+              <h3 className="font-semibold mb-5 flex items-center gap-2 text-lg tracking-tight">
+                <Mail className="h-5 w-5 text-muted-foreground" />
                 Información de Contacto
               </h3>
               
@@ -242,9 +242,9 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
             </Card>
 
             {lead.message && (
-              <Card className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5" />
+              <Card className="p-6 rounded-2xl border-border/50 shadow-sm bg-card/50 backdrop-blur-sm">
+                <h3 className="font-semibold mb-4 flex items-center gap-2 text-lg tracking-tight">
+                  <MessageSquare className="h-5 w-5 text-muted-foreground" />
                   Mensaje Original
                 </h3>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -257,9 +257,9 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
               try {
                 const analysis = JSON.parse(lead.ai_summary);
                 return (
-                  <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30">
-                    <h3 className="font-semibold mb-4 flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-purple-600" />
+                  <Card className="p-6 rounded-2xl border-purple-100 dark:border-purple-900/50 shadow-sm bg-gradient-to-br from-purple-50/80 to-blue-50/80 dark:from-purple-950/20 dark:to-blue-950/20 backdrop-blur-sm">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2 text-lg tracking-tight">
+                      <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                       Análisis de IA
                     </h3>
                     {lead.ai_score && (
@@ -284,9 +284,9 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
                 );
               } catch (e) {
                 return (
-                  <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30">
-                    <h3 className="font-semibold mb-4 flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-purple-600" />
+                  <Card className="p-6 rounded-2xl border-purple-100 dark:border-purple-900/50 shadow-sm bg-gradient-to-br from-purple-50/80 to-blue-50/80 dark:from-purple-950/20 dark:to-blue-950/20 backdrop-blur-sm">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2 text-lg tracking-tight">
+                      <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                       Análisis de IA
                     </h3>
                     {lead.ai_score && (
@@ -303,17 +303,17 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
           </div>
 
           {/* Gestión del Lead */}
-          <div className="space-y-6">
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4">Estado y Prioridad</h3>
+          <div className="space-y-4">
+            <Card className="p-6 rounded-2xl border-border/50 shadow-sm bg-card/50 backdrop-blur-sm">
+              <h3 className="font-semibold mb-5 text-lg tracking-tight">Estado y Prioridad</h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Estado</label>
+                  <label className="text-sm font-medium mb-2 block text-muted-foreground">Estado</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg"
+                    className="w-full px-4 h-12 bg-muted/50 border-transparent focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all cursor-pointer appearance-none"
                   >
                     <option value="new">Nuevo</option>
                     <option value="contacted">Contactado</option>
@@ -324,11 +324,11 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Prioridad</label>
+                  <label className="text-sm font-medium mb-2 block text-muted-foreground">Prioridad</label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg"
+                    className="w-full px-4 h-12 bg-muted/50 border-transparent focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all cursor-pointer appearance-none"
                   >
                     <option value="low">Baja</option>
                     <option value="medium">Media</option>
@@ -337,12 +337,13 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Notas</label>
+                  <label className="text-sm font-medium mb-2 block text-muted-foreground">Notas</label>
                   <Textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Agrega notas sobre este lead..."
                     rows={4}
+                    className="w-full p-4 bg-muted/50 border-transparent focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all resize-none"
                   />
                 </div>
               </div>
@@ -352,7 +353,7 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
               <Button
                 onClick={saveChanges}
                 disabled={isSaving}
-                className="flex-1"
+                className="flex-1 h-12 rounded-xl font-medium text-[15px] shadow-sm transition-all"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {isSaving ? 'Guardando...' : 'Guardar Cambios'}
@@ -363,8 +364,9 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
                   onClick={analyzeWithAI}
                   disabled={isAnalyzing}
                   variant="outline"
+                  className="h-12 rounded-xl border-border/50 bg-background/50 hover:bg-muted font-medium text-[15px] shadow-sm transition-all"
                 >
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4 text-purple-600" />
                   {isAnalyzing ? 'Analizando...' : 'Analizar con IA'}
                 </Button>
               )}
@@ -373,7 +375,7 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
             <Button
               onClick={() => setShowCreateReport(true)}
               variant="outline"
-              className="w-full"
+              className="w-full h-12 rounded-xl border-border/50 bg-background/50 hover:bg-muted font-medium text-[15px] shadow-sm transition-all"
             >
               <FileText className="mr-2 h-4 w-4" />
               Crear Informe de Consultoría
@@ -381,21 +383,23 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
 
             <Button
               onClick={() => setShowScheduleMeeting(true)}
-              variant="outline"
-              className="w-full"
+              variant="secondary"
+              className="w-full h-12 rounded-xl font-medium text-[15px] shadow-sm transition-all"
             >
               <Calendar className="mr-2 h-4 w-4" />
               Agendar Reunión
             </Button>
 
-            <Button
-              onClick={() => setShowDeleteDialog(true)}
-              variant="destructive"
-              className="w-full"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Eliminar Lead
-            </Button>
+            <div className="pt-4 mt-2 border-t border-border/40">
+              <Button
+                onClick={() => setShowDeleteDialog(true)}
+                variant="ghost"
+                className="w-full h-12 rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10 font-medium text-[15px] transition-all"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Eliminar Lead
+              </Button>
+            </div>
 
             {activities.length > 0 && (
               <Card className="p-6">
