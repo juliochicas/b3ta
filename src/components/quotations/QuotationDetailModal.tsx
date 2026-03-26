@@ -152,6 +152,43 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
     }
   };
 
+  const deleteItem = async (itemId: string) => {
+    if (!confirm("¿Eliminar este item de la cotización?")) return;
+    try {
+      const { error } = await supabase
+        .from('quotation_items')
+        .delete()
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      // Recalcular totales en la cotización
+      const remainingItems = items.filter(i => i.id !== itemId);
+      const newSubtotal = remainingItems.reduce((sum, i) => sum + i.total, 0);
+      const discountAmt = (newSubtotal * quotation.discount_percentage) / 100;
+      const taxableBase = newSubtotal - discountAmt;
+      const newTaxAmount = (taxableBase * quotation.tax_rate) / 100;
+      const newTotal = taxableBase + newTaxAmount;
+
+      await supabase
+        .from('quotations')
+        .update({
+          subtotal: newSubtotal,
+          discount_amount: discountAmt,
+          tax_amount: newTaxAmount,
+          total: newTotal,
+        })
+        .eq('id', quotation.id);
+
+      setItems(remainingItems);
+      toast({ title: "Item eliminado", description: "El item ha sido eliminado exitosamente" });
+      onUpdate();
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      toast({ title: "Error", description: "No se pudo eliminar el item", variant: "destructive" });
+    }
+  };
+
   const createStripePaymentLink = async () => {
     setIsCreatingPaymentLink(true);
     try {
@@ -1363,6 +1400,14 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                             className="text-muted-foreground hover:text-primary transition-colors"
                           >
                             <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteItem(item.id)}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
