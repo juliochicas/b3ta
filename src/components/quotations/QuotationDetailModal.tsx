@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -106,6 +107,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const [showInvoice, setShowInvoice] = useState(false);
   const [stripePaymentLink, setStripePaymentLink] = useState(quotation.stripe_payment_link);
   const [editingItem, setEditingItem] = useState<QuotationItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -153,14 +155,16 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   };
 
   const deleteItem = async (itemId: string) => {
-    if (!confirm("¿Eliminar este item de la cotización?")) return;
     try {
       const { error } = await supabase
         .from('quotation_items')
         .delete()
         .eq('id', itemId);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase delete error:", error);
+        throw error;
+      }
 
       // Recalcular totales en la cotización
       const remainingItems = items.filter(i => i.id !== itemId);
@@ -170,7 +174,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       const newTaxAmount = (taxableBase * quotation.tax_rate) / 100;
       const newTotal = taxableBase + newTaxAmount;
 
-      await supabase
+      const { error: updateError } = await supabase
         .from('quotations')
         .update({
           subtotal: newSubtotal,
@@ -180,11 +184,15 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
         })
         .eq('id', quotation.id);
 
+      if (updateError) console.error("Error updating quotation totals:", updateError);
+
       setItems(remainingItems);
+      setItemToDelete(null);
       toast({ title: "Item eliminado", description: "El item ha sido eliminado exitosamente" });
       onUpdate();
     } catch (error) {
       console.error("Error deleting item:", error);
+      setItemToDelete(null);
       toast({ title: "Error", description: "No se pudo eliminar el item", variant: "destructive" });
     }
   };
@@ -1404,7 +1412,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => deleteItem(item.id)}
+                            onClick={() => setItemToDelete(item.id)}
                             className="text-muted-foreground hover:text-destructive transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -1705,6 +1713,26 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
           }}
         />
       )}
+
+      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => { if (!open) setItemToDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar este item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El item será eliminado permanentemente de la cotización y los totales serán recalculados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => itemToDelete && deleteItem(itemToDelete)}
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
