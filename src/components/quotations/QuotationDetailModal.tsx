@@ -573,13 +573,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       doc.text(formatCurrencyForPDF(quotation.total, quotation.currency), totX+10, y+19);
       if (hasExchange) {
         doc.setFontSize(8.5); doc.setFont(undefined!, 'bold'); doc.setTextColor(...cyan);
-        doc.text(`≈ ${formatCurrencyForPDF(quotation.total * rate, targetCurrency)}  (${rate} ${targetCurrency}/${quotation.currency})`, totX+10, y+27);
+        doc.text(`Aprox. ${formatCurrencyForPDF(quotation.total * rate, targetCurrency)}  (${rate} ${targetCurrency}/${quotation.currency})`, totX+10, y+27);
       }
       y += tbH + 18;
 
       // ── SECCIONES INFERIORES ──
       const sec = (title: string, content: string, fs = 8.5) => {
-        if (y > 248) { doc.addPage(); y = 20; }
+        if (y > 225) { doc.addPage(); y = 20; }
         doc.setFillColor(...dark); doc.roundedRect(margin, y, cw, 8, 1, 1, 'F');
         doc.setFillColor(...cyan);  doc.roundedRect(margin, y, 4, 8, 1, 1, 'F');
         doc.setTextColor(...wh); doc.setFontSize(8); doc.setFont(undefined!, 'bold');
@@ -587,7 +587,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
         y += 11;
         doc.setFont(undefined!, 'normal'); doc.setFontSize(fs); doc.setTextColor(50, 60, 75);
         doc.splitTextToSize(content, cw).forEach((line: string) => {
-          if (y > 258) { doc.addPage(); y = 20; }
+          if (y > 265) { doc.addPage(); y = 20; }
           doc.text(line, margin, y); y += fs < 8 ? 4 : 5;
         });
         y += 8;
