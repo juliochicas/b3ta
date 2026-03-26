@@ -426,296 +426,196 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const downloadPDF = async () => {
     setIsDownloadingPDF(true);
     try {
-      // Generación 100% en el navegador con jsPDF (sin llamar funciones backend)
       const { jsPDF } = await import('jspdf');
-
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 20;
-      const contentWidth = pageWidth - margin * 2;
-      let yPos = 0;
+      const margin = 18;
+      const cw = pageWidth - margin * 2;
+      let y = 0;
 
-      const brandBlue: [number, number, number] = [43, 79, 224];
-      const brandCyan: [number, number, number] = [0, 201, 167];
-      const brandDark: [number, number, number] = [26, 31, 46];
+      const dark:  [number,number,number] = [15, 23, 42];
+      const blue:  [number,number,number] = [43, 79, 224];
+      const cyan:  [number,number,number] = [0, 201, 167];
+      const light: [number,number,number] = [248, 250, 252];
+      const muted: [number,number,number] = [100, 116, 139];
+      const wh:    [number,number,number] = [255, 255, 255];
 
-      // ── BRANDED HEADER ──
-      doc.setFillColor(...brandDark);
-      doc.rect(0, 0, pageWidth, 48, 'F');
-      doc.setFillColor(...brandCyan);
-      doc.rect(0, 48, pageWidth, 2, 'F');
+      // ── HEADER split: left dark / right blue ──
+      const hH = 60;
+      doc.setFillColor(...dark);  doc.rect(0, 0, pageWidth * 0.55, hH, 'F');
+      doc.setFillColor(...blue);  doc.rect(pageWidth * 0.55, 0, pageWidth * 0.45, hH, 'F');
+      doc.setFillColor(...cyan);  doc.rect(0, hH, pageWidth, 2.5, 'F');
 
-      // Logo
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(24);
-      doc.setFont(undefined!, 'bold');
-      doc.text('B3TA', margin, 18);
-      doc.setFontSize(8);
-      doc.setFont(undefined!, 'normal');
-      doc.setTextColor(180, 200, 220);
-      doc.text('Tecnologia que escala contigo', margin, 24);
+      // Logo izquierda
+      doc.setTextColor(...wh); doc.setFontSize(30); doc.setFont(undefined!, 'bold');
+      doc.text('B3TA', margin, 23);
+      doc.setFontSize(8); doc.setFont(undefined!, 'normal'); doc.setTextColor(180, 210, 240);
+      doc.text('Tecnología que escala contigo', margin, 31);
+      doc.text('consulting@b3ta.us  |  b3ta.us', margin, 38);
+      doc.text('+1 435 534 8065', margin, 44);
 
-      // Quotation number
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(18);
-      doc.setFont(undefined!, 'bold');
-      doc.text(`Cotizacion ${quotation.quotation_number}`, margin, 35);
-      doc.setFontSize(9);
-      doc.setFont(undefined!, 'normal');
-      doc.setTextColor(180, 200, 220);
+      // Número derecha
+      const rx = pageWidth * 0.57;
+      doc.setTextColor(200, 225, 255); doc.setFontSize(8); doc.setFont(undefined!, 'normal');
+      doc.text('COTIZACIÓN', rx, 14);
+      doc.setTextColor(...wh); doc.setFontSize(19); doc.setFont(undefined!, 'bold');
+      doc.text(quotation.quotation_number, rx, 28);
+      doc.setFontSize(8.5); doc.setFont(undefined!, 'normal'); doc.setTextColor(200, 225, 255);
+      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'dd/MM/yyyy', { locale: es })}`, rx, 40);
       doc.text(
-        `Valida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), 'PPP', { locale: es }) : 'No especificado'}`,
-        margin, 41
+        `Válida hasta: ${quotation.valid_until ? format(new Date(quotation.valid_until), 'dd/MM/yyyy', { locale: es }) : 'Sin vencimiento'}`,
+        rx, 49
       );
-      doc.text(`Fecha: ${format(new Date(quotation.created_at), 'PPP', { locale: es })}`, pageWidth - margin, 41, { align: 'right' });
 
-      yPos = 60;
+      y = hH + 14;
 
-      // Client info
-      doc.setTextColor(...brandBlue);
-      doc.setFontSize(12);
-      doc.setFont(undefined!, 'bold');
-      doc.text('CLIENTE', margin, yPos);
-      yPos += 7;
-      doc.setFontSize(10);
-      doc.setFont(undefined!, 'normal');
-      doc.setTextColor(...brandDark);
-      doc.text(quotation.customers.name, margin, yPos);
-      yPos += 5;
+      // ── CARD CLIENTE ──
+      const ccH = quotation.customers.company ? 36 : 30;
+      doc.setFillColor(...light); doc.roundedRect(margin, y, cw, ccH, 2, 2, 'F');
+      doc.setDrawColor(...blue); doc.setLineWidth(0.8); doc.roundedRect(margin, y, cw, ccH, 2, 2, 'D');
+      doc.setFillColor(...blue); doc.roundedRect(margin, y, 4, ccH, 1, 1, 'F');
+      doc.setTextColor(...blue); doc.setFontSize(7.5); doc.setFont(undefined!, 'bold');
+      doc.text('CLIENTE', margin + 9, y + 7);
+      doc.setTextColor(...dark); doc.setFontSize(11); doc.setFont(undefined!, 'bold');
+      doc.text(quotation.customers.name, margin + 9, y + 16);
+      let cy2 = y + 23;
       if (quotation.customers.company) {
-        doc.text(quotation.customers.company, margin, yPos);
-        yPos += 5;
+        doc.setFontSize(9); doc.setFont(undefined!, 'normal'); doc.setTextColor(...muted);
+        doc.text(quotation.customers.company, margin + 9, cy2); cy2 += 6;
       }
-      doc.setTextColor(100, 100, 100);
-      doc.text(quotation.customers.email, margin, yPos);
-      yPos += 5;
+      doc.setFontSize(8.5); doc.setFont(undefined!, 'normal'); doc.setTextColor(...muted);
+      doc.text(quotation.customers.email, margin + 9, cy2);
       if (quotation.tracking_number) {
-        doc.setFont(undefined!, 'bold');
-        doc.setTextColor(...brandDark);
-        doc.text('Tracking: ', margin, yPos);
-        doc.setFont(undefined!, 'normal');
-        doc.text(quotation.tracking_number, margin + 20, yPos);
-        yPos += 5;
+        doc.setFont(undefined!, 'bold'); doc.setTextColor(...blue);
+        doc.text(`Ref: ${quotation.tracking_number}`, margin + cw - 4, y + 16, { align: 'right' });
       }
-      yPos += 8;
+      y += ccH + 14;
 
-      // Items title with accent bar
-      doc.setFillColor(...brandBlue);
-      doc.rect(margin, yPos - 3, 3, 8, 'F');
-      doc.setFontSize(12);
-      doc.setFont(undefined!, 'bold');
-      doc.setTextColor(...brandDark);
-      doc.text('DETALLE DE PRODUCTOS/SERVICIOS', margin + 6, yPos + 2);
-      yPos += 12;
+      // ── CABECERA TABLA ──
+      doc.setFillColor(...dark); doc.rect(margin, y, cw, 9, 'F');
+      doc.setFillColor(...cyan);  doc.rect(margin, y, 4, 9, 'F');
+      doc.setTextColor(...wh); doc.setFontSize(8.5); doc.setFont(undefined!, 'bold');
+      doc.text('DETALLE DE PRODUCTOS / SERVICIOS', margin + 9, y + 6.2);
+      y += 9;
 
-      // Table header
-      doc.setFillColor(235, 240, 255);
-      doc.rect(margin, yPos - 5, contentWidth, 8, 'F');
-      doc.setFontSize(9);
-      doc.setFont(undefined!, 'bold');
-      doc.setTextColor(...brandDark);
-      doc.text('Producto/Servicio', margin + 2, yPos);
-      doc.text('Cant.', margin + contentWidth * 0.55, yPos);
-      doc.text('P. Unit.', margin + contentWidth * 0.68, yPos);
-      doc.text('Desc.', margin + contentWidth * 0.8, yPos);
-      doc.text('Total', margin + contentWidth * 0.9, yPos);
-      yPos += 8;
+      const col = { name: margin + 2, qty: margin + cw*0.56, unit: margin + cw*0.67, disc: margin + cw*0.80, tot: margin + cw + 2 };
+      const rowH = 7.5;
+      doc.setFillColor(220, 229, 255); doc.rect(margin, y, cw, rowH, 'F');
+      doc.setDrawColor(170, 185, 220); doc.setLineWidth(0.3); doc.rect(margin, y, cw, rowH, 'D');
+      doc.setTextColor(...blue); doc.setFontSize(8); doc.setFont(undefined!, 'bold');
+      doc.text('Producto / Servicio', col.name+1, y+5);
+      doc.text('Cant.', col.qty, y+5);
+      doc.text('P. Unit.', col.unit, y+5);
+      doc.text('Desc.', col.disc, y+5);
+      doc.text('Total', col.tot, y+5, { align: 'right' });
+      y += rowH;
 
-      // Rows
-      doc.setFont(undefined!, 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(60, 60, 60);
-      items.forEach((item) => {
-        if (yPos > 255) { doc.addPage(); yPos = 20; }
-        doc.text(item.item_name.substring(0, 35), margin + 2, yPos);
-        doc.text(String(item.quantity), margin + contentWidth * 0.55, yPos);
-        doc.text(`${formatCurrencyForPDF(item.unit_price, quotation.currency)}`, margin + contentWidth * 0.68, yPos);
-        doc.text(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '-', margin + contentWidth * 0.8, yPos);
-        doc.text(`${formatCurrencyForPDF(item.total, quotation.currency)}`, margin + contentWidth * 0.9, yPos);
-        yPos += 6;
-
-        if (item.description) {
-          doc.setFontSize(8);
-          doc.setTextColor(100, 100, 100);
-          const descLines = doc.splitTextToSize(item.description, contentWidth * 0.55);
-          descLines.forEach((line: string) => {
-            if (yPos > 255) { doc.addPage(); yPos = 20; }
-            doc.text(line, margin + 4, yPos);
-            yPos += 4;
-          });
-          doc.setFontSize(9);
-          doc.setTextColor(60, 60, 60);
+      doc.setLineWidth(0.2);
+      items.forEach((item, idx) => {
+        const descLines = item.description ? doc.splitTextToSize(item.description, cw * 0.52) : [];
+        const extraH = descLines.length > 1 ? (descLines.length - 1) * 4 : 0;
+        const thisH = rowH + extraH;
+        if (y + thisH > 265) { doc.addPage(); y = 20; }
+        const bg: [number,number,number] = idx % 2 === 0 ? [255,255,255] : [241,245,249];
+        doc.setFillColor(...bg); doc.rect(margin, y, cw, thisH, 'F');
+        doc.setDrawColor(210, 218, 230); doc.rect(margin, y, cw, thisH, 'D');
+        doc.setTextColor(...dark); doc.setFontSize(8.5); doc.setFont(undefined!, 'bold');
+        doc.text(item.item_name.substring(0, 40), col.name+1, y+5.5);
+        if (item.description && descLines.length > 0) {
+          doc.setFontSize(7.5); doc.setFont(undefined!, 'normal'); doc.setTextColor(...muted);
+          descLines.forEach((line: string, li: number) => { doc.text(line, col.name+2, y+10+li*4); });
         }
-        yPos += 2;
+        doc.setFont(undefined!, 'normal'); doc.setFontSize(8.5); doc.setTextColor(...dark);
+        doc.text(String(item.quantity), col.qty, y+5.5);
+        doc.text(formatCurrencyForPDF(item.unit_price, quotation.currency), col.unit, y+5.5);
+        doc.text(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '—', col.disc, y+5.5);
+        doc.setFont(undefined!, 'bold');
+        doc.text(formatCurrencyForPDF(item.total, quotation.currency), col.tot, y+5.5, { align: 'right' });
+        y += thisH;
       });
+      y += 12;
 
-      // Totals
-      yPos += 8;
-      const totalsX = margin + contentWidth * 0.5;
-      doc.setFontSize(10);
-      doc.setTextColor(60, 60, 60);
-      doc.text('Subtotal:', totalsX + 5, yPos);
-      doc.text(`${formatCurrencyForPDF(quotation.subtotal, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
-      yPos += 6;
+      // ── TOTALES ──
+      const totW = cw * 0.46;
+      const totX = margin + cw - totW;
+      doc.setDrawColor(...blue); doc.setLineWidth(0.5); doc.line(totX, y-4, margin+cw, y-4);
 
+      const tRow = (label: string, value: string, red = false) => {
+        doc.setTextColor(red ? 220 : muted[0], red ? 38 : muted[1], red ? 38 : muted[2]);
+        doc.setFont(undefined!, 'normal'); doc.setFontSize(9);
+        doc.text(label, totX, y);
+        doc.setTextColor(...dark); doc.setFont(undefined!, 'bold');
+        doc.text(value, margin+cw, y, { align: 'right' });
+        y += 7;
+      };
+
+      tRow('Subtotal:', formatCurrencyForPDF(quotation.subtotal, quotation.currency));
       if (quotation.discount_percentage > 0) {
-        doc.setTextColor(220, 38, 38);
-        doc.text(`Descuento (${quotation.discount_percentage}%):`, totalsX + 5, yPos);
-        doc.text(`-${formatCurrencyForPDF(quotation.discount_amount, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
-        yPos += 6;
-        doc.setTextColor(60, 60, 60);
-        doc.text('Subtotal con Descuento:', totalsX + 5, yPos);
-        doc.text(`${formatCurrencyForPDF(quotation.subtotal - quotation.discount_amount, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
-        yPos += 6;
+        tRow(`Descuento (${quotation.discount_percentage}%):`, `- ${formatCurrencyForPDF(quotation.discount_amount, quotation.currency)}`, true);
+        tRow('Subtotal con descuento:', formatCurrencyForPDF(quotation.subtotal - quotation.discount_amount, quotation.currency));
       }
+      tRow(`IVA (${quotation.tax_rate}%):`, formatCurrencyForPDF(quotation.tax_amount, quotation.currency));
+      y += 4;
 
-      doc.setTextColor(100, 100, 100);
-      doc.text(`IVA (${quotation.tax_rate}%):`, totalsX + 5, yPos);
-      doc.text(`${formatCurrencyForPDF(quotation.tax_amount, quotation.currency)}`, margin + contentWidth * 0.92, yPos, { align: 'right' });
-      yPos += 8;
-
-      // Total box
-      const exTag = quotation.tags?.find((tag: string) => tag.startsWith("exchange:"));
-      let rate = 0;
-      let targetCurrency = "";
-      if (exTag) {
-        const [, r, c] = exTag.split(":");
-        rate = parseFloat(r);
-        if (!isNaN(rate) && rate > 0 && c) {
-          targetCurrency = c;
-        }
-      }
-
-      const hasExchange = rate > 0 && targetCurrency !== "";
-      const boxHeight = hasExchange ? 24 : 16;
-
-      doc.setFillColor(...brandDark);
-      doc.roundedRect(totalsX, yPos - 5, contentWidth * 0.5, boxHeight, 2, 2, 'F');
-      doc.setFillColor(...brandCyan);
-      doc.rect(totalsX, yPos - 5, 3, boxHeight, 'F');
-      
-      doc.setTextColor(180, 200, 220);
-      doc.setFontSize(10);
-      doc.setFont(undefined!, 'normal');
-      doc.text('Total:', totalsX + 8, yPos + 2);
-      
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(16);
-      doc.setFont(undefined!, 'bold');
-      doc.text(`${formatCurrencyForPDF(quotation.total, quotation.currency)}`, totalsX + 8, yPos + 9);
-
+      // ── CAJA TOTAL GRANDE ──
+      const exTag = quotation.tags?.find((tag: string) => tag.startsWith('exchange:'));
+      let rate = 0; let targetCurrency = '';
+      if (exTag) { const [, r, c] = exTag.split(':'); rate = parseFloat(r); if (!isNaN(rate) && rate > 0 && c) targetCurrency = c; }
+      const hasExchange = rate > 0 && targetCurrency !== '';
+      const tbH = hasExchange ? 32 : 24;
+      doc.setFillColor(150, 165, 205); doc.roundedRect(totX+1.5, y+1.5, totW, tbH, 3, 3, 'F');
+      doc.setFillColor(...dark);       doc.roundedRect(totX, y, totW, tbH, 3, 3, 'F');
+      doc.setFillColor(...cyan);       doc.roundedRect(totX, y, 5, tbH, 1, 1, 'F');
+      doc.setTextColor(180, 210, 240); doc.setFontSize(8); doc.setFont(undefined!, 'normal');
+      doc.text('TOTAL A PAGAR', totX+10, y+8);
+      doc.setTextColor(...wh); doc.setFontSize(19); doc.setFont(undefined!, 'bold');
+      doc.text(formatCurrencyForPDF(quotation.total, quotation.currency), totX+10, y+19);
       if (hasExchange) {
-        doc.setFontSize(9);
-        doc.setTextColor(...brandCyan);
-        doc.setFont(undefined!, 'bold');
-        doc.text(`Equivalente: ${formatCurrencyForPDF(quotation.total * rate, targetCurrency)} (${rate} ${targetCurrency}/${quotation.currency})`, totalsX + 8, yPos + 16);
+        doc.setFontSize(8.5); doc.setFont(undefined!, 'bold'); doc.setTextColor(...cyan);
+        doc.text(`≈ ${formatCurrencyForPDF(quotation.total * rate, targetCurrency)}  (${rate} ${targetCurrency}/${quotation.currency})`, totX+10, y+27);
       }
-      
-      yPos += 24;
+      y += tbH + 18;
 
-      // Notes & Terms
-      if (quotation.notes || quotation.terms_conditions) {
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10);
-        doc.setFont(undefined!, 'normal');
+      // ── SECCIONES INFERIORES ──
+      const sec = (title: string, content: string, fs = 8.5) => {
+        if (y > 248) { doc.addPage(); y = 20; }
+        doc.setFillColor(...dark); doc.roundedRect(margin, y, cw, 8, 1, 1, 'F');
+        doc.setFillColor(...cyan);  doc.roundedRect(margin, y, 4, 8, 1, 1, 'F');
+        doc.setTextColor(...wh); doc.setFontSize(8); doc.setFont(undefined!, 'bold');
+        doc.text(title, margin+9, y+5.5);
+        y += 11;
+        doc.setFont(undefined!, 'normal'); doc.setFontSize(fs); doc.setTextColor(50, 60, 75);
+        doc.splitTextToSize(content, cw).forEach((line: string) => {
+          if (y > 258) { doc.addPage(); y = 20; }
+          doc.text(line, margin, y); y += fs < 8 ? 4 : 5;
+        });
+        y += 8;
+      };
 
-        if (quotation.notes) {
-          if (yPos > 240) { doc.addPage(); yPos = 20; }
-          doc.setFillColor(...brandBlue);
-          doc.rect(margin, yPos - 3, 3, 8, 'F');
-          doc.setFont(undefined!, 'bold');
-          doc.setTextColor(...brandDark);
-          doc.text('NOTAS', margin + 6, yPos + 2);
-          yPos += 10;
-          doc.setFont(undefined!, 'normal');
-          doc.setFontSize(9);
-          doc.setTextColor(60, 60, 60);
-          const notesLines = doc.splitTextToSize(quotation.notes, contentWidth);
-          notesLines.forEach((line: string) => {
-            if (yPos > 255) { doc.addPage(); yPos = 20; }
-            doc.text(line, margin, yPos);
-            yPos += 5;
-          });
-          yPos += 5;
-        }
+      if (quotation.notes) sec('NOTAS', quotation.notes);
+      if (quotation.terms_conditions) sec('TÉRMINOS Y CONDICIONES', quotation.terms_conditions, 7.5);
+      const bankTag = quotation.tags?.find((tag: string) => tag.startsWith('bank:'));
+      if (bankTag) { const b = decodeURIComponent(bankTag.substring(5)); if (b.trim()) sec('DATOS DE DEPÓSITO / CUENTAS BANCARIAS', b); }
 
-        if (quotation.terms_conditions) {
-          if (yPos > 240) { doc.addPage(); yPos = 20; }
-          doc.setFillColor(...brandBlue);
-          doc.rect(margin, yPos - 3, 3, 8, 'F');
-          doc.setFont(undefined!, 'bold');
-          doc.setTextColor(...brandDark);
-          doc.text('TERMINOS Y CONDICIONES', margin + 6, yPos + 2);
-          yPos += 10;
-          doc.setFont(undefined!, 'normal');
-          doc.setFontSize(8);
-          doc.setTextColor(100, 100, 100);
-          const termsLines = doc.splitTextToSize(quotation.terms_conditions, contentWidth);
-          termsLines.forEach((line: string) => {
-            if (yPos > 255) { doc.addPage(); yPos = 20; }
-            doc.text(line, margin, yPos);
-            yPos += 4;
-          });
-        }
-      }
-
-      const bankTag = quotation.tags?.find((tag: string) => tag.startsWith("bank:"));
-      if (bankTag) {
-        const banks = decodeURIComponent(bankTag.substring(5));
-        if (banks.trim()) {
-          yPos += 8;
-          if (yPos > 240) { doc.addPage(); yPos = 20; }
-          doc.setFillColor(...brandBlue);
-          doc.rect(margin, yPos - 3, 3, 8, 'F');
-          doc.setFont(undefined!, 'bold');
-          doc.setTextColor(...brandDark);
-          doc.text('DATOS DE DEPOSITO / CUENTAS BANCARIAS', margin + 6, yPos + 2);
-          yPos += 10;
-          doc.setFont(undefined!, 'normal');
-          doc.setFontSize(9);
-          doc.setTextColor(40, 40, 40);
-          const bankLines = doc.splitTextToSize(banks, contentWidth);
-          bankLines.forEach((line: string) => {
-            if (yPos > 255) { doc.addPage(); yPos = 20; }
-            doc.text(line, margin, yPos);
-            yPos += 5;
-          });
-        }
-      }
-
-      // ── BRANDED FOOTER on all pages ──
-      const pageCount = doc.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
+      // ── FOOTER ──
+      const pc = doc.getNumberOfPages();
+      for (let i = 1; i <= pc; i++) {
         doc.setPage(i);
-        doc.setFillColor(...brandDark);
-        doc.rect(0, pageHeight - 18, pageWidth, 18, 'F');
-        doc.setFillColor(...brandCyan);
-        doc.rect(0, pageHeight - 18, pageWidth, 1.5, 'F');
-        doc.setTextColor(180, 200, 220);
-        doc.setFontSize(7);
-        doc.setFont(undefined!, 'normal');
-        doc.text('consulting@b3ta.us | b3ta.us | +1 435 534 8065', margin, pageHeight - 9);
-        doc.text(`Pagina ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 9, { align: 'right' });
-        doc.setFontSize(6);
-        doc.setTextColor(120, 140, 160);
-        doc.text('Consultoria en infraestructura, automatizacion y soluciones digitales', margin, pageHeight - 5);
+        doc.setFillColor(...dark); doc.rect(0, pageHeight-16, pageWidth, 16, 'F');
+        doc.setFillColor(...cyan);  doc.rect(0, pageHeight-16, pageWidth, 1.5, 'F');
+        doc.setTextColor(160, 190, 220); doc.setFontSize(7); doc.setFont(undefined!, 'normal');
+        doc.text('consulting@b3ta.us  |  b3ta.us  |  +1 435 534 8065', margin, pageHeight-7);
+        doc.text(`Página ${i} de ${pc}`, pageWidth-margin, pageHeight-7, { align: 'right' });
+        doc.setFontSize(6); doc.setTextColor(100, 130, 160);
+        doc.text('Consultoría en infraestructura, automatización y soluciones digitales', margin, pageHeight-3);
       }
 
       doc.save(`Cotizacion-${quotation.quotation_number}.pdf`);
-
-      toast({
-        title: 'PDF descargado',
-        description: 'La cotización se ha descargado exitosamente',
-      });
+      toast({ title: 'PDF descargado', description: 'La cotización se ha descargado exitosamente' });
     } catch (error) {
       console.error('Error downloading PDF:', error);
-      toast({
-        title: 'Error',
-        description:
-          'No se pudo descargar el PDF. Asegúrate de no tener bloqueadores y vuelve a intentar.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: 'No se pudo descargar el PDF.', variant: 'destructive' });
     } finally {
       setIsDownloadingPDF(false);
     }
