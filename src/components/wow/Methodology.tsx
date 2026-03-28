@@ -1,95 +1,150 @@
 import { motion } from "framer-motion";
 import { Search, PenTool, Rocket, RefreshCw } from "lucide-react";
 
-export const Methodology = () => {
-  const steps = [
-    {
-      num: "1",
-      title: "DIAGNÓSTICO (Gratis)",
-      desc: "Descubre tus cuellos de botella.",
-      icon: Search,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10"
-    },
-    {
-      num: "2",
-      title: "DISEÑO",
-      desc: "Arquitectamos tu solución ideal.",
-      icon: PenTool,
-      color: "text-purple-500",
-      bg: "bg-purple-500/10"
-    },
-    {
-      num: "3",
-      title: "IMPLEMENTACIÓN",
-      desc: "Construimos software que trabaja por ti.",
-      icon: Rocket,
-      color: "text-secondary",
-      bg: "bg-secondary/10"
-    },
-    {
-      num: "4",
-      title: "OPTIMIZACIÓN",
-      desc: "Escalamos tus resultados con IA.",
-      icon: RefreshCw,
-      color: "text-accent",
-      bg: "bg-accent/10"
-    }
-  ];
+const steps = [
+  {
+    num: "01",
+    title: "DIAGNÓSTICO",
+    badge: "Gratis",
+    desc: "Mapeamos tus cuellos de botella operativos. Auditamos tus sistemas actuales e identificamos exactamente dónde pierdes tiempo y dinero.",
+    icon: Search,
+    gradient: "from-blue-500/20 to-blue-500/5",
+    border: "border-blue-500/30 hover:border-blue-500/60",
+    iconColor: "text-blue-400",
+    iconBg: "bg-blue-500/10",
+    ringColor: "ring-blue-500/30",
+  },
+  {
+    num: "02",
+    title: "DISEÑO",
+    badge: null,
+    desc: "Arquitectamos tu solución ideal. Diseñamos los flujos de automatización, integraciones y la arquitectura técnica que conectará todos tus sistemas.",
+    icon: PenTool,
+    gradient: "from-purple-500/20 to-purple-500/5",
+    border: "border-purple-500/30 hover:border-purple-500/60",
+    iconColor: "text-purple-400",
+    iconBg: "bg-purple-500/10",
+    ringColor: "ring-purple-500/30",
+  },
+  {
+    num: "03",
+    title: "IMPLEMENTACIÓN",
+    badge: null,
+    desc: "Construimos software que trabaja por ti. Integramos SAP, Shopify, IA y todos tus canales. Pruebas reales, no demos de laboratorio.",
+    icon: Rocket,
+    gradient: "from-cyan-500/20 to-cyan-500/5",
+    border: "border-cyan-500/30 hover:border-cyan-500/60",
+    iconColor: "text-cyan-400",
+    iconBg: "bg-cyan-500/10",
+    ringColor: "ring-cyan-500/30",
+  },
+  {
+    num: "04",
+    title: "OPTIMIZACIÓN",
+    badge: "Continuo",
+    desc: "Escalamos tus resultados con IA. Monitoreamos métricas, ajustamos automatizaciones y añadimos inteligencia conforme crece tu operación.",
+    icon: RefreshCw,
+    gradient: "from-accent/20 to-accent/5",
+    border: "border-accent/30 hover:border-accent/60",
+    iconColor: "text-accent",
+    iconBg: "bg-accent/10",
+    ringColor: "ring-accent/30",
+  },
+];
 
+export const Methodology = () => {
   return (
-    <section id="proceso" className="py-32 bg-card relative">
-      <div className="container mx-auto px-4 max-w-5xl">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-black mb-6">
+    <section id="proceso" className="py-32 bg-card relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
+
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-20"
+        >
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-primary/10 text-primary mb-5 ring-1 ring-primary/20 uppercase">
+            Proceso Probado
+          </span>
+          <h2 className="text-4xl md:text-5xl font-black mb-4">
             Nuestra Metodología
           </h2>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl text-muted-foreground max-w-xl mx-auto">
             No improvisamos. Aplicamos ingeniería operativa pura.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-12 relative">
-          {/* Vertical Line Connector (hidden on mobile) */}
-          <div className="hidden md:block absolute left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-primary/50 via-secondary/50 to-accent/50 -translate-x-1/2" />
-          
-          {steps.map((step, index) => (
-            <div key={index} className={`flex flex-col md:flex-row items-center gap-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
-              
-              <motion.div 
-                className="flex-1 w-full"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5 }}
+        {/* Desktop: Horizontal Stepper */}
+        <div className="hidden md:block">
+          {/* Progress line */}
+          <div className="relative flex items-start justify-between gap-0 mb-0">
+            {/* Connecting line */}
+            <div className="absolute top-8 left-[calc(12.5%)] right-[calc(12.5%)] h-px bg-gradient-to-r from-blue-500/30 via-purple-500/30 via-cyan-500/30 to-accent/30" />
+
+            {steps.map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.5, delay: i * 0.12 }}
+                className="flex-1 flex flex-col items-center text-center px-4"
               >
-                <div className={`p-8 rounded-3xl bg-background border border-border/50 hover:border-primary/50 transition-colors shadow-lg relative group overflow-hidden ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                  
-                  {/* Subtle Background Icon */}
-                  <step.icon className={`absolute opacity-5 h-48 w-48 ${index % 2 === 0 ? '-left-10' : '-right-10'} top-1/2 -translate-y-1/2 ${step.color} transition-transform group-hover:scale-110`} />
-                  
-                  <div className="relative z-10">
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-widest bg-muted text-muted-foreground mb-4">
-                      FASE {step.num}
-                    </span>
-                    <h3 className="text-2xl font-bold mb-4">{step.title}</h3>
-                    <p className="text-lg text-muted-foreground leading-relaxed">
-                      {step.desc}
-                    </p>
+                {/* Circle with number */}
+                <div className={`relative z-10 w-16 h-16 rounded-full bg-background border-2 ${step.border} flex items-center justify-center mb-6 shadow-lg transition-all duration-300 ring-4 ${step.ringColor} group-hover:scale-110`}>
+                  <step.icon className={`w-7 h-7 ${step.iconColor}`} />
+                </div>
+
+                {/* Card */}
+                <div className={`w-full p-6 rounded-3xl bg-gradient-to-b ${step.gradient} border ${step.border} transition-colors duration-300 text-left relative group`}>
+                  <div className="flex items-start justify-between mb-3">
+                    <span className="text-3xl font-black text-foreground/10 leading-none">{step.num}</span>
+                    {step.badge && (
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${step.iconBg} ${step.iconColor} ring-1 ${step.ringColor} whitespace-nowrap`}>
+                        {step.badge}
+                      </span>
+                    )}
                   </div>
+                  <h3 className="text-lg font-black mb-3 tracking-tight">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
                 </div>
               </motion.div>
+            ))}
+          </div>
+        </div>
 
-              {/* Center Dot */}
-              <div className="hidden md:flex flex-shrink-0 w-16 h-16 rounded-full bg-background border-4 border-card items-center justify-center relative z-10 shadow-neon">
-                <div className={`w-10 h-10 rounded-full ${step.bg} flex items-center justify-center`}>
-                  <step.icon className={`w-5 h-5 ${step.color}`} />
+        {/* Mobile: Vertical list */}
+        <div className="md:hidden space-y-6">
+          {steps.map((step, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className={`p-6 rounded-3xl bg-gradient-to-br ${step.gradient} border ${step.border} relative`}
+            >
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-2xl ${step.iconBg} flex items-center justify-center flex-shrink-0`}>
+                  <step.icon className={`w-6 h-6 ${step.iconColor}`} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-bold text-muted-foreground tracking-widest">FASE {step.num}</span>
+                    {step.badge && (
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.iconBg} ${step.iconColor}`}>
+                        {step.badge}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
                 </div>
               </div>
-
-              {/* Spacer matching */}
-              <div className="hidden md:block flex-1" />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

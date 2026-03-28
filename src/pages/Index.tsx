@@ -2,8 +2,10 @@ import { MainHeader } from "@/components/MainHeader";
 import { HeroB3ta } from "@/components/wow/HeroB3ta";
 import { TechLogos } from "@/components/wow/TechLogos";
 import { ProblemSolution } from "@/components/wow/ProblemSolution";
+import { AutomationHub } from "@/components/wow/AutomationHub";
 import { TechStack } from "@/components/wow/TechStack";
 import { Methodology } from "@/components/wow/Methodology";
+import { StatsSection } from "@/components/wow/StatsSection";
 import { CaseStudiesCarousel } from "@/components/wow/CaseStudiesCarousel";
 import { PricingSection } from "@/components/wow/PricingSection";
 import { FinalCTA } from "@/components/wow/FinalCTA";
@@ -19,8 +21,10 @@ const Index = () => {
         <HeroB3ta />
         <TechLogos />
         <ProblemSolution />
+        <AutomationHub />
         <TechStack />
         <Methodology />
+        <StatsSection />
         <CaseStudiesCarousel />
         <PricingSection />
         <FinalCTA />

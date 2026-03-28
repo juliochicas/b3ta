@@ -57,6 +57,7 @@ export const FinalCTA = () => {
     <section id="contact" className="py-32 bg-background relative overflow-hidden">
       {/* Dynamic Background Patterns */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,hsl(var(--primary)/0.1),transparent_60%)]" />
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10 text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl glass-dark mb-8 border border-primary/20 shadow-2xl">
@@ -67,11 +68,25 @@ export const FinalCTA = () => {
           ¡Acelera tu operación hoy!
         </h2>
         
-        <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-12 max-w-3xl mx-auto">
+        <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-4 max-w-3xl mx-auto">
           ¿Tienes procesos atascados o quieres lanzar un nuevo MVP? Diseñamos la solución que te faltaba.
         </p>
 
-        <form onSubmit={handleSubmit} className="glass p-6 md:p-10 rounded-3xl border border-border/50 shadow- elegant mx-auto max-w-4xl relative overflow-hidden">
+        {/* Trust bar */}
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
+          {[
+            { dot: "bg-accent", text: "Respuesta en menos de 24h" },
+            { dot: "bg-primary", text: "Sin contratos de permanencia" },
+            { dot: "bg-secondary", text: "Diagnóstico 100% gratuito" },
+          ].map((item, i) => (
+            <span key={i} className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+              <span className={`w-2 h-2 rounded-full ${item.dot}`} />
+              {item.text}
+            </span>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit} className="glass p-6 md:p-10 rounded-3xl border border-border/50 shadow-elegant mx-auto max-w-4xl relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0 pointer-events-none" />
           <div className="space-y-6 text-left relative z-10">
             <label className="block text-foreground font-bold text-lg md:text-xl">
@@ -108,7 +123,7 @@ export const FinalCTA = () => {
               <Button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full sm:w-auto h-16 px-10 bg-primary hover:bg-primary-glow text-primary-foreground font-black text-lg rounded-2xl shadow-glow transition-all hover:scale-105"
+                className="w-full sm:w-auto h-16 px-10 bg-primary hover:bg-primary-glow text-primary-foreground font-black text-lg rounded-2xl cta-glow transition-all hover:scale-105 cursor-pointer"
               >
                 {isLoading ? "PROCESANDO..." : "ENVIAR SOLICITUD"}
                 <ArrowRight className="ml-2 w-6 h-6" />

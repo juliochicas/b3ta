@@ -215,8 +215,18 @@ All colors MUST be HSL.
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight;
+  h1 {
+    /* Inter supports font-black (900) — used for maximum-impact heroes */
+    @apply font-heading tracking-tighter leading-[1.05];
+  }
+
+  h2, h3 {
+    /* Space Grotesk max weight 700 — used for section headings */
+    @apply font-display font-bold tracking-tight;
+  }
+
+  h4, h5, h6 {
+    @apply font-display font-semibold tracking-tight;
   }
 }
 
@@ -257,6 +267,43 @@ All colors MUST be HSL.
   .mesh-gradient {
     background-image: var(--gradient-mesh);
   }
+
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
+
+  .animate-pulse-ring {
+    animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-count-up {
+    animation: count-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .cta-glow {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0), 0 0 20px hsl(var(--primary) / 0.35), 0 0 60px hsl(var(--primary) / 0.15);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .cta-glow:hover {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0), 0 0 32px hsl(var(--primary) / 0.5), 0 0 80px hsl(var(--primary) / 0.25);
+  }
+
+  .hub-line {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hub-line::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.8);
+    animation: travel-dot 2s ease-in-out infinite;
+  }
 }
 
 @keyframes float {
@@ -277,6 +324,69 @@ All colors MUST be HSL.
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.7;
+  }
+}
+
+@keyframes travel-dot {
+  0% {
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+  }
+}
+
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dot-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

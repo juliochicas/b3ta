@@ -14,8 +14,14 @@ export default {
     },
     extend: {
       fontFamily: {
+        // Body text — clear, readable at small sizes
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        // Section headings, badges, labels — Space Grotesk (max weight 700)
+        display: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
+        // Hero headlines — Inter supports 900 (font-black) for max visual impact
+        heading: ['Inter', 'system-ui', 'sans-serif'],
+        // Code / technical labels
+        mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
