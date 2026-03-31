@@ -93,7 +93,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const [isEditingTracking, setIsEditingTracking] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState(quotation.tracking_number || "");
   const [isEditingTags, setIsEditingTags] = useState(false);
-  const [tags, setTags] = useState((quotation.tags || []).join(", "));
+  const displayTags = (quotation.tags || []).filter(t => !t.startsWith('bank:') && !t.startsWith('exchange:'));
+  const [tags, setTags] = useState(displayTags.join(", "));
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(quotation.notes || "");
   const [isEditingTerms, setIsEditingTerms] = useState(false);
@@ -257,13 +258,15 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
 
   const updateTags = async () => {
     try {
-      const tagsArray = tags
+      const userTags = tags
         ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
         : [];
+      const systemTags = (quotation.tags || []).filter((t: string) => t.startsWith('bank:') || t.startsWith('exchange:'));
+      const newTags = [...userTags, ...systemTags];
 
       const { error } = await supabase
         .from('quotations')
-        .update({ tags: tagsArray })
+        .update({ tags: newTags })
         .eq('id', quotation.id);
 
       if (error) throw error;
@@ -1193,9 +1196,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                   <Label className="text-sm text-muted-foreground">Tags:</Label>
                   {!isEditingTags ? (
                     <div className="flex items-center gap-2 flex-wrap max-w-md justify-end">
-                      {quotation.tags && quotation.tags.length > 0 ? (
+                      {displayTags.length > 0 ? (
                         <>
-                          {quotation.tags.map((tag, index) => (
+                          {displayTags.map((tag, index) => (
                             <Badge key={index} variant="secondary">{tag}</Badge>
                           ))}
                           <Button
@@ -1238,7 +1241,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          setTags((quotation.tags || []).join(", "));
+                          setTags(displayTags.join(", "));
                           setIsEditingTags(false);
                         }}
                       >
