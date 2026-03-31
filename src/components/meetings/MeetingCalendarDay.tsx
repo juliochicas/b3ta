@@ -28,10 +28,10 @@ export const MeetingCalendarDay = ({
       onClick={onClick}
       className={cn(
         "relative aspect-square rounded-lg p-2 text-sm font-medium transition-all duration-200",
-        "hover:bg-accent hover:scale-105 active:scale-95",
-        isSelected && "bg-primary text-primary-foreground shadow-md scale-105",
-        !isSelected && todayDate && "bg-accent/50 font-semibold",
-        !isCurrentMonth && "text-muted-foreground opacity-40",
+        "hover:bg-accent/20 hover:scale-105 active:scale-95",
+        isSelected && "bg-primary text-primary-foreground shadow-md scale-105 font-bold hover:bg-primary/90 hover:text-primary-foreground",
+        !isSelected && todayDate && "bg-accent text-accent-foreground font-semibold shadow-sm hover:bg-accent/90 hover:text-accent-foreground",
+        !isCurrentMonth && "text-muted-foreground opacity-40 hover:bg-transparent",
         "group"
       )}
     >
