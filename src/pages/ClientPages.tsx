@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw, MoreVertical, Search, Check, ChevronsUpDown } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Copy, ArrowLeft, Upload, Globe, Eye, RefreshCw, Lock, LockOpen, Sparkles, FileUp, Download, History, UserPen, UserPlus, Settings2, CalendarDays, DollarSign, RotateCw, MoreVertical, Search, Check, ChevronsUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -417,6 +417,31 @@ export default function ClientPages() {
     const text = await fileData.text();
     setGrandSlamHtml(text);
     setGrandSlamPage(page);
+  };
+
+  const downloadHtml = async (page: ClientPage) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('client-pages')
+        .download(page.html_storage_path);
+      
+      if (error || !data) throw error;
+      
+      const url = window.URL.createObjectURL(data);
+      const link = document.createElement('a');
+      link.href = url;
+      // Extract original filename if possible, otherwise use slug
+      const filename = page.html_storage_path.split('/').pop() || `${page.slug}.html`;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Descarga iniciada");
+    } catch (err: any) {
+      toast.error(err.message || "Error al descargar el archivo HTML");
+    }
   };
 
   const openEditCustomer = (page: ClientPage) => {
@@ -902,6 +927,10 @@ export default function ClientPages() {
                           <DropdownMenuItem onClick={() => openEditPassword(page)}>
                             {page.page_password ? <Lock className="h-4 w-4 mr-2" /> : <LockOpen className="h-4 w-4 mr-2" />}
                             {page.page_password ? "Cambiar contraseña" : "Agregar contraseña"}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => downloadHtml(page)}>
+                            <Download className="h-4 w-4 mr-2" />
+                            Descargar HTML
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onSelect={(e) => {
