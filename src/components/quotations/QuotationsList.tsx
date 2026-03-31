@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2 } from "lucide-react";
+import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2, CheckCircle, XCircle } from "lucide-react";
 import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
 import {
   DropdownMenu,
@@ -139,6 +139,29 @@ export const QuotationsList = () => {
       toast({
         title: "Error",
         description: "No se pudo archivar la cotización",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleStatusChange = async (quotationId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('quotations')
+        .update({ status: newStatus })
+        .eq('id', quotationId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Estado actualizado",
+        description: `La cotización ha sido marcada como ${newStatus === 'accepted' ? 'Aceptada' : newStatus === 'rejected' ? 'Rechazada' : newStatus}`,
+      });
+      loadQuotations();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el estado de la cotización",
         variant: "destructive",
       });
     }
@@ -289,6 +312,18 @@ export const QuotationsList = () => {
                             <Edit2 className="h-4 w-4 mr-2" />
                             Editar Cotización
                           </DropdownMenuItem>
+
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleStatusChange(quotation.id, 'accepted')}>
+                            <CheckCircle className="h-4 w-4 mr-2 text-emerald-500" />
+                            Marcar como Aceptada
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quotation.id, 'rejected')}>
+                            <XCircle className="h-4 w-4 mr-2 text-destructive" />
+                            Marcar como Rechazada
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+
                           {quotation.status !== 'archived' && quotation.status !== 'accepted' && (
                             <>
                               <DropdownMenuItem onClick={() => handleArchive(quotation.id)}>
