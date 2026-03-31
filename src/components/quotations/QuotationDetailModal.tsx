@@ -964,7 +964,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-start pr-8">
             <div>
               <DialogTitle className="text-2xl mb-2">{quotation.quotation_number}</DialogTitle>
               <DialogDescription className="mb-2">
