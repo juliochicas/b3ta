@@ -964,7 +964,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex justify-between items-start pr-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start pr-12 gap-4">
             <div>
               <DialogTitle className="text-2xl mb-2">{quotation.quotation_number}</DialogTitle>
               <DialogDescription className="mb-2">
@@ -977,8 +977,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                  quotation.status === 'rejected' ? 'Rechazada' : 'Expirada'}
               </Badge>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-muted-foreground mb-1">Total</div>
+            <div className="text-left sm:text-right w-full sm:w-auto mt-2 sm:mt-0 bg-primary/5 p-3 rounded-lg border border-primary/10">
+              <div className="text-sm text-muted-foreground mb-1 uppercase tracking-wider font-semibold">Total</div>
               <div className="text-3xl font-bold text-primary">
                 {formatCurrencyDisplay(quotation.total, quotation.currency)}
               </div>
