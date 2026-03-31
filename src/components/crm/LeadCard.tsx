@@ -19,6 +19,7 @@ interface Lead {
   created_at: string;
   last_contact: string | null;
   notes: string | null;
+  assigned_to: string | null;
 }
 
 interface LeadCardProps {

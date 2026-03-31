@@ -9,7 +9,16 @@ async function main() {
   const client = new Client({ name: "cli", version: "1" }, { capabilities: {} });
   await client.connect(transport);
   const tools = await client.listTools();
-  tools.tools.forEach(t => console.log(t.name));
+  
+  const sslTools = tools.tools.filter(t => t.name.toLowerCase().includes('ssl'));
+  
+  for (const t of sslTools) {
+    console.log(t.name);
+    console.log(t.description);
+    console.log(JSON.stringify(t.inputSchema, null, 2));
+    console.log('---');
+  }
+
   process.exit();
 }
 main().catch(console.error);

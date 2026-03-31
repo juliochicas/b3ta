@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Filter, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Sparkles, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { LeadCard } from "./LeadCard";
 import { LeadDetailModal } from "./LeadDetailModal";
+import { CreateLeadModal } from "./CreateLeadModal";
 import { useToast } from "@/hooks/use-toast";
 
 interface Lead {
@@ -23,6 +24,7 @@ interface Lead {
   created_at: string;
   last_contact: string | null;
   notes: string | null;
+  assigned_to: string | null;
 }
 
 const LEADS_PER_PAGE = 20;
@@ -36,6 +38,7 @@ export const LeadsList = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -160,7 +163,7 @@ export const LeadsList = () => {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
@@ -180,6 +183,14 @@ export const LeadsList = () => {
             >
               <Sparkles className="mr-2 h-4 w-4" />
               Analizar Todos con IA
+            </Button>
+
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Lead
             </Button>
           </div>
         </div>
@@ -236,6 +247,16 @@ export const LeadsList = () => {
           lead={selectedLead}
           onClose={() => setSelectedLead(null)}
           onUpdate={loadLeads}
+        />
+      )}
+
+      {isCreateModalOpen && (
+        <CreateLeadModal
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={() => {
+            setIsCreateModalOpen(false);
+            loadLeads();
+          }}
         />
       )}
     </>

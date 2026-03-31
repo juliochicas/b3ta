@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+import Team from "./pages/Team";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const App = () => (
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/meetings" element={<ProtectedRoute><Meetings /></ProtectedRoute>} />
           <Route path="/email" element={<ProtectedRoute><Email /></ProtectedRoute>} />
+          <Route path="/team" element={<ProtectedRoute><Team /></ProtectedRoute>} />
           <Route path="/informe/:slug" element={<PublicReport />} />
           <Route path="/p/:slug" element={<ClientPage />} />
           <Route path="/client-pages" element={<ProtectedRoute><ClientPages /></ProtectedRoute>} />

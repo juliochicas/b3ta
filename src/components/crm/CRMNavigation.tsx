@@ -11,7 +11,8 @@ import {
   DollarSign,
   LogOut,
   Home,
-  Globe
+  Globe,
+  Users
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +31,7 @@ const navItems: NavItem[] = [
   { label: "Reuniones", path: "/meetings", icon: <Clock className="h-4 w-4" /> },
   { label: "Correo", path: "/email", icon: <Mail className="h-4 w-4" /> },
   { label: "Páginas", path: "/client-pages", icon: <Globe className="h-4 w-4" /> },
+  { label: "Equipo", path: "/team", icon: <Users className="h-4 w-4" /> },
 ];
 
 interface CRMNavigationProps {

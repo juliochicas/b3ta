@@ -41,6 +41,7 @@ interface Lead {
   created_at: string;
   last_contact: string | null;
   notes: string | null;
+  assigned_to: string | null;
 }
 
 interface LeadActivity {
@@ -60,7 +61,9 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
   const [status, setStatus] = useState(lead.status);
   const [priority, setPriority] = useState(lead.priority);
   const [notes, setNotes] = useState(lead.notes || "");
+  const [assignedTo, setAssignedTo] = useState(lead.assigned_to || "");
   const [activities, setActivities] = useState<LeadActivity[]>([]);
+  const [teamMembers, setTeamMembers] = useState<{id: string, full_name: string | null, email: string | null}[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -71,7 +74,15 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
 
   useEffect(() => {
     loadActivities();
+    loadTeamMembers();
   }, [lead.id]);
+
+  const loadTeamMembers = async () => {
+    const { data, error } = await supabase.from('profiles').select('id, full_name, email');
+    if (data && !error) {
+      setTeamMembers(data);
+    }
+  };
 
   const loadActivities = async () => {
     const { data } = await supabase
@@ -117,7 +128,8 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
       const updates: any = {
         status,
         priority,
-        notes
+        notes,
+        assigned_to: assignedTo || null
       };
 
       // Si se contactó, actualizar last_contact
@@ -320,6 +332,22 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
                     <option value="qualified">Calificado</option>
                     <option value="converted">Convertido</option>
                     <option value="lost">Perdido</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block text-muted-foreground">Asignado a</label>
+                  <select
+                    value={assignedTo}
+                    onChange={(e) => setAssignedTo(e.target.value)}
+                    className="w-full px-4 h-12 bg-muted/50 border-transparent focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all cursor-pointer appearance-none"
+                  >
+                    <option value="">Sin asignar</option>
+                    {teamMembers.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.full_name || member.email}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
