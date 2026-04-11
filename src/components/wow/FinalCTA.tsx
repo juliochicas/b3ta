@@ -54,14 +54,14 @@ export const FinalCTA = () => {
   };
 
   return (
-    <section id="contact" className="py-32 bg-background relative overflow-hidden">
+    <section id="contact" className="py-24 bg-background relative overflow-hidden">
       {/* Dynamic Background Patterns */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,hsl(var(--primary)/0.1),transparent_60%)]" />
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10 text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl glass-dark mb-8 border border-primary/20 shadow-2xl">
-          <Zap className="w-10 h-10 text-primary animate-bounce" />
+          <Zap className="w-10 h-10 text-primary" />
         </div>
         
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight tracking-tighter">

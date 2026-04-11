@@ -54,7 +54,7 @@ const steps = [
 
 export const Methodology = () => {
   return (
-    <section id="proceso" className="py-32 bg-card relative overflow-hidden">
+    <section id="proceso" className="py-24 bg-card relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
 
@@ -64,7 +64,7 @@ export const Methodology = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-primary/10 text-primary mb-5 ring-1 ring-primary/20 uppercase">
             Como Trabajamos

@@ -14,7 +14,7 @@ export const TechStack = () => {
     <section className="py-24 bg-background relative overflow-hidden border-t border-b border-border/30">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-background to-background" />
       
-      <div className="container mx-auto px-4 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <div className="text-center mb-16">
           <span className="px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-secondary/10 text-secondary mb-4 inline-block uppercase ring-1 ring-secondary/30">
             Tecnologias que usamos

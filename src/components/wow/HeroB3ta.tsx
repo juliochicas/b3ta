@@ -52,9 +52,8 @@ const AnimatedSequenceCard = ({ tab }: { tab: typeof tabs[0] }) => {
     <div className="p-6 rounded-3xl glass-dark border border-primary/20 shadow-[0_0_40px_hsl(var(--primary)/0.1)]">
       {/* Pulsing indicator dot */}
       <div className="flex justify-end mb-4">
-        <span className="relative flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-accent" />
+        <span className="relative flex h-2 w-2">
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
         </span>
       </div>
 
@@ -130,9 +129,8 @@ export const HeroB3ta = () => {
       <div className="absolute inset-0 mesh-gradient opacity-60" />
       {/* Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.05)_1px,transparent_1px)] bg-[size:60px_60px]" />
-      {/* Glow blobs */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Subtle accent blob */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
@@ -145,7 +143,7 @@ export const HeroB3ta = () => {
               transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2 px-5 py-2.5 glass-dark rounded-full border border-primary/20"
             >
-              <Sparkles className="h-4 w-4 text-secondary animate-pulse" />
+              <Sparkles className="h-4 w-4 text-secondary" />
               <span className="text-sm font-medium text-foreground">
                 Consultoria tech para empresas en Guatemala y LATAM
               </span>

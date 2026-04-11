@@ -53,18 +53,18 @@ const McpBadge = ({ label, icon: Icon, color }: { label: string; icon: React.Ele
 
 export const AutomationHub = () => {
   return (
-    <section className="py-28 bg-background relative overflow-hidden">
+    <section className="py-24 bg-background relative overflow-hidden">
       {/* Grid background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.04)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.04)_1px,transparent_1px)] bg-[size:50px_50px]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,hsl(var(--primary)/0.08),transparent_65%)]" />
 
-      <div className="container mx-auto px-4 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-secondary/10 text-secondary mb-5 ring-1 ring-secondary/20 uppercase">
             Asi se conecta
@@ -121,10 +121,10 @@ export const AutomationHub = () => {
             className="relative flex-shrink-0 my-6 lg:my-0"
           >
             {/* Outer pulse ring */}
-            <div className="absolute inset-0 rounded-3xl border border-primary/20 animate-pulse-ring" style={{ margin: "-14px" }} />
+            <div className="absolute inset-0 rounded-3xl border border-primary/20" style={{ margin: "-14px" }} />
 
             {/* Hub card */}
-            <div className="relative w-52 rounded-3xl glass-dark border border-primary/30 flex flex-col items-center justify-center p-5 shadow-[0_0_60px_hsl(var(--primary)/0.2)] z-10 gap-3">
+            <div className="relative w-52 rounded-3xl glass-dark border border-primary/30 flex flex-col items-center justify-center p-5 shadow-lg z-10 gap-3">
               {/* Icon */}
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.4)]">
                 <Zap className="w-7 h-7 text-white" />

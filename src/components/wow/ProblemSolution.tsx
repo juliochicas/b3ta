@@ -22,8 +22,8 @@ export const ProblemSolution = () => {
   };
 
   return (
-    <section id="problema" className="py-32 bg-background relative overflow-hidden text-lg">
-      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+    <section id="problema" className="py-24 bg-background relative overflow-hidden text-lg">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Si algo de esto te pasa,
