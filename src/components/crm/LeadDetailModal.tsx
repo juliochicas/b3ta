@@ -98,77 +98,16 @@ export const LeadDetailModal = ({ lead, onClose, onUpdate }: LeadDetailModalProp
   const analyzeWithAI = async () => {
     setIsAnalyzing(true);
     try {
-      const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY no está configurada");
-      }
-
-      const aiPrompt = `Eres un experto en calificación de leads B2B. Analiza este lead y dame:
-1. Score de calidad (0-100)
-2. Prioridad sugerida (high/medium/low)
-3. Resumen breve (2-3 líneas)
-4. Próximos pasos recomendados
-
-Lead:
-- Nombre: ${lead.name}
-- Email: ${lead.email}
-- Empresa: ${lead.company || 'No especificada'}
-- Teléfono: ${lead.phone || 'No especificado'}
-- Servicio de interés: ${lead.service_interest || 'No especificado'}
-- Mensaje: ${lead.message || 'Sin mensaje'}
-
-Responde ESTRICTAMENTE en este formato JSON (sin markdown, solo el JSON raw):
-{"score": 85, "priority": "high", "summary": "Este lead busca...", "next_steps": "Contactar..."}`;
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: aiPrompt }] }],
-            generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`Gemini error ${response.status}: ${errText}`);
-      }
-
-      const aiData = await response.json();
-      let aiContent = aiData.candidates[0].content.parts[0].text;
-      aiContent = aiContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-
-      let analysisData: any;
-      try {
-        analysisData = JSON.parse(aiContent);
-      } catch {
-        analysisData = { score: 50, priority: "medium", summary: aiContent.substring(0, 200), next_steps: "Calificación manual requerida" };
-      }
-
-      // Guardar en Supabase
-      const { error: updateError } = await supabase
-        .from("leads_b3ta")
-        .update({
-          ai_score: analysisData.score,
-          priority: analysisData.priority,
-          ai_summary: JSON.stringify(analysisData),
-        })
-        .eq("id", lead.id);
-
-      if (updateError) throw updateError;
-
-      // Registrar actividad
-      await supabase.from("lead_activities").insert({
-        lead_id: lead.id,
-        activity_type: "ai_analysis",
-        description: `IA analizó el lead. Score: ${analysisData.score}/100, Prioridad: ${analysisData.priority}`,
+      const { data, error } = await supabase.functions.invoke('ai-lead-scorer', {
+        body: { leadId: lead.id }
       });
 
+      if (error) throw error;
+
+      const analysisData = data.analysis;
+
       toast({
-        title: "Análisis completado ✨",
+        title: "Analisis completado",
         description: `Score: ${analysisData.score}/100 · Prioridad: ${analysisData.priority}`,
       });
 

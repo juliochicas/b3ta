@@ -14,6 +14,8 @@ import Email from "./pages/Email";
 import ClientPage from "./pages/ClientPage";
 import ClientPages from "./pages/ClientPages";
 import NotFound from "./pages/NotFound";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +40,8 @@ const App = () => (
           <Route path="/informe/:slug" element={<PublicReport />} />
           <Route path="/p/:slug" element={<ClientPage />} />
           <Route path="/client-pages" element={<ProtectedRoute><ClientPages /></ProtectedRoute>} />
+          <Route path="/privacidad" element={<Privacy />} />
+          <Route path="/terminos" element={<Terms />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

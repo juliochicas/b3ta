@@ -59,8 +59,9 @@ export const Footer = () => {
               &copy; {new Date().getFullYear()} B3TA. Todos los derechos reservados.
             </p>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
+              <a href="/privacidad" className="hover:text-primary transition-colors">Privacidad</a>
+              <a href="/terminos" className="hover:text-primary transition-colors">Terminos</a>
               <a href="mailto:hi@b3ta.us" className="hover:text-primary transition-colors">hi@b3ta.us</a>
-              <a href="https://wa.me/14355348065" className="hover:text-primary transition-colors">+1 (435) 534-8065</a>
               <span>🇬🇹 Guatemala, LATAM</span>
             </div>
           </div>

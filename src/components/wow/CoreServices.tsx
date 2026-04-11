@@ -4,33 +4,33 @@ import { Workflow, ShoppingCart, TrendingUp, Cpu, Store } from "lucide-react";
 export const CoreServices = () => {
   const services = [
     {
-      title: "FLUJOS INTELIGENTES",
-      description: "n8n/Make + IA para automatizar TODO. Cero tareas repetitivas.",
-      example: "Ej: Carrito abandonado → WhatsApp → Recuperación 40%",
+      title: "AUTOMATIZACION CON N8N",
+      description: "Conectamos tus apps con flujos automaticos. Si hoy lo haces a mano, probablemente se puede automatizar.",
+      example: "Ej: Pedido en Shopify → factura en SAP → aviso al cliente por WhatsApp",
       icon: Workflow,
       color: "from-primary/20",
       borderColor: "hover:border-primary/50"
     },
     {
-      title: "ERP, CRM & PUNTOS DE VENTA",
-      description: "Implementamos SAP B1, ecosistema Modularis.pro y POS nativo en WordPress.",
-      example: "Omnicanalidad: Tienda física y online 100% sincronizadas.",
+      title: "SAP B1 + PUNTO DE VENTA",
+      description: "Implementamos SAP Business One y POS conectado. Tu tienda fisica y online ven el mismo inventario.",
+      example: "Venta en sucursal → SAP actualiza stock → Shopify refleja disponibilidad",
       icon: Store,
       color: "from-secondary/20",
       borderColor: "hover:border-secondary/50"
     },
     {
-      title: "SEO PROGRAMÁTICO",
-      description: "Generación automática de clusters de contenido con IA.",
-      example: "Internal linking inteligente = Posicionamiento escalable.",
+      title: "SEO PROGRAMATICO",
+      description: "Generamos miles de paginas optimizadas a partir de tu catalogo de productos, con schema markup.",
+      example: "Ej: 4,057 paginas indexadas para un portal de celulares en Guatemala",
       icon: TrendingUp,
       color: "from-accent/20",
       borderColor: "hover:border-accent/50"
     },
     {
-      title: "APPS BP PERSONALIZADAS",
-      description: "Aplicativos inyectables para cualquier web E-commerce.",
-      example: "Dashboards, calculadoras y formularios para B2B.",
+      title: "APPS Y DASHBOARDS A MEDIDA",
+      description: "Paneles de control, portales B2B y herramientas internas hechas en React + Supabase.",
+      example: "Ej: Portal de clientes con cotizaciones, reportes y firmas digitales",
       icon: Cpu,
       color: "from-orange-500/20",
       borderColor: "hover:border-orange-500/50"
@@ -55,10 +55,10 @@ export const CoreServices = () => {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Nuestros Sistemas <span className="gradient-text">Core</span>
+            Lo que <span className="gradient-text">hacemos</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            Construimos los pilares operativos para tu e-commerce.
+            Estas son las areas donde podemos ayudarte.
           </p>
         </div>
 
