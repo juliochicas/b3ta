@@ -8,17 +8,14 @@ export const Footer = () => {
               B3TA
             </h3>
             <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
-              Transformación Digital Integral para LATAM. Procesos, MVPs y Páginas Web. Consultoría + Tecnología + Crecimiento.
+              Consultoria tecnologica en Guatemala. Integramos SAP, Shopify, WhatsApp y sistemas a medida para empresas en LATAM.
             </p>
             <div className="flex space-x-4">
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-all duration-300">
-                <span className="text-sm font-semibold">in</span>
+              <a href="https://wa.me/14355348065" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-muted hover:bg-[#25D366] hover:text-white flex items-center justify-center transition-all duration-300">
+                <span className="text-sm font-semibold">WA</span>
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-all duration-300">
-                <span className="text-sm font-semibold">𝕏</span>
-              </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-all duration-300">
-                <span className="text-sm font-semibold">▶</span>
+              <a href="mailto:hi@b3ta.us" className="w-10 h-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-all duration-300">
+                <span className="text-sm font-semibold">@</span>
               </a>
             </div>
           </div>
@@ -62,8 +59,8 @@ export const Footer = () => {
               &copy; {new Date().getFullYear()} B3TA. Todos los derechos reservados.
             </p>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">Política de Privacidad</a>
-              <a href="#" className="hover:text-primary transition-colors">Términos de Servicio</a>
+              <a href="mailto:hi@b3ta.us" className="hover:text-primary transition-colors">hi@b3ta.us</a>
+              <a href="https://wa.me/14355348065" className="hover:text-primary transition-colors">+1 (435) 534-8065</a>
               <span>🇬🇹 Guatemala, LATAM</span>
             </div>
           </div>

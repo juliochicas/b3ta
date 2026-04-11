@@ -45,14 +45,17 @@ export const MainHeader = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-8" role="navigation" aria-label="Navegación principal">
-          <a href="/#soluciones" onClick={(e) => handleNavClick(e, 'soluciones')} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-            Soluciones
+          <a href="/#servicios" onClick={(e) => handleNavClick(e, 'servicios')} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            Servicios
           </a>
           <a href="/#proceso" onClick={(e) => handleNavClick(e, 'proceso')} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             Proceso
           </a>
-          <a href="/#ai-consultant" onClick={(e) => handleNavClick(e, 'ai-consultant')} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-            Consultor IA
+          <a href="/#casos" onClick={(e) => handleNavClick(e, 'casos')} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            Casos
+          </a>
+          <a href="/#precios" onClick={(e) => handleNavClick(e, 'precios')} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            Precios
           </a>
           <a href="/#contact" onClick={(e) => handleNavClick(e, 'contact')} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             Contacto
@@ -61,12 +64,12 @@ export const MainHeader = () => {
 
         <div className="flex items-center gap-3">
           {/* CTA Mobile-friendly */}
-          <a 
-            href="#ai-consultant"
+          <a
+            href="#contact"
             className="text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors py-2 px-4 rounded-lg hidden sm:inline-flex"
-            onClick={(e) => handleNavClick(e, 'ai-consultant')}
+            onClick={(e) => handleNavClick(e, 'contact')}
           >
-            Consultor IA
+            Cotizar Gratis
           </a>
           <Link
             to="/auth"
@@ -91,14 +94,17 @@ export const MainHeader = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-background border-b border-border absolute top-full left-0 w-full shadow-lg animate-in slide-in-from-top-2">
           <nav className="flex flex-col px-4 py-4 gap-4">
-            <a href="/#soluciones" onClick={(e) => handleNavClick(e, 'soluciones')} className="text-base font-medium text-foreground hover:text-primary transition-colors">
-              Soluciones
+            <a href="/#servicios" onClick={(e) => handleNavClick(e, 'servicios')} className="text-base font-medium text-foreground hover:text-primary transition-colors">
+              Servicios
             </a>
             <a href="/#proceso" onClick={(e) => handleNavClick(e, 'proceso')} className="text-base font-medium text-foreground hover:text-primary transition-colors">
               Proceso
             </a>
-            <a href="/#ai-consultant" onClick={(e) => handleNavClick(e, 'ai-consultant')} className="text-base font-medium text-foreground hover:text-primary transition-colors">
-              Consultor IA
+            <a href="/#casos" onClick={(e) => handleNavClick(e, 'casos')} className="text-base font-medium text-foreground hover:text-primary transition-colors">
+              Casos
+            </a>
+            <a href="/#precios" onClick={(e) => handleNavClick(e, 'precios')} className="text-base font-medium text-foreground hover:text-primary transition-colors">
+              Precios
             </a>
             <a href="/#contact" onClick={(e) => handleNavClick(e, 'contact')} className="text-base font-medium text-foreground hover:text-primary transition-colors">
               Contacto

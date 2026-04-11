@@ -24,7 +24,7 @@ export const TechLogos = () => {
       
       <div className="container mx-auto px-4 mb-8 text-center relative z-20">
         <p className="text-sm font-bold text-muted-foreground uppercase tracking-[0.3em]">
-          Partners y Tecnologías Soportadas
+          Tecnologias con las que trabajamos
         </p>
       </div>
 

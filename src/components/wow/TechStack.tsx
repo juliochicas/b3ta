@@ -17,10 +17,10 @@ export const TechStack = () => {
       <div className="container mx-auto px-4 max-w-7xl relative z-10">
         <div className="text-center mb-16">
           <span className="px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-secondary/10 text-secondary mb-4 inline-block uppercase ring-1 ring-secondary/30">
-            Stack Técnico Enterprise
+            Tecnologias que usamos
           </span>
           <h2 className="text-3xl md:text-5xl font-black text-foreground">
-            Armamos Tu <span className="text-primary">Ecosistema</span>
+            Nuestro <span className="text-primary">stack tecnico</span>
           </h2>
         </div>
 

@@ -6,7 +6,7 @@ const steps = [
     num: "01",
     title: "DIAGNÓSTICO",
     badge: "Gratis",
-    desc: "Mapeamos tus cuellos de botella operativos. Auditamos tus sistemas actuales e identificamos exactamente dónde pierdes tiempo y dinero.",
+    desc: "Revisamos como trabaja tu equipo hoy: que sistemas usan, donde se traban y que datos se pierden en el camino.",
     icon: Search,
     gradient: "from-blue-500/20 to-blue-500/5",
     border: "border-blue-500/30 hover:border-blue-500/60",
@@ -18,7 +18,7 @@ const steps = [
     num: "02",
     title: "DISEÑO",
     badge: null,
-    desc: "Arquitectamos tu solución ideal. Diseñamos los flujos de automatización, integraciones y la arquitectura técnica que conectará todos tus sistemas.",
+    desc: "Te presentamos un plan claro: que se conecta con que, cuanto cuesta y en cuanto tiempo queda listo.",
     icon: PenTool,
     gradient: "from-purple-500/20 to-purple-500/5",
     border: "border-purple-500/30 hover:border-purple-500/60",
@@ -30,7 +30,7 @@ const steps = [
     num: "03",
     title: "IMPLEMENTACIÓN",
     badge: null,
-    desc: "Construimos software que trabaja por ti. Integramos SAP, Shopify, IA y todos tus canales. Pruebas reales, no demos de laboratorio.",
+    desc: "Construimos las integraciones, probamos con datos reales de tu negocio y entrenamos a tu equipo para que lo usen desde el dia uno.",
     icon: Rocket,
     gradient: "from-cyan-500/20 to-cyan-500/5",
     border: "border-cyan-500/30 hover:border-cyan-500/60",
@@ -42,7 +42,7 @@ const steps = [
     num: "04",
     title: "OPTIMIZACIÓN",
     badge: "Continuo",
-    desc: "Escalamos tus resultados con IA. Monitoreamos métricas, ajustamos automatizaciones y añadimos inteligencia conforme crece tu operación.",
+    desc: "Seguimos contigo despues del lanzamiento. Ajustamos lo que haga falta y agregamos funciones conforme crece tu operacion.",
     icon: RefreshCw,
     gradient: "from-accent/20 to-accent/5",
     border: "border-accent/30 hover:border-accent/60",
@@ -67,13 +67,13 @@ export const Methodology = () => {
           className="text-center mb-20"
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-primary/10 text-primary mb-5 ring-1 ring-primary/20 uppercase">
-            Proceso Probado
+            Como Trabajamos
           </span>
           <h2 className="text-4xl md:text-5xl font-black mb-4">
-            Nuestra Metodología
+            4 pasos, sin sorpresas
           </h2>
           <p className="text-xl text-muted-foreground max-w-xl mx-auto">
-            No improvisamos. Aplicamos ingeniería operativa pura.
+            Asi funciona cada proyecto con nosotros.
           </p>
         </motion.div>
 

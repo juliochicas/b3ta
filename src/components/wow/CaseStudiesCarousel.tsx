@@ -5,13 +5,13 @@ import { motion } from 'framer-motion';
 
 const cases = [
   {
-    title: "Tienda Guatemala",
-    metricLabel: "Tiempo operativo",
-    metricBefore: "100%",
-    metricAfter: "-80%",
-    kpi: "-80% tiempo operativo",
-    kpiExtra: "+35% conversión",
-    description: "Automatización de recolección de pedidos, actualización de inventarios y notificaciones de envío sin intervención humana.",
+    title: "Distribuidora — Guatemala",
+    metricLabel: "Procesamiento pedidos",
+    metricBefore: "45 min",
+    metricAfter: "2 min",
+    kpi: "SAP + Shopify sincronizado",
+    kpiExtra: "0 errores de digitacion",
+    description: "Una distribuidora con 200+ SKUs pasaba pedidos de Shopify a SAP a mano. Ahora el flujo es automatico: pedido entra, SAP lo registra, bodega recibe la orden.",
     icon: Clock,
     color: "text-blue-400",
     bg: "bg-blue-500/10",
@@ -19,13 +19,13 @@ const cases = [
     badgeColor: "bg-blue-500/10 text-blue-400",
   },
   {
-    title: "E-commerce LATAM",
-    metricLabel: "Shopify ↔ SAP",
-    metricBefore: "Manual",
-    metricAfter: "100% sync",
-    kpi: "Shopify + SAP sincronizado",
-    kpiExtra: "0 doble digitación",
-    description: "Eliminación de doble digitación. Catálogo maestro en SAP reflejado en tiempo real en Shopify Plus.",
+    title: "E-commerce — Mexico",
+    metricLabel: "Catalogo",
+    metricBefore: "Desync",
+    metricAfter: "Tiempo real",
+    kpi: "Catalogo maestro unificado",
+    kpiExtra: "Precios sincronizados",
+    description: "Tienda con catalogo en SAP y Shopify Plus desincronizados. Integramos ambos: precio, stock y descripcion se actualizan solos cuando cambian en SAP.",
     icon: TrendingUp,
     color: "text-secondary",
     bg: "bg-secondary/10",
@@ -33,13 +33,13 @@ const cases = [
     badgeColor: "bg-secondary/10 text-secondary",
   },
   {
-    title: "Marca Moda",
-    metricLabel: "Tráfico orgánico",
-    metricBefore: "1x",
-    metricAfter: "3x",
-    kpi: "SEO Automático = x3",
-    kpiExtra: "Tráfico orgánico",
-    description: "Clusterización de contenido con IA y link building interno programático sin redactores adicionales.",
+    title: "Portal B2B — Centroamerica",
+    metricLabel: "Trafico organico",
+    metricBefore: "800/mes",
+    metricAfter: "4,000/mes",
+    kpi: "+4,000 paginas indexadas",
+    kpiExtra: "SEO programatico",
+    description: "Portal de celulares con 4,057 paginas generadas programaticamente. Cada producto tiene su landing optimizada con schema markup y contenido unico.",
     icon: Search,
     color: "text-accent",
     bg: "bg-accent/10",
@@ -47,13 +47,13 @@ const cases = [
     badgeColor: "bg-accent/10 text-accent",
   },
   {
-    title: "Retail Físico",
-    metricLabel: "Atención al cliente",
-    metricBefore: "Manual",
-    metricAfter: "24/7 Bot",
-    kpi: "Inventarios Inteligentes",
-    kpiExtra: "WhatsApp Bot activo",
-    description: "Consulta de stock en tiempo real vía WhatsApp bot conectado a ERP, liberando a los vendedores.",
+    title: "Retail Multicanal — Guatemala",
+    metricLabel: "Atencion cliente",
+    metricBefore: "Solo horario",
+    metricAfter: "24/7",
+    kpi: "Bot WhatsApp activo",
+    kpiExtra: "Consulta stock en vivo",
+    description: "Cadena con 3 sucursales donde los vendedores perdian tiempo revisando inventario. Ahora un bot de WhatsApp consulta SAP y responde stock en segundos.",
     icon: MessageCircle,
     color: "text-purple-400",
     bg: "bg-purple-500/10",
@@ -102,10 +102,10 @@ export const CaseStudiesCarousel = () => {
             Casos Reales
           </span>
           <h2 className="text-4xl md:text-5xl font-black mb-4">
-            Casos de <span className="text-secondary">Éxito Reales</span>
+            Proyectos <span className="text-secondary">que hemos hecho</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            No vendemos teoría. Mostramos métricas operativas.
+            Algunos ejemplos de lo que construimos para nuestros clientes.
           </p>
         </motion.div>
 

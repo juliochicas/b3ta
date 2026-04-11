@@ -62,10 +62,10 @@ export const StickyCTA = () => {
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
               <p className="font-bold text-lg mb-1">
-                Primera Consultoría 100% Gratis
+                Necesitas una cotizacion?
               </p>
               <p className="text-sm opacity-90">
-                Diagnóstico completo + Roadmap personalizado • Sin compromiso
+                Cuentanos tu proyecto, te respondemos en 24h
               </p>
             </div>
 
@@ -75,7 +75,7 @@ export const StickyCTA = () => {
                 size="lg"
                 className="bg-background text-primary hover:bg-background/90 shadow-lg font-bold"
               >
-                Agendar Ahora
+                Cotizar
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
 

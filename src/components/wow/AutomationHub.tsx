@@ -67,16 +67,16 @@ export const AutomationHub = () => {
           className="text-center mb-20"
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-secondary/10 text-secondary mb-5 ring-1 ring-secondary/20 uppercase">
-            Cómo Funciona
+            Asi se conecta
           </span>
           <h2 className="text-4xl md:text-5xl font-black text-foreground mb-4">
-            Todo conectado en{" "}
+            Tus sistemas,{" "}
             <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              un solo sistema
+              hablando entre si
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            WordPress, Shopify, WhatsApp y los mejores modelos de IA — orquestados desde un solo núcleo.
+            Conectamos tu tienda, ERP, WhatsApp y herramientas de IA en un flujo que funciona solo.
           </p>
         </motion.div>
 
@@ -189,7 +189,7 @@ export const AutomationHub = () => {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="text-center text-muted-foreground mt-14 text-base"
         >
-          Servidores MCP propios para que Claude, Gemini y ChatGPT operen dentro de tu sistema — sin copy-paste, sin fricción.
+          Usamos servidores MCP propios para que los modelos de IA trabajen directamente con tus datos — sin copiar y pegar nada.
         </motion.p>
       </div>
     </section>

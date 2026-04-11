@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 const pains = [
-  "Tengo ventas pero mi operación es caos",
-  "Cargo pedidos a mano entre Shopify y SAP",
-  "No controlo inventarios ni veo mis números",
-  "Mi agencia solo me hizo la web y desapareció",
-  "Atiendo WhatsApp manualmente todo el día",
-  "No sé qué tan rentable es cada cliente",
+  "Paso pedidos de Shopify a SAP copiando y pegando",
+  "Mi inventario dice una cosa y la bodega otra",
+  "Contesto WhatsApp uno por uno, todo el dia",
+  "Pague por una web pero no genera ni un lead",
+  "No se cuanto gano por cliente ni por producto",
+  "Tengo 3 sistemas que no se hablan entre si",
 ];
 
 export const ProblemSolution = () => {
@@ -26,11 +26,12 @@ export const ProblemSolution = () => {
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            El Problema no son tus Ventas. <br />
-            <span className="text-destructive">Es tu Operación.</span>
+            Si algo de esto te pasa,
+            <br />
+            <span className="text-destructive">podemos ayudarte.</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Selecciona los que aplican a tu negocio — sin compromiso.
+            Marca los que reconozcas — te decimos como resolverlos.
           </p>
         </div>
 
@@ -101,15 +102,15 @@ export const ProblemSolution = () => {
                 <div className="w-14 h-14 rounded-2xl bg-destructive/10 flex items-center justify-center mb-8">
                   <AlertTriangle className="w-7 h-7 text-destructive" />
                 </div>
-                <h3 className="text-3xl font-black mb-4 tracking-tight">Vendes mucho, operas lento.</h3>
+                <h3 className="text-3xl font-black mb-4 tracking-tight">Asi se ve el dia a dia sin integracion.</h3>
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                  Tu negocio crece, pero tu infraestructura colapsa.
+                  El equipo trabaja duro, pero la mitad del esfuerzo se va en tareas que deberian ser automaticas.
                 </p>
                 <ul className="space-y-4">
                   {[
-                    "Pierdes horas en tareas manuales.",
-                    "Errores humanos arruinan pedidos.",
-                    "Sistemas desconectados frustran a tu equipo.",
+                    "Doble digitacion entre Shopify, SAP y Excel.",
+                    "Pedidos que se pierden entre sistemas.",
+                    "Nadie sabe el stock real hasta que revisan la bodega.",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <X className="w-6 h-6 text-destructive shrink-0 mt-0.5" />
@@ -134,15 +135,15 @@ export const ProblemSolution = () => {
                 <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center mb-8">
                   <CheckCircle2 className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="text-3xl font-black mb-4 tracking-tight">Automatiza y Escala sin límites.</h3>
+                <h3 className="text-3xl font-black mb-4 tracking-tight">Asi se ve despues de integrarnos.</h3>
                 <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-                  Conectamos tu ERP, web y ventas. Opera 24/7 sin sumar nómina.
+                  Conectamos SAP, tu tienda y WhatsApp. Tu equipo se enfoca en vender, no en cargar datos.
                 </p>
                 <ul className="space-y-6">
                   {[
-                    "Integra SAP con tu tienda online.",
-                    "Delega atención a Agentes de IA.",
-                    "Multiplica tu rentabilidad diaria.",
+                    "Pedido en Shopify → SAP lo registra solo.",
+                    "WhatsApp bot responde preguntas frecuentes.",
+                    "Dashboard con ventas, inventario y margenes en tiempo real.",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-4">
                       <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">

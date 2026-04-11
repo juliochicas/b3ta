@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => ({
           'vendor-motion': ['framer-motion'],
           'vendor-utils': ['date-fns', 'zod', 'clsx', 'tailwind-merge'],
           'vendor-ui': ['lucide-react', 'react-hook-form', '@radix-ui/react-dialog', '@radix-ui/react-slot'],
-          'vendor-heavy': ['jspdf', 'html2canvas', 'xlsx', 'recharts']
+          'vendor-heavy': ['jspdf', 'xlsx', 'recharts']
         }
       }
     }

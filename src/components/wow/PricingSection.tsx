@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export const PricingSection = () => {
   const scrollToContact = () => {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -21,7 +21,7 @@ export const PricingSection = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-black mb-6"
           >
-            Inversión Clara. <span className="gradient-text">Retorno Evidente.</span>
+            Que incluye y <span className="gradient-text">cuanto cuesta.</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -30,7 +30,7 @@ export const PricingSection = () => {
             transition={{ delay: 0.1 }}
             className="text-xl text-muted-foreground"
           >
-            A diferencia de las agencias tradicionales, no cobramos por hora ni por humo. Construimos sistemas que puedes medir desde el día 1.
+            Precio fijo por proyecto, sin cargos por hora ni letras chiquitas. Sabes exactamente que vas a recibir.
           </motion.p>
         </div>
 
@@ -48,7 +48,7 @@ export const PricingSection = () => {
                 <Zap className="h-7 w-7 text-primary" />
               </div>
               <h3 className="text-2xl font-bold mb-2">Web de Conversión</h3>
-              <p className="text-muted-foreground mb-6 h-12">No es un folleto digital, es un vendedor 24/7 diseñado para capar leads reales.</p>
+              <p className="text-muted-foreground mb-6 h-12">Sitio web profesional que carga rapido, se ve bien en celular y esta hecho para generar contactos.</p>
               
               <div className="mb-8">
                 <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
@@ -97,7 +97,7 @@ export const PricingSection = () => {
                 <Code2 className="h-7 w-7 text-secondary" />
               </div>
               <h3 className="text-2xl font-bold mb-2">Plataforma / App a Medida</h3>
-              <p className="text-muted-foreground mb-6 h-12">Elimina procesos manuales. Tu propio CRM, panel de control o SaaS operativo.</p>
+              <p className="text-muted-foreground mb-6 h-12">Tu propio sistema web: panel de control, CRM o plataforma a medida con login y roles.</p>
               
               <div className="mb-8">
                 <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
@@ -143,7 +143,7 @@ export const PricingSection = () => {
                 <Bot className="h-7 w-7 text-primary" />
               </div>
               <h3 className="text-2xl font-bold mb-2">Automatización (IA)</h3>
-              <p className="text-muted-foreground mb-6 h-12">Deja que los sistemas trabajen por ti. Conectamos SAP, WhatsApp y IA.</p>
+              <p className="text-muted-foreground mb-6 h-12">Integraciones entre SAP, Shopify, WhatsApp y bots de IA para tu operacion diaria.</p>
               
               <div className="mb-8">
                 <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
@@ -160,7 +160,7 @@ export const PricingSection = () => {
                   "Automatización n8n / Flujos complejos",
                   "Conexión WhatsApp API y Omnicanalidad",
                   "Reportería Dinámica y Dashboards",
-                  "Ahorro de +100 horas operativas al mes"
+                  "Soporte y ajustes post-lanzamiento"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <Check className="h-5 w-5 text-accent shrink-0 mt-0.5" />

@@ -12,25 +12,25 @@ interface StatItem {
 
 const stats: StatItem[] = [
   {
-    value: "80%",
-    numericEnd: 80,
-    suffix: "%",
-    label: "Reducción Tiempo Operativo",
-    sublabel: "Horas liberadas para lo que importa"
+    value: "50+",
+    numericEnd: 50,
+    suffix: "+",
+    label: "Proyectos Entregados",
+    sublabel: "En Guatemala, Mexico, Colombia y mas"
   },
   {
-    value: "3x",
-    numericEnd: 3,
-    suffix: "x",
-    label: "Retorno sobre Inversión",
-    sublabel: "En los primeros 6 meses"
+    value: "12",
+    numericEnd: 12,
+    suffix: "",
+    label: "Paises en LATAM",
+    sublabel: "Donde operan nuestros clientes"
   },
   {
-    value: "24/7",
-    numericEnd: 24,
-    suffix: "/7",
-    label: "Disponibilidad Automatizada",
-    sublabel: "Tu negocio nunca duerme"
+    value: "5",
+    numericEnd: 5,
+    suffix: "+",
+    label: "Anos de Experiencia",
+    sublabel: "Desde 2020 integrando sistemas"
   }
 ];
 
@@ -105,11 +105,11 @@ export const StatsSection = () => {
           className="text-center mb-16"
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-primary/10 text-primary mb-5 ring-1 ring-primary/20 uppercase">
-            Resultados Medibles
+            En Numeros
           </span>
           <h2 className="text-3xl md:text-4xl font-black text-foreground">
-            Resultados que medimos,{" "}
-            <span className="text-secondary">no prometemos</span>
+            Lo que hemos{" "}
+            <span className="text-secondary">construido</span>
           </h2>
         </motion.div>
 

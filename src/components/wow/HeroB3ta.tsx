@@ -117,7 +117,7 @@ export const HeroB3ta = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   const scrollToContact = () => {
-    document.getElementById("diagnostico")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
   const scrollToCases = () => {
     document.getElementById("casos")?.scrollIntoView({ behavior: "smooth" });
@@ -147,7 +147,7 @@ export const HeroB3ta = () => {
             >
               <Sparkles className="h-4 w-4 text-secondary animate-pulse" />
               <span className="text-sm font-medium text-foreground">
-                ¡No hagas webs informativas! Construye sistemas que facturen.
+                Consultoria tech para empresas en Guatemala y LATAM
               </span>
             </motion.div>
 
@@ -157,10 +157,10 @@ export const HeroB3ta = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="text-5xl sm:text-6xl md:text-7xl font-black text-foreground leading-[1.05] tracking-tighter"
             >
-              TU OPERACIÓN,
+              CONECTAMOS TU
               <br />
               <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                100% AUTOMATIZADA
+                SAP, TIENDA Y EQUIPO
               </span>
             </motion.h1>
 
@@ -170,8 +170,8 @@ export const HeroB3ta = () => {
               transition={{ duration: 0.7, delay: 0.4 }}
               className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed"
             >
-              Deja de operar manualmente.{" "}
-              <strong className="text-foreground">Integramos IA, SAP y código a medida.</strong> Escala tus ventas sin colapsar tu equipo.
+              Tu Shopify no habla con SAP, tu equipo carga pedidos a mano y WhatsApp se come tu dia.{" "}
+              <strong className="text-foreground">Nosotros arreglamos eso.</strong>
             </motion.p>
 
             {/* Bullet list */}
@@ -182,9 +182,9 @@ export const HeroB3ta = () => {
               className="space-y-3 text-base text-muted-foreground max-w-sm mx-auto lg:mx-0"
             >
               {[
-                "Automatizamos lo que hoy haces manual",
-                "Organizamos cómo fluye tu negocio",
-                "Todo conectado en un solo sistema",
+                "Pedidos de Shopify entran a SAP solos",
+                "Bot de WhatsApp atiende mientras duermes",
+                "Dashboards con tus numeros reales, no Excel",
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
@@ -205,7 +205,7 @@ export const HeroB3ta = () => {
                 className="group relative bg-primary hover:bg-primary-glow text-primary-foreground font-bold text-lg px-10 py-8 rounded-2xl cta-glow hover:scale-105 transition-all duration-300 w-full sm:w-auto overflow-hidden"
               >
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
-                DIAGNÓSTICO GRATIS
+                COTIZAR MI PROYECTO
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
 
@@ -226,7 +226,7 @@ export const HeroB3ta = () => {
               transition={{ delay: 0.9 }}
               className="text-sm text-muted-foreground text-center lg:text-left"
             >
-              Auditoría gratuita · Sin compromiso · Respuesta en 24h
+              Sin compromiso · Te respondemos en menos de 24h
             </motion.p>
           </div>
 
@@ -270,9 +270,9 @@ export const HeroB3ta = () => {
             {/* Floating stat badges */}
             <div className="flex gap-3 flex-wrap justify-center lg:justify-start">
               {[
-                { label: "Clientes activos", value: "50+" },
-                { label: "Uptime garantizado", value: "99.9%" },
-                { label: "Promedio ROI", value: "3x" },
+                { label: "Proyectos entregados", value: "50+" },
+                { label: "Paises en LATAM", value: "12" },
+                { label: "Desde", value: "2020" },
               ].map((badge, i) => (
                 <motion.div
                   key={i}

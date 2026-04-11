@@ -65,11 +65,11 @@ export const FinalCTA = () => {
         </div>
         
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight tracking-tighter">
-          ¡Acelera tu operación hoy!
+          Platicanos tu proyecto
         </h2>
-        
+
         <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-4 max-w-3xl mx-auto">
-          ¿Tienes procesos atascados o quieres lanzar un nuevo MVP? Diseñamos la solución que te faltaba.
+          Cuentanos que necesitas y te decimos si podemos ayudarte, cuanto cuesta y en cuanto tiempo.
         </p>
 
         {/* Trust bar */}
@@ -77,7 +77,7 @@ export const FinalCTA = () => {
           {[
             { dot: "bg-accent", text: "Respuesta en menos de 24h" },
             { dot: "bg-primary", text: "Sin contratos de permanencia" },
-            { dot: "bg-secondary", text: "Diagnóstico 100% gratuito" },
+            { dot: "bg-secondary", text: "Cotizacion sin costo" },
           ].map((item, i) => (
             <span key={i} className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
               <span className={`w-2 h-2 rounded-full ${item.dot}`} />
@@ -90,7 +90,7 @@ export const FinalCTA = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0 pointer-events-none" />
           <div className="space-y-6 text-left relative z-10">
             <label className="block text-foreground font-bold text-lg md:text-xl">
-              Dinos cuál es tu cuello de botella:
+              Que necesitas? Cuentanos en una linea:
             </label>
             <div className="flex flex-col md:flex-row gap-4">
               <Input 
@@ -105,7 +105,7 @@ export const FinalCTA = () => {
               <Input 
                 value={pain}
                 onChange={(e) => setPain(e.target.value)}
-                placeholder="Ej. Necesito una web, o quiero automatizar mis procesos..." 
+                placeholder="Ej: Necesito conectar Shopify con SAP, o quiero una web nueva..." 
                 className="h-16 text-lg bg-background/50 border-border text-foreground placeholder:text-muted-foreground rounded-2xl px-6 focus-visible:ring-primary md:w-2/3"
                 required
                 disabled={isLoading}
@@ -118,19 +118,19 @@ export const FinalCTA = () => {
                 className="w-full sm:w-auto h-16 px-8 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold text-base rounded-2xl border border-[#25D366]/20 transition-all"
               >
                 <MessageCircle className="mr-2 w-5 h-5" />
-                WhatsApp Directo
+                Escribir por WhatsApp
               </Button>
               <Button 
                 type="submit"
                 disabled={isLoading}
                 className="w-full sm:w-auto h-16 px-10 bg-primary hover:bg-primary-glow text-primary-foreground font-black text-lg rounded-2xl cta-glow transition-all hover:scale-105 cursor-pointer"
               >
-                {isLoading ? "PROCESANDO..." : "ENVIAR SOLICITUD"}
+                {isLoading ? "ENVIANDO..." : "ENVIAR"}
                 <ArrowRight className="ml-2 w-6 h-6" />
               </Button>
             </div>
             <p className="text-sm text-muted-foreground font-medium text-center">
-              🔒 100% Confidencial. El diagnóstico te llegará a tu correo.
+              Tu informacion es confidencial. Te respondemos por correo.
             </p>
           </div>
         </form>
