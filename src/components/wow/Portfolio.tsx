@@ -80,6 +80,12 @@ const projects = [
     desc: "Flujo automatico: cuando SAP hace picking, Cargo Expreso recibe la orden de envio. Cero manual.",
   },
   {
+    name: "Nano Banana Pro",
+    url: "#",
+    category: "IA / E-commerce",
+    desc: "Generador de imagenes con angulos de venta: hero shot, lifestyle, flat lay, UGC, carrusel. Para Shopify y redes.",
+  },
+  {
     name: "ChateaYA",
     url: "https://chateaya.app",
     category: "SaaS / Chatbots",
