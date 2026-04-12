@@ -56,10 +56,10 @@ export const FinalCTA = () => {
     <section id="contact" className="py-24 bg-zinc-950">
       <div className="container mx-auto px-4 sm:px-6 max-w-2xl text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          Platicanos tu proyecto
+          Desafíanos con tu proyecto
         </h2>
         <p className="text-lg text-zinc-400 mb-10">
-          Cuentanos que necesitas. Te respondemos en menos de 24 horas con una cotizacion clara.
+          Algo sencillo o algo que nadie ha podido resolver — cuentanos. Te respondemos en menos de 24 horas.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-left">

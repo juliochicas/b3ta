@@ -20,9 +20,12 @@ export const HeroB3ta = () => {
         </h1>
 
         <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Te ayudamos a tener tu propia pagina web, tu sistema de cotizaciones,
-          correo profesional y que tus clientes te encuentren en Google.
+          Pagina web, sistema de cotizaciones, correo profesional, que te encuentren en Google.
           Empezamos con lo basico y creces a tu ritmo.
+        </p>
+
+        <p className="text-base text-zinc-500 italic max-w-lg mx-auto mb-10">
+          "Nos gustan los retos. Si tienes un problema raro, complicado o que nadie te ha sabido resolver — cuentanos. Es lo que mas nos emociona."
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
