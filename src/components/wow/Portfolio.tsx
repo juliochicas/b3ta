@@ -80,6 +80,12 @@ const projects = [
     desc: "Flujo automatico: cuando SAP hace picking, Cargo Expreso recibe la orden de envio. Cero manual.",
   },
   {
+    name: "Validador NIT Shopify",
+    url: "#",
+    category: "Plugin Shopify",
+    desc: "Valida NIT en tiempo real con Digifact al momento del checkout en Shopify. Hecho para Guatemala.",
+  },
+  {
     name: "Nano Banana Pro",
     url: "#",
     category: "IA / E-commerce",
