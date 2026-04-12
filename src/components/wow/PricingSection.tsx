@@ -55,14 +55,15 @@ export const PricingSection = () => {
   };
 
   return (
-    <section id="precios" className="py-24 bg-zinc-50">
+    <section id="precios" className="py-24 bg-slate-50">
       <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4">
+          <p className="text-sm font-semibold text-blue-600 mb-3 uppercase tracking-wider">Precios</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             Precios claros. Sin letras chiquitas.
           </h2>
-          <p className="text-lg text-zinc-500 max-w-xl mx-auto">
-            Precio fijo por proyecto. Sabes exactamente que vas a recibir y cuanto te va a costar.
+          <p className="text-lg text-slate-500 max-w-xl mx-auto">
+            Precio fijo por proyecto. Sabes exactamente que vas a recibir.
           </p>
         </div>
 
@@ -70,32 +71,34 @@ export const PricingSection = () => {
           {plans.map((plan, i) => (
             <div
               key={i}
-              className={`bg-white rounded-lg p-8 border ${
-                plan.popular ? "border-zinc-900 ring-1 ring-zinc-900" : "border-zinc-200"
-              } relative`}
+              className={`bg-white rounded-xl p-8 border-2 transition-all duration-200 relative ${
+                plan.popular
+                  ? "border-blue-600 shadow-lg shadow-blue-600/10"
+                  : "border-slate-200 hover:border-slate-300"
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-zinc-900 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  <span className="bg-blue-600 text-white text-xs font-semibold px-4 py-1 rounded-full">
                     Mas popular
                   </span>
                 </div>
               )}
 
-              <h3 className="text-xl font-bold text-zinc-900 mb-1">{plan.name}</h3>
-              <p className="text-sm text-zinc-500 mb-4 h-10">{plan.desc}</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">{plan.name}</h3>
+              <p className="text-sm text-slate-500 mb-4 min-h-[40px]">{plan.desc}</p>
 
               <div className="mb-6">
-                <span className="text-sm text-zinc-400">Desde</span>
-                <div className="text-4xl font-bold text-zinc-900">
-                  {plan.price} <span className="text-base font-normal text-zinc-400">USD</span>
+                <span className="text-xs text-slate-400 uppercase tracking-wider">Desde</span>
+                <div className="text-4xl font-bold text-slate-900">
+                  {plan.price} <span className="text-base font-normal text-slate-400">USD</span>
                 </div>
               </div>
 
               <ul className="space-y-3 mb-8">
                 {plan.features.map((f, j) => (
-                  <li key={j} className="flex items-start gap-2 text-sm text-zinc-600">
-                    <Check className="w-4 h-4 text-zinc-400 mt-0.5 flex-shrink-0" />
+                  <li key={j} className="flex items-start gap-2.5 text-sm text-slate-600">
+                    <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.popular ? "text-blue-600" : "text-slate-400"}`} />
                     {f}
                   </li>
                 ))}
@@ -103,10 +106,10 @@ export const PricingSection = () => {
 
               <Button
                 onClick={scrollToContact}
-                className={`w-full ${
+                className={`w-full rounded-lg ${
                   plan.popular
-                    ? "bg-zinc-900 text-white hover:bg-zinc-800"
-                    : "bg-white text-zinc-900 border border-zinc-300 hover:bg-zinc-50"
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-white text-slate-900 border border-slate-300 hover:bg-slate-50"
                 }`}
               >
                 {plan.cta}
@@ -116,7 +119,7 @@ export const PricingSection = () => {
           ))}
         </div>
 
-        <p className="text-center text-sm text-zinc-400 mt-8">
+        <p className="text-center text-sm text-slate-400 mt-8">
           Los precios son referenciales. Cada proyecto se cotiza segun tus necesidades.
         </p>
       </div>

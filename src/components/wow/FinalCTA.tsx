@@ -53,22 +53,23 @@ export const FinalCTA = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-zinc-950">
-      <div className="container mx-auto px-4 sm:px-6 max-w-2xl text-center">
+    <section id="contact" className="py-24 bg-slate-950">
+      <div className="container mx-auto px-4 sm:px-6 max-w-xl text-center">
+        <p className="text-sm font-semibold text-blue-400 mb-3 uppercase tracking-wider">Contacto</p>
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
           Desafíanos con tu proyecto
         </h2>
-        <p className="text-lg text-zinc-400 mb-10">
+        <p className="text-base text-slate-400 mb-10">
           Algo sencillo o algo que nadie ha podido resolver — cuentanos. Te respondemos en menos de 24 horas.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+        <form onSubmit={handleSubmit} className="space-y-3 text-left">
           <Input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="tu@empresa.com"
-            className="h-12 bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 rounded-lg"
+            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-600 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
             required
             disabled={isLoading}
           />
@@ -76,15 +77,15 @@ export const FinalCTA = () => {
             value={pain}
             onChange={(e) => setPain(e.target.value)}
             placeholder="Ej: Necesito una pagina web para mi negocio..."
-            className="h-12 bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 rounded-lg"
+            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-600 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
             required
             disabled={isLoading}
           />
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 pt-1">
             <Button
               type="submit"
               disabled={isLoading}
-              className="flex-1 h-12 bg-white text-zinc-900 hover:bg-zinc-200 font-semibold rounded-lg"
+              className="flex-1 h-12 bg-blue-600 text-white hover:bg-blue-700 font-semibold rounded-lg"
             >
               {isLoading ? "Enviando..." : "Enviar mensaje"}
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -99,7 +100,7 @@ export const FinalCTA = () => {
                 )
               }
               variant="outline"
-              className="h-12 border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-lg"
+              className="h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-lg"
             >
               <MessageCircle className="mr-2 h-4 w-4" />
               WhatsApp
@@ -107,7 +108,7 @@ export const FinalCTA = () => {
           </div>
         </form>
 
-        <p className="text-xs text-zinc-600 mt-6">
+        <p className="text-xs text-slate-600 mt-6">
           Sin compromiso. Tu informacion es confidencial.
         </p>
       </div>

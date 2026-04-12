@@ -27,54 +27,53 @@ export const MainHeader = () => {
     { label: "Proceso", id: "proceso" },
     { label: "Portafolio", id: "portafolio" },
     { label: "Precios", id: "precios" },
-    { label: "Contacto", id: "contact" },
   ];
 
   return (
-    <header className="fixed top-0 w-full bg-zinc-950/90 backdrop-blur-md z-50 border-b border-zinc-800" role="banner">
-      <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+    <header className="fixed top-0 w-full bg-slate-950/95 backdrop-blur-md z-50 border-b border-slate-800/50" role="banner">
+      <div className="container mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
         <div
-          className="flex items-center gap-1 cursor-pointer"
+          className="flex items-center gap-1.5 cursor-pointer"
           onClick={() => {
             if (location.pathname !== "/") navigate("/");
             else window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >
-          <span className="text-xl font-bold text-white">B3TA</span>
-          <span className="text-xs text-zinc-500">.us</span>
+          <span className="text-lg font-bold text-white tracking-tight">B3TA</span>
+          <span className="text-[10px] text-slate-500 font-medium">.us</span>
         </div>
 
-        <nav className="hidden md:flex items-center gap-6" role="navigation">
+        <nav className="hidden md:flex items-center gap-1" role="navigation">
           {navLinks.map((link) => (
             <a
               key={link.id}
               href={"/#" + link.id}
               onClick={(e) => handleNavClick(e, link.id)}
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
+              className="text-sm text-slate-400 hover:text-white px-3 py-2 rounded-md hover:bg-slate-800/50 transition-colors"
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <Link
+            to="/auth"
+            className="text-sm text-slate-500 hover:text-white transition-colors flex items-center gap-1.5 px-3 py-2"
+          >
+            <LogIn className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Entrar</span>
+          </Link>
           <a
             href="#contact"
-            className="text-sm font-medium bg-white text-zinc-900 hover:bg-zinc-200 transition-colors py-2 px-4 rounded-lg hidden sm:inline-flex"
+            className="text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors py-2 px-4 rounded-lg hidden sm:inline-flex"
             onClick={(e) => handleNavClick(e, "contact")}
           >
             Cotizar
           </a>
-          <Link
-            to="/auth"
-            className="text-sm text-zinc-500 hover:text-white transition-colors flex items-center gap-1"
-          >
-            <LogIn className="h-4 w-4" />
-            <span className="hidden sm:inline">Entrar</span>
-          </Link>
 
           <button
-            className="md:hidden p-2 text-zinc-400 hover:text-white transition-colors"
+            className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Menu"
           >
@@ -84,18 +83,25 @@ export const MainHeader = () => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-zinc-950 border-b border-zinc-800">
-          <nav className="flex flex-col px-4 py-4 gap-4">
+        <div className="md:hidden bg-slate-950 border-b border-slate-800/50">
+          <nav className="flex flex-col px-4 py-3 gap-1">
             {navLinks.map((link) => (
               <a
                 key={link.id}
                 href={"/#" + link.id}
                 onClick={(e) => handleNavClick(e, link.id)}
-                className="text-base text-zinc-400 hover:text-white transition-colors"
+                className="text-base text-slate-400 hover:text-white hover:bg-slate-800/50 px-3 py-2.5 rounded-md transition-colors"
               >
                 {link.label}
               </a>
             ))}
+            <a
+              href="#contact"
+              onClick={(e) => handleNavClick(e, "contact")}
+              className="text-base font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2.5 rounded-md transition-colors mt-1 text-center"
+            >
+              Cotizar proyecto
+            </a>
           </nav>
         </div>
       )}
