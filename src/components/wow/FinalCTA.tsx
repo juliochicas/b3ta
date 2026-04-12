@@ -1,72 +1,52 @@
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Zap, MessageCircle } from "lucide-react";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-
-const inputClass = "w-full h-12 px-4 bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50";
 
 export const FinalCTA = () => {
   const [pain, setPain] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState<string | undefined>("");
-  const [country, setCountry] = useState<string>("GT");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pain.trim() || !email.trim()) return;
-
-    if (phone && !isValidPhoneNumber(phone)) {
-      toast({
-        title: "Numero invalido",
-        description: "Revisa el numero de telefono.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    
     setIsLoading(true);
-
+    
     try {
-      const countryName = country || "Desconocido";
-
-      const { error } = await supabase.from("leads_b3ta").insert([
+      const { error } = await supabase.from('leads_b3ta').insert([
         {
           email: email.trim(),
-          phone: phone || null,
-          message: `[Pais: ${countryName}] ${pain.trim()}`,
-          status: "new",
-          priority: "medium",
-          name: email.split("@")[0],
-        },
+          message: pain.trim(),
+          status: 'new',
+          priority: 'medium',
+          name: email.split('@')[0] // auto-extract simple name
+        }
       ]);
 
       if (error) throw error;
 
-      await supabase.functions.invoke("send-lead-notifications", {
-        body: {
-          email: email.trim(),
-          name: email.split("@")[0],
-          message: `Tel: ${phone || "No proporcionado"} (${countryName})\n${pain.trim()}`,
-        },
+      // Disparar las notificaciones por correo automáticamente
+      await supabase.functions.invoke('send-lead-notifications', {
+        body: { email: email.trim(), name: email.split('@')[0], message: pain.trim() }
       });
 
       toast({
-        title: "Mensaje enviado",
-        description: "Te respondemos en menos de 24 horas.",
+        title: "¡Solicitud Enviada Exitosamente!",
+        description: "Nuestro equipo analizará tus requerimientos y te contactará en breve.",
       });
-
+      
       setPain("");
       setEmail("");
-      setPhone("");
     } catch (err: any) {
       toast({
-        title: "Error al enviar",
+        title: "Error al enviar la solicitud",
         description: err.message,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
@@ -74,75 +54,86 @@ export const FinalCTA = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-slate-950">
-      <div className="container mx-auto px-4 sm:px-6 max-w-xl text-center">
-        <p className="text-sm font-semibold text-blue-400 mb-3 uppercase tracking-wider">Contacto</p>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          Desafíanos con tu proyecto
+    <section id="contact" className="py-32 bg-background relative overflow-hidden">
+      {/* Dynamic Background Patterns */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,hsl(var(--primary)/0.1),transparent_60%)]" />
+
+      <div className="container mx-auto px-4 max-w-5xl relative z-10 text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl glass-dark mb-8 border border-primary/20 shadow-2xl">
+          <Zap className="w-10 h-10 text-primary animate-bounce" />
+        </div>
+        
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight tracking-tighter">
+          Platicanos tu proyecto
         </h2>
-        <p className="text-base text-slate-300 mb-10">
-          Algo sencillo o algo que nadie ha podido resolver — cuentanos. Te respondemos en menos de 24 horas.
+
+        <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-4 max-w-3xl mx-auto">
+          Cuentanos que necesitas y te decimos si podemos ayudarte, cuanto cuesta y en cuanto tiempo.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-3 text-left">
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder="tu@empresa.com"
-            className={inputClass}
-            required
-            disabled={isLoading}
-          />
-          <div className="phone-input-dark">
-            <PhoneInput
-              international
-              defaultCountry="GT"
-              value={phone}
-              onChange={(value) => setPhone(value)}
-              onCountryChange={(c) => setCountry(c || "GT")}
-              disabled={isLoading}
-              placeholder="Numero de telefono"
-              className="h-12 bg-slate-900 border border-slate-700 text-white rounded-lg px-3 focus-within:border-blue-500"
-            />
-          </div>
-          <input
-            value={pain}
-            onChange={(e) => setPain(e.target.value)}
-            placeholder="Ej: Necesito una pagina web para mi negocio..."
-            className={inputClass}
-            required
-            disabled={isLoading}
-          />
-          <div className="flex flex-col sm:flex-row gap-3 pt-1">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 h-12 inline-flex items-center justify-center gap-2 bg-blue-600 text-white hover:bg-blue-500 font-semibold rounded-lg cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? "Enviando..." : "Enviar mensaje"}
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                window.open(
-                  "https://wa.me/14355348065?text=" +
-                    encodeURIComponent("Hola, me interesa un proyecto con B3TA"),
-                  "_blank"
-                )
-              }
-              className="h-12 inline-flex items-center justify-center gap-2 border border-slate-600 text-white hover:bg-slate-800 rounded-lg cursor-pointer transition-colors px-6"
-            >
-              <MessageCircle className="h-4 w-4" />
-              WhatsApp
-            </button>
+        {/* Trust bar */}
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
+          {[
+            { dot: "bg-accent", text: "Respuesta en menos de 24h" },
+            { dot: "bg-primary", text: "Sin contratos de permanencia" },
+            { dot: "bg-secondary", text: "Cotizacion sin costo" },
+          ].map((item, i) => (
+            <span key={i} className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+              <span className={`w-2 h-2 rounded-full ${item.dot}`} />
+              {item.text}
+            </span>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit} className="glass p-6 md:p-10 rounded-3xl border border-border/50 shadow-elegant mx-auto max-w-4xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0 pointer-events-none" />
+          <div className="space-y-6 text-left relative z-10">
+            <label className="block text-foreground font-bold text-lg md:text-xl">
+              Que necesitas? Cuentanos en una linea:
+            </label>
+            <div className="flex flex-col md:flex-row gap-4">
+              <Input 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="tu@empresa.com" 
+                className="h-16 text-lg bg-background/50 border-border text-foreground placeholder:text-muted-foreground rounded-2xl px-6 focus-visible:ring-primary md:w-1/3"
+                required
+                disabled={isLoading}
+              />
+              <Input 
+                value={pain}
+                onChange={(e) => setPain(e.target.value)}
+                placeholder="Ej: Necesito conectar Shopify con SAP, o quiero una web nueva..." 
+                className="h-16 text-lg bg-background/50 border-border text-foreground placeholder:text-muted-foreground rounded-2xl px-6 focus-visible:ring-primary md:w-2/3"
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4">
+              <Button 
+                type="button"
+                onClick={() => window.open(`https://wa.me/14355348065?text=${encodeURIComponent("Hola, me interesa transformar mi negocio con B3TA")}`, '_blank')}
+                className="w-full sm:w-auto h-16 px-8 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold text-base rounded-2xl border border-[#25D366]/20 transition-all"
+              >
+                <MessageCircle className="mr-2 w-5 h-5" />
+                Escribir por WhatsApp
+              </Button>
+              <Button 
+                type="submit"
+                disabled={isLoading}
+                className="w-full sm:w-auto h-16 px-10 bg-primary hover:bg-primary-glow text-primary-foreground font-black text-lg rounded-2xl cta-glow transition-all hover:scale-105 cursor-pointer"
+              >
+                {isLoading ? "ENVIANDO..." : "ENVIAR"}
+                <ArrowRight className="ml-2 w-6 h-6" />
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground font-medium text-center">
+              Tu informacion es confidencial. Te respondemos por correo.
+            </p>
           </div>
         </form>
-
-        <p className="text-xs text-slate-500 mt-6">
-          Sin compromiso. Tu informacion es confidencial.
-        </p>
       </div>
     </section>
   );

@@ -89,8 +89,8 @@ export const CaseStudiesCarousel = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <section id="casos" className="py-24 bg-background relative overflow-hidden">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <section id="casos" className="py-32 bg-background relative overflow-hidden">
+      <div className="container mx-auto px-4 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -98,9 +98,9 @@ export const CaseStudiesCarousel = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-secondary/10 text-secondary mb-5 ring-1 ring-secondary/20 uppercase">
             Casos Reales
-          </p>
+          </span>
           <h2 className="text-4xl md:text-5xl font-black mb-4">
             Proyectos <span className="text-secondary">que hemos hecho</span>
           </h2>
@@ -114,7 +114,7 @@ export const CaseStudiesCarousel = () => {
             <div className="flex -ml-4">
               {cases.map((cs, idx) => (
                 <div key={idx} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4">
-                  <div className={`h-full p-8 rounded-xl bg-card border border-border/50 ${cs.border} transition-all duration-300 shadow-lg group hover:shadow-xl`}>
+                  <div className={`h-full p-8 rounded-3xl bg-card border border-border/50 ${cs.border} transition-all duration-300 shadow-lg group hover:shadow-xl`}>
 
                     {/* Icon + "ANTES → AHORA" pill */}
                     <div className="flex items-start justify-between mb-6">

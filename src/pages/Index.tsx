@@ -1,26 +1,35 @@
 import { MainHeader } from "@/components/MainHeader";
 import { HeroB3ta } from "@/components/wow/HeroB3ta";
+import { TechLogos } from "@/components/wow/TechLogos";
 import { ProblemSolution } from "@/components/wow/ProblemSolution";
-import { CoreServices } from "@/components/wow/CoreServices";
+import { AutomationHub } from "@/components/wow/AutomationHub";
+import { TechStack } from "@/components/wow/TechStack";
 import { Methodology } from "@/components/wow/Methodology";
-import { Portfolio } from "@/components/wow/Portfolio";
+import { StatsSection } from "@/components/wow/StatsSection";
+import { CaseStudiesCarousel } from "@/components/wow/CaseStudiesCarousel";
 import { PricingSection } from "@/components/wow/PricingSection";
 import { FinalCTA } from "@/components/wow/FinalCTA";
 import { Footer } from "@/components/Footer";
+import { StickyCTA } from "@/components/StickyCTA";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="dark min-h-screen bg-background text-foreground">
       <MainHeader />
-
-      <main id="main-content">
+      
+      <main>
         <HeroB3ta />
+        <TechLogos />
         <ProblemSolution />
-        <CoreServices />
+        <AutomationHub />
+        <TechStack />
         <Methodology />
-        <Portfolio />
+        <StatsSection />
+        <CaseStudiesCarousel />
         <PricingSection />
         <FinalCTA />
+        
+        <StickyCTA />
       </main>
 
       <Footer />

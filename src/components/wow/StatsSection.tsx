@@ -93,6 +93,8 @@ export const StatsSection = () => {
 
   return (
     <section ref={ref} className="py-24 bg-card relative overflow-hidden">
+      {/* Background accent */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.12),transparent_70%)]" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <motion.div
@@ -102,9 +104,9 @@ export const StatsSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-primary/10 text-primary mb-5 ring-1 ring-primary/20 uppercase">
             En Numeros
-          </p>
+          </span>
           <h2 className="text-3xl md:text-4xl font-black text-foreground">
             Lo que hemos{" "}
             <span className="text-secondary">construido</span>
@@ -119,10 +121,21 @@ export const StatsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.15 }}
-              className="p-8 rounded-xl bg-card border border-border/50 hover:border-primary/40 transition-all duration-200 text-center"
+              className="relative p-8 rounded-3xl bg-background border border-border/50 hover:border-primary/40 transition-all duration-300 group text-center overflow-hidden cursor-default"
             >
-              <div>
-                <div className="text-6xl md:text-7xl font-black mb-4 text-primary leading-none">
+              {/* Soft glow bg */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${
+                i === 0 ? "from-primary/5" : i === 1 ? "from-secondary/5" : "from-accent/5"
+              } to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+
+              <div className="relative z-10">
+                <div className={`text-6xl md:text-7xl font-black mb-4 bg-gradient-to-br ${
+                  i === 0
+                    ? "from-primary to-primary-glow"
+                    : i === 1
+                    ? "from-secondary to-cyan-400"
+                    : "from-accent to-emerald-400"
+                } bg-clip-text text-transparent leading-none`}>
                   <AnimatedCounter
                     end={stat.numericEnd}
                     suffix={stat.suffix}
