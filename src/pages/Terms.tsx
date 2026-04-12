@@ -3,11 +3,11 @@ import { Footer } from "@/components/Footer";
 
 const Terms = () => {
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-slate-950 text-white">
       <MainHeader />
       <main className="container mx-auto px-4 sm:px-6 max-w-3xl pt-28 pb-20">
         <h1 className="text-4xl font-black mb-8">Terminos de Servicio</h1>
-        <div className="prose prose-invert max-w-none space-y-6 text-muted-foreground">
+        <div className="prose prose-invert max-w-none space-y-6 text-slate-300">
           <p><strong>Ultima actualizacion:</strong> 11 de abril de 2026</p>
 
           <h2 className="text-xl font-bold text-foreground">1. Servicios</h2>

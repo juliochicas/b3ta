@@ -1,10 +1,11 @@
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import PhoneInput, { isValidPhoneNumber, getCountryCallingCode } from "react-phone-number-input";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+
+const inputClass = "w-full h-12 px-4 bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50";
 
 export const FinalCTA = () => {
   const [pain, setPain] = useState("");
@@ -84,12 +85,12 @@ export const FinalCTA = () => {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3 text-left">
-          <Input
+          <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="tu@empresa.com"
-            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
+            className={inputClass}
             required
             disabled={isLoading}
           />
@@ -102,14 +103,14 @@ export const FinalCTA = () => {
               onCountryChange={(c) => setCountry(c || "GT")}
               disabled={isLoading}
               placeholder="Numero de telefono"
-              className="h-12 bg-slate-900 border border-slate-800 text-white rounded-lg px-3 focus-within:border-blue-500"
+              className="h-12 bg-slate-900 border border-slate-700 text-white rounded-lg px-3 focus-within:border-blue-500"
             />
           </div>
-          <Input
+          <input
             value={pain}
             onChange={(e) => setPain(e.target.value)}
             placeholder="Ej: Necesito una pagina web para mi negocio..."
-            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
+            className={inputClass}
             required
             disabled={isLoading}
           />
