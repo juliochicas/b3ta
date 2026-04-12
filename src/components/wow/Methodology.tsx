@@ -54,7 +54,7 @@ export const Methodology = () => {
                 <step.icon className="w-5 h-5 text-blue-400" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{step.desc}</p>
+              <p className="text-sm text-slate-300 leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>

@@ -48,7 +48,7 @@ export const CoreServices = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             Que hacemos
           </h2>
-          <p className="text-lg text-slate-500">
+          <p className="text-lg text-slate-600">
             Desde una pagina web sencilla hasta un sistema completo. Tu decides hasta donde llegar.
           </p>
         </div>
@@ -63,12 +63,12 @@ export const CoreServices = () => {
                 <s.icon className="w-5 h-5 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">{s.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed mb-4">{s.desc}</p>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4">{s.desc}</p>
               <div className="flex flex-wrap gap-2">
                 {s.tags.map((tag, j) => (
                   <span
                     key={j}
-                    className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full"
+                    className="text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full"
                   >
                     {tag}
                   </span>

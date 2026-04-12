@@ -30,6 +30,10 @@ export const MainHeader = () => {
   ];
 
   return (
+    <>
+    <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
+      Saltar al contenido
+    </a>
     <header className="fixed top-0 w-full bg-slate-950/95 backdrop-blur-md z-50 border-b border-slate-800/50" role="banner">
       <div className="container mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
         <div
@@ -106,5 +110,6 @@ export const MainHeader = () => {
         </div>
       )}
     </header>
+    </>
   );
 };

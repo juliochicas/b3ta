@@ -24,11 +24,11 @@ export const HeroB3ta = () => {
               Tu negocio merece mas que un Excel y un WhatsApp.
             </h1>
 
-            <p className="text-lg text-slate-400 mb-4 leading-relaxed max-w-lg">
+            <p className="text-lg text-slate-300 mb-4 leading-relaxed max-w-lg">
               Pagina web, sistema de cotizaciones, correo profesional y que tus clientes te encuentren en Google. Empezamos con lo basico y creces a tu ritmo.
             </p>
 
-            <p className="text-base text-slate-500 italic mb-8 max-w-lg border-l-2 border-blue-500/30 pl-4">
+            <p className="text-base text-slate-400 italic mb-8 max-w-lg border-l-2 border-blue-500/30 pl-4">
               "Eres empresario, eres emprendedor, pero tu programador no te entiende. Siempre te dicen 'no se puede' o 'dejame averiguar' y pasan meses. Nosotros te lo resolvemos ya."
             </p>
 
@@ -59,7 +59,7 @@ export const HeroB3ta = () => {
               </Button>
             </div>
 
-            <div className="flex gap-8 text-sm text-slate-500">
+            <div className="flex gap-8 text-sm text-slate-400">
               <span><strong className="text-white">20+</strong> proyectos</span>
               <span><strong className="text-white">12</strong> paises</span>
               <span><strong className="text-white">5+</strong> anos</span>
@@ -77,7 +77,7 @@ export const HeroB3ta = () => {
               <div key={i} className="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
                 <div className="text-2xl font-bold text-white mb-1">{s.num}</div>
                 <div className="text-sm font-medium text-slate-300 mb-1">{s.label}</div>
-                <div className="text-xs text-slate-500">{s.sub}</div>
+                <div className="text-xs text-slate-400">{s.sub}</div>
               </div>
             ))}
           </div>

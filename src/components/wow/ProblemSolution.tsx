@@ -54,7 +54,7 @@ export const ProblemSolution = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             Si algo de esto te suena, podemos ayudarte.
           </h2>
-          <p className="text-lg text-slate-500">
+          <p className="text-lg text-slate-600">
             Son los problemas mas comunes que nos cuentan nuestros clientes en Guatemala.
           </p>
         </div>
@@ -69,7 +69,7 @@ export const ProblemSolution = () => {
                 <p.icon className={`w-5 h-5 ${p.color}`} />
               </div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">{p.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{p.desc}</p>
+              <p className="text-sm text-slate-600 leading-relaxed">{p.desc}</p>
             </div>
           ))}
         </div>

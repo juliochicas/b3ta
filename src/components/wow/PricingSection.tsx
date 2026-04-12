@@ -62,7 +62,7 @@ export const PricingSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             Precios claros. Sin letras chiquitas.
           </h2>
-          <p className="text-lg text-slate-500 max-w-xl mx-auto">
+          <p className="text-lg text-slate-600 max-w-xl mx-auto">
             Precio fijo por proyecto. Sabes exactamente que vas a recibir.
           </p>
         </div>
@@ -86,7 +86,7 @@ export const PricingSection = () => {
               )}
 
               <h3 className="text-xl font-bold text-slate-900 mb-1">{plan.name}</h3>
-              <p className="text-sm text-slate-500 mb-4 min-h-[40px]">{plan.desc}</p>
+              <p className="text-sm text-slate-600 mb-4 min-h-[40px]">{plan.desc}</p>
 
               <div className="mb-6">
                 <span className="text-xs text-slate-400 uppercase tracking-wider">Desde</span>

@@ -59,7 +59,7 @@ export const FinalCTA = () => {
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
           Desafíanos con tu proyecto
         </h2>
-        <p className="text-base text-slate-400 mb-10">
+        <p className="text-base text-slate-300 mb-10">
           Algo sencillo o algo que nadie ha podido resolver — cuentanos. Te respondemos en menos de 24 horas.
         </p>
 
@@ -108,7 +108,7 @@ export const FinalCTA = () => {
           </div>
         </form>
 
-        <p className="text-xs text-slate-600 mt-6">
+        <p className="text-xs text-slate-500 mt-6">
           Sin compromiso. Tu informacion es confidencial.
         </p>
       </div>

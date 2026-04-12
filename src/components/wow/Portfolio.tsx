@@ -117,7 +117,7 @@ export const Portfolio = () => {
                     {p.category}
                   </span>
                 </div>
-                <p className="text-sm text-slate-500">{p.desc}</p>
+                <p className="text-sm text-slate-600">{p.desc}</p>
               </div>
             </a>
           ))}
@@ -130,7 +130,7 @@ export const Portfolio = () => {
           </h3>
           <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
             {more.map((item, i) => (
-              <p key={i} className="text-sm text-slate-500 py-1 border-b border-slate-100 last:border-0">
+              <p key={i} className="text-sm text-slate-600 py-1 border-b border-slate-100 last:border-0">
                 {item}
               </p>
             ))}
