@@ -80,6 +80,12 @@ const projects = [
     desc: "Flujo automatico: cuando SAP hace picking, Cargo Expreso recibe la orden de envio. Cero manual.",
   },
   {
+    name: "ChateaYA",
+    url: "https://chateaya.app",
+    category: "SaaS / Chatbots",
+    desc: "Plataforma multi-canal: WhatsApp, Instagram, Facebook en un solo lugar. Chatbots con IA. 500+ empresas.",
+  },
+  {
     name: "Prospeccion B2B",
     url: "#",
     category: "CRM + Automatizacion",
