@@ -25,6 +25,7 @@ export const MainHeader = () => {
   const navLinks = [
     { label: "Servicios", id: "servicios" },
     { label: "Proceso", id: "proceso" },
+    { label: "Portafolio", id: "portafolio" },
     { label: "Precios", id: "precios" },
     { label: "Contacto", id: "contact" },
   ];
