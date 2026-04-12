@@ -1,5 +1,8 @@
 import { ExternalLink } from "lucide-react";
 
+const getThumb = (url: string) =>
+  `https://image.thum.io/get/width/600/crop/400/${url}`;
+
 const projects = [
   {
     name: "Grupo Syst",
@@ -160,7 +163,7 @@ export const Portfolio = () => {
           </p>
         </div>
 
-        {/* Highlighted projects — larger cards */}
+        {/* Highlighted projects — with screenshots */}
         <div className="grid sm:grid-cols-2 gap-6 mb-6">
           {highlighted.map((p, i) => (
             <a
@@ -168,23 +171,35 @@ export const Portfolio = () => {
               href={p.url}
               target={p.url !== "#" ? "_blank" : undefined}
               rel="noopener noreferrer"
-              className="group p-6 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500/50 transition-all duration-200 block"
+              className="group rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500/50 transition-all duration-200 block overflow-hidden"
             >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full">
-                  {p.category}
-                </span>
-                {p.url !== "#" && (
-                  <ExternalLink className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                )}
+              {p.url !== "#" && (
+                <div className="w-full h-48 bg-slate-800 overflow-hidden">
+                  <img
+                    src={getThumb(p.url)}
+                    alt={p.name}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full">
+                    {p.category}
+                  </span>
+                  {p.url !== "#" && (
+                    <ExternalLink className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />
+                  )}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{p.name}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{p.desc}</p>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">{p.name}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{p.desc}</p>
             </a>
           ))}
         </div>
 
-        {/* Rest of projects — compact grid */}
+        {/* Rest of projects — compact grid with thumbnails */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {rest.map((p, i) => (
             <a
@@ -192,18 +207,30 @@ export const Portfolio = () => {
               href={p.url}
               target={p.url !== "#" ? "_blank" : undefined}
               rel="noopener noreferrer"
-              className="group p-4 rounded-lg border border-slate-200 hover:border-blue-200 hover:shadow-sm transition-all duration-200 block"
+              className="group rounded-lg border border-slate-200 hover:border-blue-200 hover:shadow-md transition-all duration-200 block overflow-hidden"
             >
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                {p.category}
-              </span>
-              <h3 className="text-sm font-semibold text-slate-900 mt-1 mb-1 flex items-center gap-1.5">
-                {p.name}
-                {p.url !== "#" && (
-                  <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-blue-500 transition-colors" />
-                )}
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
+              {p.url !== "#" && (
+                <div className="w-full h-32 bg-slate-100 overflow-hidden">
+                  <img
+                    src={getThumb(p.url)}
+                    alt={p.name}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div className="p-4">
+                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                  {p.category}
+                </span>
+                <h3 className="text-sm font-semibold text-slate-900 mt-1 mb-1 flex items-center gap-1.5">
+                  {p.name}
+                  {p.url !== "#" && (
+                    <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                  )}
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
+              </div>
             </a>
           ))}
         </div>
