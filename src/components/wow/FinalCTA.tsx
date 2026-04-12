@@ -55,12 +55,9 @@ export const FinalCTA = () => {
 
   return (
     <section id="contact" className="py-24 bg-background relative overflow-hidden">
-      {/* Dynamic Background Patterns */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,hsl(var(--primary)/0.1),transparent_60%)]" />
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10 text-center">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl glass-dark mb-8 border border-primary/20 shadow-2xl">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-card mb-8 border border-primary/20 shadow-2xl">
           <Zap className="w-10 h-10 text-primary" />
         </div>
         
@@ -86,8 +83,7 @@ export const FinalCTA = () => {
           ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="glass p-6 md:p-10 rounded-3xl border border-border/50 shadow-elegant mx-auto max-w-4xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0 pointer-events-none" />
+        <form onSubmit={handleSubmit} className="bg-card p-6 md:p-10 rounded-xl border border-border/50 shadow-elegant mx-auto max-w-4xl relative overflow-hidden">
           <div className="space-y-6 text-left relative z-10">
             <label className="block text-foreground font-bold text-lg md:text-xl">
               Que necesitas? Cuentanos en una linea:

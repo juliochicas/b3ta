@@ -49,7 +49,7 @@ const AnimatedSequenceCard = ({ tab }: { tab: typeof tabs[0] }) => {
   }, [tab.id, tab.steps.length]);
 
   return (
-    <div className="p-6 rounded-3xl glass-dark border border-primary/20 shadow-[0_0_40px_hsl(var(--primary)/0.1)]">
+    <div className="p-6 rounded-xl bg-card border border-border/50">
       {/* Pulsing indicator dot */}
       <div className="flex justify-end mb-4">
         <span className="relative flex h-2 w-2">
@@ -125,12 +125,7 @@ export const HeroB3ta = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background */}
-      <div className="absolute inset-0 bg-hero-gradient" />
-      <div className="absolute inset-0 mesh-gradient opacity-60" />
-      {/* Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.05)_1px,transparent_1px)] bg-[size:60px_60px]" />
-      {/* Subtle accent blob */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-background" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
@@ -141,7 +136,7 @@ export const HeroB3ta = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 glass-dark rounded-full border border-primary/20"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-card rounded-full border border-primary/20"
             >
               <Sparkles className="h-4 w-4 text-secondary" />
               <span className="text-sm font-medium text-foreground">
@@ -157,7 +152,7 @@ export const HeroB3ta = () => {
             >
               CONECTAMOS TU
               <br />
-              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              <span className="text-primary">
                 SAP, TIENDA Y EQUIPO
               </span>
             </motion.h1>
@@ -236,7 +231,7 @@ export const HeroB3ta = () => {
             className="space-y-4 w-full max-w-md mx-auto lg:mx-0 lg:ml-auto"
           >
             {/* Tabs */}
-            <div className="flex gap-2 p-1 rounded-2xl glass-dark border border-border/50 w-fit mx-auto lg:mx-0">
+            <div className="flex gap-2 p-1 rounded-2xl bg-card border border-border/50 w-fit mx-auto lg:mx-0">
               {tabs.map((tab, i) => (
                 <button
                   key={tab.id}
@@ -277,7 +272,7 @@ export const HeroB3ta = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 + i * 0.1 }}
-                  className="px-4 py-2 rounded-xl glass-dark border border-border/40 text-center"
+                  className="px-4 py-2 rounded-xl bg-card border border-border/40 text-center"
                 >
                   <div className="text-base font-black text-primary">{badge.value}</div>
                   <div className="text-xs text-muted-foreground">{badge.label}</div>

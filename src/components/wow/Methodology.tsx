@@ -55,8 +55,6 @@ const steps = [
 export const Methodology = () => {
   return (
     <section id="proceso" className="py-24 bg-card relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <motion.div
@@ -66,9 +64,9 @@ export const Methodology = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-primary/10 text-primary mb-5 ring-1 ring-primary/20 uppercase">
+          <p className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
             Como Trabajamos
-          </span>
+          </p>
           <h2 className="text-4xl md:text-5xl font-black mb-4">
             4 pasos, sin sorpresas
           </h2>
@@ -99,7 +97,7 @@ export const Methodology = () => {
                 </div>
 
                 {/* Card */}
-                <div className={`w-full p-6 rounded-3xl bg-gradient-to-b ${step.gradient} border ${step.border} transition-colors duration-300 text-left relative group`}>
+                <div className={`w-full p-6 rounded-xl bg-gradient-to-b ${step.gradient} border ${step.border} transition-colors duration-300 text-left relative group`}>
                   <div className="flex items-start justify-between mb-3">
                     <span className="text-3xl font-black text-foreground/10 leading-none">{step.num}</span>
                     {step.badge && (
@@ -125,7 +123,7 @@ export const Methodology = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`p-6 rounded-3xl bg-gradient-to-br ${step.gradient} border ${step.border} relative`}
+              className={`p-6 rounded-xl bg-gradient-to-br ${step.gradient} border ${step.border} relative`}
             >
               <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-2xl ${step.iconBg} flex items-center justify-center flex-shrink-0`}>

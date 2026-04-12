@@ -96,8 +96,7 @@ export const ProblemSolution = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
           >
-            <div className="md:col-span-4 p-10 md:p-12 rounded-[2rem] bg-card border border-destructive/20 relative overflow-hidden group hover:border-destructive/50 transition-colors h-full">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-destructive/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+            <div className="md:col-span-4 p-10 md:p-12 rounded-xl bg-card border border-destructive/20 relative overflow-hidden group hover:border-destructive/50 transition-colors h-full">
               <div className="relative z-10">
                 <div className="w-14 h-14 rounded-2xl bg-destructive/10 flex items-center justify-center mb-8">
                   <AlertTriangle className="w-7 h-7 text-destructive" />
@@ -129,8 +128,7 @@ export const ProblemSolution = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="h-full p-10 md:p-12 rounded-[2rem] bg-gradient-to-br from-primary/10 via-background to-secondary/10 border border-primary/30 relative overflow-hidden group hover:border-primary/60 transition-colors shadow-glow">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--primary)/0.1),transparent_60%)]" />
+            <div className="h-full p-10 md:p-12 rounded-xl bg-card border border-primary/30 relative overflow-hidden group hover:border-primary/60 transition-colors">
               <div className="relative z-10">
                 <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center mb-8">
                   <CheckCircle2 className="w-7 h-7 text-primary" />

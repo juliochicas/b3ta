@@ -55,7 +55,7 @@ export const CoreServices = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Lo que <span className="gradient-text">hacemos</span>
+            Lo que <span className="text-primary">hacemos</span>
           </h2>
           <p className="text-xl text-muted-foreground">
             Estas son las areas donde podemos ayudarte.
@@ -74,10 +74,8 @@ export const CoreServices = () => {
               key={idx}
               variants={item}
               whileHover={{ scale: 1.02 }}
-              className={`p-10 rounded-3xl bg-gradient-to-br ${srv.color} to-background border-2 border-border/50 ${srv.borderColor} transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl shadow-card`}
+              className={`p-10 rounded-xl bg-card border border-border/50 ${srv.borderColor} transition-all duration-200 relative overflow-hidden group cursor-pointer`}
             >
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="mb-6 inline-flex items-center justify-center p-4 rounded-2xl bg-background border border-border shadow-inner">
                 <srv.icon className="h-8 w-8 text-foreground" />

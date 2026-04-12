@@ -21,7 +21,7 @@ export const PricingSection = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-black mb-6"
           >
-            Que incluye y <span className="gradient-text">cuanto cuesta.</span>
+            Que incluye y <span className="text-primary">cuanto cuesta.</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -40,9 +40,8 @@ export const PricingSection = () => {
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="glass rounded-3xl p-8 lg:p-10 border border-border/50 hover:border-primary/50 transition-all duration-300 relative group"
+            className="bg-card rounded-xl p-8 lg:p-10 border border-border/50 hover:border-primary/50 transition-all duration-300 relative group"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10">
               <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
                 <Zap className="h-7 w-7 text-primary" />
@@ -86,12 +85,11 @@ export const PricingSection = () => {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="glass rounded-3xl p-8 lg:p-10 border-2 border-secondary relative group overflow-hidden"
+            className="bg-card rounded-xl p-8 lg:p-10 border-2 border-secondary relative group overflow-hidden"
           >
             <div className="absolute top-0 right-0 bg-secondary text-secondary-foreground text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
               Más Solicitado
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10">
               <div className="h-14 w-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6">
                 <Code2 className="h-7 w-7 text-secondary" />
@@ -135,9 +133,8 @@ export const PricingSection = () => {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="glass rounded-3xl p-8 lg:p-10 border border-border/50 hover:border-primary/50 transition-all duration-300 relative group"
+            className="bg-card rounded-xl p-8 lg:p-10 border border-border/50 hover:border-primary/50 transition-all duration-300 relative group"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10">
               <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
                 <Bot className="h-7 w-7 text-primary" />
