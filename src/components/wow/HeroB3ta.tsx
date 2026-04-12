@@ -33,16 +33,15 @@ export const HeroB3ta = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-8">
-              <Button
+              <button
                 onClick={scrollToContact}
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base px-8 py-6 rounded-lg"
+                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-base px-8 py-4 rounded-lg cursor-pointer transition-colors"
               >
                 Cotizar mi proyecto
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+                <ArrowRight className="h-5 w-5" />
+              </button>
 
-              <Button
+              <button
                 onClick={() =>
                   window.open(
                     "https://wa.me/14355348065?text=" +
@@ -50,13 +49,11 @@ export const HeroB3ta = () => {
                     "_blank"
                   )
                 }
-                size="lg"
-                variant="outline"
-                className="border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-base px-8 py-6 rounded-lg"
+                className="inline-flex items-center justify-center gap-2 border border-slate-600 text-white hover:bg-slate-800 font-semibold text-base px-8 py-4 rounded-lg cursor-pointer transition-colors"
               >
-                <MessageCircle className="mr-2 h-5 w-5" />
+                <MessageCircle className="h-5 w-5" />
                 WhatsApp
-              </Button>
+              </button>
             </div>
 
             <div className="flex gap-8 text-sm text-slate-400">

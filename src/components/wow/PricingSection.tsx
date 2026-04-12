@@ -104,17 +104,17 @@ export const PricingSection = () => {
                 ))}
               </ul>
 
-              <Button
+              <button
                 onClick={scrollToContact}
-                className={`w-full rounded-lg ${
+                className={`w-full h-11 rounded-lg inline-flex items-center justify-center gap-2 font-medium text-sm cursor-pointer transition-colors ${
                   plan.popular
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "bg-white text-slate-900 border border-slate-300 hover:bg-slate-50"
+                    ? "bg-blue-600 text-white hover:bg-blue-500"
+                    : "bg-slate-900 text-white hover:bg-slate-800"
                 }`}
               >
                 {plan.cta}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+                <ArrowRight className="h-4 w-4" />
+              </button>
             </div>
           ))}
         </div>

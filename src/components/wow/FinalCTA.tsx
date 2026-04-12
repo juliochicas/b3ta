@@ -82,15 +82,15 @@ export const FinalCTA = () => {
             disabled={isLoading}
           />
           <div className="flex flex-col sm:flex-row gap-3 pt-1">
-            <Button
+            <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 h-12 bg-blue-600 text-white hover:bg-blue-700 font-semibold rounded-lg"
+              className="flex-1 h-12 inline-flex items-center justify-center gap-2 bg-blue-600 text-white hover:bg-blue-500 font-semibold rounded-lg cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Enviando..." : "Enviar mensaje"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            <button
               type="button"
               onClick={() =>
                 window.open(
@@ -99,12 +99,11 @@ export const FinalCTA = () => {
                   "_blank"
                 )
               }
-              variant="outline"
-              className="h-12 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-lg"
+              className="h-12 inline-flex items-center justify-center gap-2 border border-slate-600 text-white hover:bg-slate-800 rounded-lg cursor-pointer transition-colors px-6"
             >
-              <MessageCircle className="mr-2 h-4 w-4" />
+              <MessageCircle className="h-4 w-4" />
               WhatsApp
-            </Button>
+            </button>
           </div>
         </form>
 
