@@ -80,6 +80,12 @@ const projects = [
     desc: "Flujo automatico: cuando SAP hace picking, Cargo Expreso recibe la orden de envio. Cero manual.",
   },
   {
+    name: "Prospeccion B2B",
+    url: "#",
+    category: "CRM + Automatizacion",
+    desc: "Prospector automatico de clientes B2B. WhatsApp masivo, multi-pais (GT, HN, SV). Meta: 5,000 leads/mes.",
+  },
+  {
     name: "Shopify + SAP B1 HANA",
     url: "#",
     category: "Integracion ERP",
