@@ -72,14 +72,14 @@ export const Portfolio = () => {
   const project = featured[current];
 
   return (
-    <section id="portafolio" className="py-24 bg-white">
+    <section id="portafolio" className="py-24 bg-slate-900">
       <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <div className="max-w-2xl mb-16">
           <p className="text-sm font-semibold text-blue-600 mb-3 uppercase tracking-wider">Portafolio</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             20 proyectos reales. Desde landing pages hasta ERPs.
           </h2>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-slate-400">
             Cada proyecto empezo con una conversacion. Nos gustan los retos.
           </p>
         </div>
@@ -138,16 +138,16 @@ export const Portfolio = () => {
         </div>
 
         {/* More projects — grid */}
-        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">
+        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+          <h3 className="text-sm font-semibold text-white mb-4">
             + {more.length} proyectos mas
           </h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {more.map((p, i) => (
               <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
                 <div>
-                  <span className="text-sm font-medium text-slate-800">{p.name}</span>
-                  <span className="text-xs text-slate-500 ml-2">{p.desc}</span>
+                  <span className="text-sm font-medium text-slate-200">{p.name}</span>
+                  <span className="text-xs text-slate-400 ml-2">{p.desc}</span>
                 </div>
                 {p.url !== "#" && (
                   <a href={p.url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 ml-2">
