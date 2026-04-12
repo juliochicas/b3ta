@@ -80,6 +80,12 @@ const projects = [
     desc: "Flujo automatico: cuando SAP hace picking, Cargo Expreso recibe la orden de envio. Cero manual.",
   },
   {
+    name: "Shopify + SAP B1 HANA",
+    url: "#",
+    category: "Integracion ERP",
+    desc: "Pedidos de Shopify entran a SAP automaticamente. Inventario, facturacion y envios sincronizados en tiempo real.",
+  },
+  {
     name: "JulioChicas.com",
     url: "https://juliochicas.com",
     category: "Portafolio Personal",
