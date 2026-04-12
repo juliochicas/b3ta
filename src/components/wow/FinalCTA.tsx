@@ -1,13 +1,16 @@
-import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import PhoneInput, { isValidPhoneNumber, getCountryCallingCode } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 export const FinalCTA = () => {
   const [pain, setPain] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState<string | undefined>("");
+  const [country, setCountry] = useState<string>("GT");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -15,13 +18,25 @@ export const FinalCTA = () => {
     e.preventDefault();
     if (!pain.trim() || !email.trim()) return;
 
+    if (phone && !isValidPhoneNumber(phone)) {
+      toast({
+        title: "Numero invalido",
+        description: "Revisa el numero de telefono.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      const countryName = country || "Desconocido";
+
       const { error } = await supabase.from("leads_b3ta").insert([
         {
           email: email.trim(),
-          message: pain.trim(),
+          phone: phone || null,
+          message: `[Pais: ${countryName}] ${pain.trim()}`,
           status: "new",
           priority: "medium",
           name: email.split("@")[0],
@@ -31,7 +46,11 @@ export const FinalCTA = () => {
       if (error) throw error;
 
       await supabase.functions.invoke("send-lead-notifications", {
-        body: { email: email.trim(), name: email.split("@")[0], message: pain.trim() },
+        body: {
+          email: email.trim(),
+          name: email.split("@")[0],
+          message: `Tel: ${phone || "No proporcionado"} (${countryName})\n${pain.trim()}`,
+        },
       });
 
       toast({
@@ -41,6 +60,7 @@ export const FinalCTA = () => {
 
       setPain("");
       setEmail("");
+      setPhone("");
     } catch (err: any) {
       toast({
         title: "Error al enviar",
@@ -69,15 +89,27 @@ export const FinalCTA = () => {
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="tu@empresa.com"
-            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-600 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
+            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
             required
             disabled={isLoading}
           />
+          <div className="phone-input-dark">
+            <PhoneInput
+              international
+              defaultCountry="GT"
+              value={phone}
+              onChange={(value) => setPhone(value)}
+              onCountryChange={(c) => setCountry(c || "GT")}
+              disabled={isLoading}
+              placeholder="Numero de telefono"
+              className="h-12 bg-slate-900 border border-slate-800 text-white rounded-lg px-3 focus-within:border-blue-500"
+            />
+          </div>
           <Input
             value={pain}
             onChange={(e) => setPain(e.target.value)}
             placeholder="Ej: Necesito una pagina web para mi negocio..."
-            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-600 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
+            className="h-12 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 rounded-lg focus:border-blue-500 focus:ring-blue-500/20"
             required
             disabled={isLoading}
           />

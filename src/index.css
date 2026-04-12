@@ -410,6 +410,38 @@ All colors MUST be HSL.
   }
 }
 
+/* Phone input dark theme */
+.phone-input-dark .PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.phone-input-dark .PhoneInputCountry {
+  display: flex;
+  align-items: center;
+}
+.phone-input-dark .PhoneInputCountrySelect {
+  background: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.phone-input-dark .PhoneInputCountrySelect option {
+  background: #1e293b;
+  color: white;
+}
+.phone-input-dark .PhoneInputInput {
+  background: transparent;
+  color: white;
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+}
+.phone-input-dark .PhoneInputInput::placeholder {
+  color: #64748b;
+}
+
 /* Performance optimizations for accordion animations */
 @layer utilities {
   [data-radix-accordion-content] {
