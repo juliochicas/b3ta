@@ -2,7 +2,7 @@ name: Build & Deploy to Hostinger
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
 
 jobs:
   deploy:
@@ -11,6 +11,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - uses: actions/setup-node@v4
         with:
@@ -22,10 +24,10 @@ jobs:
       - name: Build
         run: npx vite build
 
-      - name: Deploy to branch
+      - name: Deploy to main
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          publish_branch: deploy
+          publish_branch: main
           force_orphan: true
