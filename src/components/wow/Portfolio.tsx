@@ -80,6 +80,12 @@ const projects = [
     desc: "Flujo automatico: cuando SAP hace picking, Cargo Expreso recibe la orden de envio. Cero manual.",
   },
   {
+    name: "Cargo Expreso + Shopify",
+    url: "#",
+    category: "Plugin Shopify",
+    desc: "Pago contra entrega en Shopify con Cargo Expreso. Formulario de direccion por departamento y municipio de Guatemala.",
+  },
+  {
     name: "Validador NIT Shopify",
     url: "#",
     category: "Plugin Shopify",
