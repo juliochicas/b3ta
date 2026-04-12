@@ -24,8 +24,8 @@ export const HeroB3ta = () => {
           Empezamos con lo basico y creces a tu ritmo.
         </p>
 
-        <p className="text-base text-zinc-500 italic max-w-lg mx-auto mb-10">
-          "Nos gustan los retos. Si tienes un problema raro, complicado o que nadie te ha sabido resolver — cuentanos. Es lo que mas nos emociona."
+        <p className="text-base text-zinc-500 italic max-w-xl mx-auto mb-10 leading-relaxed">
+          "Eres empresario, eres emprendedor, pero tu programador no te entiende. Siempre te dicen 'no se puede' o 'dejame averiguar' y pasan meses. Nosotros te lo resolvemos ya."
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
