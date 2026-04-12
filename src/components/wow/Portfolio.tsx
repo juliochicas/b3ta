@@ -1,238 +1,140 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 
 const getThumb = (url: string) =>
-  `https://image.thum.io/get/width/600/crop/400/${url}`;
+  `https://image.thum.io/get/width/800/crop/450/${url}`;
 
-const projects = [
+const featured = [
   {
     name: "Grupo Syst",
     url: "https://www.gruposyst.com",
-    category: "Ecosistema Completo",
-    desc: "B2B, B2C, portales, ERP con IA, POS, RRHH. 30+ modulos, 500+ emprendedores.",
-    highlight: true,
+    category: "Ecosistema B2B/B2C",
+    desc: "30+ modulos, POS, RRHH, portales, IA. 500+ emprendedores.",
   },
   {
     name: "Modularis ERP",
     url: "https://modularis.pro",
     category: "ERP con IA",
-    desc: "ERP propio con 18 modulos, 105+ endpoints, 6 proveedores de IA. 24/7.",
-    highlight: true,
-  },
-  {
-    name: "Top Movil",
-    url: "https://topmovil.com.gt",
-    category: "E-commerce Shopify",
-    desc: "Tienda de accesorios para celulares. SEO programatico con 4,000+ paginas.",
-    highlight: false,
+    desc: "18 modulos, 105+ endpoints, 6 proveedores de IA.",
   },
   {
     name: "Realis AI",
     url: "https://www.getrealis.ai",
-    category: "SaaS / IA",
-    desc: "Videos UGC con avatares IA. +50,000 videos creados. Sin actores.",
-    highlight: true,
-  },
-  {
-    name: "GeoLead Pro",
-    url: "https://www.geolead.ai",
-    category: "SaaS / Prospeccion",
-    desc: "Extraccion de leads con IA + OSINT. Instagram, Facebook, LinkedIn. 65+ paises.",
-    highlight: false,
-  },
-  {
-    name: "Vixela",
-    url: "https://www.vixela.app",
-    category: "SaaS / E-commerce",
-    desc: "Fotos de producto profesionales con IA en 3 segundos. 1,200+ vendedores.",
-    highlight: false,
+    category: "SaaS",
+    desc: "Videos UGC con avatares IA. +50K videos creados.",
   },
   {
     name: "ChateaYA",
     url: "https://chateaya.app",
-    category: "SaaS / Chatbots",
-    desc: "WhatsApp, Instagram, Facebook en un solo lugar. Chatbots con IA. 500+ empresas.",
-    highlight: true,
+    category: "SaaS",
+    desc: "Chat multi-canal con bots IA. 500+ empresas.",
+  },
+  {
+    name: "GeoLead Pro",
+    url: "https://www.geolead.ai",
+    category: "SaaS",
+    desc: "Leads con IA + OSINT. 65+ paises.",
+  },
+  {
+    name: "Top Movil",
+    url: "https://topmovil.com.gt",
+    category: "E-commerce",
+    desc: "Shopify + SEO programatico. 4,000+ paginas.",
+  },
+  {
+    name: "Vixela",
+    url: "https://www.vixela.app",
+    category: "SaaS",
+    desc: "Fotos de producto con IA. 1,200+ vendedores.",
   },
   {
     name: "DoctoresCV+",
     url: "https://doctorescv.com",
     category: "Web + Reservas",
-    desc: "Medicina estetica y capilar. Tienda, reservas online, multi-idioma.",
-    highlight: false,
+    desc: "Medicina estetica. Tienda y reservas online.",
   },
   {
     name: "Silvia Sett",
     url: "https://silviasett.com",
     category: "Landing Page",
-    desc: "Cosmiatra en Chiquimula. 40 anos de experiencia. Reservas + WhatsApp.",
-    highlight: false,
-  },
-  {
-    name: "Vianney",
-    url: "#",
-    category: "E-commerce",
-    desc: "Ropa de cama premium en Guatemala. Catalogo, pagos y envios.",
-    highlight: false,
-  },
-  {
-    name: "Katherine Angulo",
-    url: "#",
-    category: "Web + CRM + MVP",
-    desc: "Psicologa clinica. Pagina web, agendamiento, CRM y atencion virtual.",
-    highlight: false,
-  },
-  {
-    name: "Famy",
-    url: "https://famy.juliochicas.com",
-    category: "App a Medida",
-    desc: "App para familias divorciadas. Calendario, custodia, presupuesto. 12+ modulos.",
-    highlight: false,
-  },
-  {
-    name: "Mundo Accesorios",
-    url: "https://www.mundoaccesorios.com.gt",
-    category: "WMS + E-commerce",
-    desc: "Sistema de bodega (WMS), cargo expreso, Dropi, portal de clientes.",
-    highlight: false,
-  },
-  {
-    name: "Nano Banana Pro",
-    url: "#",
-    category: "IA / E-commerce",
-    desc: "Generador de imagenes con angulos de venta para Shopify y redes sociales.",
-    highlight: false,
-  },
-  {
-    name: "Cargo Expreso + Shopify",
-    url: "#",
-    category: "Plugin Shopify",
-    desc: "Pago contra entrega integrado en checkout. Formulario por departamento/municipio.",
-    highlight: false,
-  },
-  {
-    name: "Validador NIT",
-    url: "#",
-    category: "Plugin Shopify",
-    desc: "Valida NIT en tiempo real con Digifact al momento del checkout.",
-    highlight: false,
-  },
-  {
-    name: "Shopify + SAP B1",
-    url: "#",
-    category: "Integracion ERP",
-    desc: "Pedidos, inventario y facturacion sincronizados automaticamente.",
-    highlight: false,
-  },
-  {
-    name: "SAP + Cargo Expreso",
-    url: "#",
-    category: "Automatizacion",
-    desc: "Picking en SAP → orden de envio en Cargo Expreso. Cero manual.",
-    highlight: false,
-  },
-  {
-    name: "Prospeccion B2B",
-    url: "#",
-    category: "CRM + Automatizacion",
-    desc: "Prospector automatico. WhatsApp masivo, multi-pais (GT, HN, SV).",
-    highlight: false,
-  },
-  {
-    name: "JulioChicas.com",
-    url: "https://juliochicas.com",
-    category: "Portafolio",
-    desc: "Builder & Consultor Tech. MVPs, automatizacion, China-LATAM. +17 anos.",
-    highlight: false,
+    desc: "Cosmiatra en Chiquimula. 40 anos de experiencia.",
   },
 ];
 
-export const Portfolio = () => {
-  const highlighted = projects.filter((p) => p.highlight);
-  const rest = projects.filter((p) => !p.highlight);
+const more = [
+  "Vianney — E-commerce de ropa de cama premium",
+  "Katherine Angulo — Web + CRM para psicologa clinica",
+  "Famy — App para familias divorciadas, 12+ modulos",
+  "Mundo Accesorios — WMS + WordPress + Dropi",
+  "Nano Banana Pro — Generador de imagenes con IA",
+  "Cargo Expreso + Shopify — Pago contra entrega",
+  "Validador NIT — Plugin Digifact para Shopify",
+  "Shopify + SAP B1 HANA — Sincronizacion automatica",
+  "SAP + Cargo Expreso — Automatizacion de envios",
+  "Prospeccion B2B — CRM automatico multi-pais",
+  "JulioChicas.com — Portafolio personal del founder",
+];
 
+export const Portfolio = () => {
   return (
     <section id="portafolio" className="py-24 bg-white">
       <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <div className="max-w-2xl mb-16">
           <p className="text-sm font-semibold text-blue-600 mb-3 uppercase tracking-wider">Portafolio</p>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            20 proyectos. Desde landing pages hasta ERPs con IA.
+            20 proyectos reales. Desde landing pages hasta ERPs.
           </h2>
           <p className="text-lg text-slate-500">
             Cada proyecto empezo con una conversacion. Nos gustan los retos.
           </p>
         </div>
 
-        {/* Highlighted projects — with screenshots */}
-        <div className="grid sm:grid-cols-2 gap-6 mb-6">
-          {highlighted.map((p, i) => (
+        {/* Featured grid with images */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
+          {featured.map((p, i) => (
             <a
               key={i}
               href={p.url}
-              target={p.url !== "#" ? "_blank" : undefined}
+              target="_blank"
               rel="noopener noreferrer"
-              className="group rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500/50 transition-all duration-200 block overflow-hidden"
+              className="group block rounded-xl overflow-hidden border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200"
             >
-              {p.url !== "#" && (
-                <div className="w-full h-48 bg-slate-800 overflow-hidden">
-                  <img
-                    src={getThumb(p.url)}
-                    alt={p.name}
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
+              <div className="w-full aspect-video bg-slate-100 overflow-hidden relative">
+                <img
+                  src={getThumb(p.url)}
+                  alt={p.name}
+                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <ExternalLink className="w-4 h-4 text-white" />
                 </div>
-              )}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full">
+              </div>
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-base font-semibold text-slate-900">{p.name}</h3>
+                  <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                     {p.category}
                   </span>
-                  {p.url !== "#" && (
-                    <ExternalLink className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  )}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{p.name}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{p.desc}</p>
+                <p className="text-sm text-slate-500">{p.desc}</p>
               </div>
             </a>
           ))}
         </div>
 
-        {/* Rest of projects — compact grid with thumbnails */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {rest.map((p, i) => (
-            <a
-              key={i}
-              href={p.url}
-              target={p.url !== "#" ? "_blank" : undefined}
-              rel="noopener noreferrer"
-              className="group rounded-lg border border-slate-200 hover:border-blue-200 hover:shadow-md transition-all duration-200 block overflow-hidden"
-            >
-              {p.url !== "#" && (
-                <div className="w-full h-32 bg-slate-100 overflow-hidden">
-                  <img
-                    src={getThumb(p.url)}
-                    alt={p.name}
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              <div className="p-4">
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                  {p.category}
-                </span>
-                <h3 className="text-sm font-semibold text-slate-900 mt-1 mb-1 flex items-center gap-1.5">
-                  {p.name}
-                  {p.url !== "#" && (
-                    <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-blue-500 transition-colors" />
-                  )}
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
-              </div>
-            </a>
-          ))}
+        {/* More projects — simple list */}
+        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+          <h3 className="text-sm font-semibold text-slate-900 mb-4">
+            + {more.length} proyectos mas
+          </h3>
+          <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
+            {more.map((item, i) => (
+              <p key={i} className="text-sm text-slate-500 py-1 border-b border-slate-100 last:border-0">
+                {item}
+              </p>
+            ))}
+          </div>
         </div>
       </div>
     </section>
