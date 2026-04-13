@@ -1,181 +1,76 @@
-import { Button } from "@/components/ui/button";
-import { Check, Zap, Code2, ArrowRight, Bot } from "lucide-react";
-import { motion } from "framer-motion";
+import { Check, ArrowRight } from "lucide-react";
+
+const plans = [
+  {
+    name: "Fase 1: Tu Presencia",
+    price: "$500",
+    desc: "Tu pagina web, correo profesional y que te encuentren en Google.",
+    features: ["Pagina web profesional", "Correo con tu dominio", "Hosting y SSL incluido", "Se ve bien en celular", "SEO para Google", "WhatsApp y formulario"],
+    cta: "Empezar con mi pagina",
+    popular: false,
+  },
+  {
+    name: "Fase 2: Tu Sistema",
+    price: "$650",
+    desc: "Deja el Excel. Tu propio cotizador, portal de clientes o sistema a medida.",
+    features: ["Todo lo de Fase 1", "Tu propia app web", "Login con usuarios", "Cotizador o facturador", "Base de datos en la nube", "Soporte post-lanzamiento"],
+    cta: "Cotizar mi sistema",
+    popular: true,
+  },
+  {
+    name: "Fase 3: Todo Automatico",
+    price: "$1,000",
+    desc: "WhatsApp bot, notificaciones automaticas, tienda online. Tu negocio funciona solo.",
+    features: ["Todo lo de Fase 2", "Tienda Shopify conectada", "Bot WhatsApp con IA", "Notificaciones automaticas", "Reportes y dashboards", "Integracion con ERPs"],
+    cta: "Ver si aplica para mi",
+    popular: false,
+  },
+];
 
 export const PricingSection = () => {
-  const scrollToContact = () => {
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollTo = () => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <section className="py-24 relative overflow-hidden bg-background" id="precios">
-      {/* Background Decorators */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full filter blur-[100px] -z-10" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full filter blur-[100px] -z-10" />
-
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-black mb-6"
-          >
-            Empieza con lo que <span className="gradient-text">necesitas hoy.</span>
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-muted-foreground"
-          >
-            No tienes que hacer todo de una vez. Elige la fase que se ajusta a tu presupuesto y vamos creciendo juntos.
-          </motion.p>
+    <section id="precios" className="py-20 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            Empieza con lo que necesitas hoy
+          </h2>
+          <p className="text-lg text-slate-500 max-w-xl mx-auto">
+            No tienes que hacer todo de una vez. Elige la fase que se ajusta a tu presupuesto.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {/* Tier 1: Websites */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="glass rounded-3xl p-8 lg:p-10 border border-border/50 hover:border-primary/50 transition-all duration-300 relative group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative z-10">
-              <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                <Zap className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Fase 1: Tu Presencia</h3>
-              <p className="text-muted-foreground mb-6 h-12">Tu pagina web, correo profesional y que te encuentren en Google. Lo basico para verte formal.</p>
-              
-              <div className="mb-8">
-                <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black">$500</span>
-                  <span className="text-muted-foreground">USD</span>
+        <div className="grid md:grid-cols-3 gap-6">
+          {plans.map((plan, i) => (
+            <div key={i} className={`rounded-xl p-8 border-2 relative ${plan.popular ? "border-amber-400 shadow-lg" : "border-gray-100 hover:border-gray-200"} bg-white transition-all`}>
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="bg-amber-400 text-slate-900 text-xs font-bold px-4 py-1 rounded-full">Mas popular</span>
                 </div>
+              )}
+              <h3 className="text-xl font-bold text-slate-900 mb-1">{plan.name}</h3>
+              <p className="text-sm text-slate-500 mb-5 min-h-[40px]">{plan.desc}</p>
+              <div className="mb-6">
+                <span className="text-xs text-slate-400 uppercase">Desde</span>
+                <div className="text-4xl font-bold text-slate-900">{plan.price} <span className="text-base font-normal text-slate-400">USD</span></div>
               </div>
-
-              <ul className="space-y-4 mb-8">
-                {[
-                  "Diseño moderno y de alto impacto (WOW Effect)",
-                  "Desarrollo ágil en WordPress o código limpio",
-                  "Optimización extrema de velocidad (LCP < 1.5s)",
-                  "Integración con WhatsApp y formularios",
-                  "SEO Técnico base incluido",
-                  "Lista para escalar y vender"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-                    <span className="text-foreground/80">{feature}</span>
+              <ul className="space-y-3 mb-8">
+                {plan.features.map((f, j) => (
+                  <li key={j} className="flex items-start gap-2.5 text-sm text-slate-600">
+                    <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.popular ? "text-amber-500" : "text-teal-600"}`} />
+                    {f}
                   </li>
                 ))}
               </ul>
-
-              <Button onClick={scrollToContact} className="w-full group" variant="outline">
-                Comenzar Proyecto
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <button onClick={scrollTo} className={`w-full py-3 rounded-full font-semibold text-sm cursor-pointer transition-colors ${plan.popular ? "bg-amber-400 hover:bg-amber-500 text-slate-900" : "bg-slate-100 hover:bg-slate-200 text-slate-700"}`}>
+                {plan.cta} <ArrowRight className="inline w-4 h-4 ml-1" />
+              </button>
             </div>
-          </motion.div>
-
-          {/* Tier 2: Apps / Custom */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="glass rounded-3xl p-8 lg:p-10 border-2 border-secondary relative group overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 bg-secondary text-secondary-foreground text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
-              Más Solicitado
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative z-10">
-              <div className="h-14 w-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6">
-                <Code2 className="h-7 w-7 text-secondary" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Fase 2: Tu Sistema</h3>
-              <p className="text-muted-foreground mb-6 h-12">Deja el Excel. Tu propio cotizador, portal de clientes o sistema a medida desde el celular.</p>
-              
-              <div className="mb-8">
-                <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black">$650</span>
-                  <span className="text-muted-foreground">USD</span>
-                </div>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {[
-                  "Arquitectura React/NextJS + Supabase",
-                  "Autenticación segura (Login/Roles)",
-                  "Paneles de administración y dashboards",
-                  "Automatización de base de datos y flujos",
-                  "Integraciones vía API (Pagos, ERPs, IA)",
-                  "Código nativo, de tu propiedad"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
-                    <span className="text-foreground/80">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button onClick={scrollToContact} className="w-full bg-secondary hover:bg-secondary/80 text-secondary-foreground group">
-                Automatizar mi negocio
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </div>
-          </motion.div>
-
-          {/* Tier 3: Automations */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="glass rounded-3xl p-8 lg:p-10 border border-border/50 hover:border-primary/50 transition-all duration-300 relative group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative z-10">
-              <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                <Bot className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Fase 3: Todo Automatico</h3>
-              <p className="text-muted-foreground mb-6 h-12">WhatsApp bot, notificaciones automaticas, tienda online conectada. Tu negocio funciona solo.</p>
-              
-              <div className="mb-8">
-                <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black">$1k</span>
-                  <span className="text-muted-foreground">USD</span>
-                </div>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {[
-                  "Integración SAP Business One / ERPs",
-                  "Agentes Inteligentes de Ventas 24/7",
-                  "Automatización n8n / Flujos complejos",
-                  "Conexión WhatsApp API y Omnicanalidad",
-                  "Reportería Dinámica y Dashboards",
-                  "Soporte y ajustes post-lanzamiento"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-                    <span className="text-foreground/80">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button onClick={scrollToContact} className="w-full group" variant="outline">
-                Consultar Viabilidad
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </div>
-          </motion.div>
+          ))}
         </div>
+        <p className="text-center text-sm text-slate-400 mt-6">Cada proyecto se cotiza segun tus necesidades.</p>
       </div>
     </section>
   );

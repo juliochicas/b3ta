@@ -1,150 +1,34 @@
-import { motion } from "framer-motion";
-import { Search, PenTool, Rocket, RefreshCw } from "lucide-react";
+import { MessageCircle, FileText, Code, Rocket } from "lucide-react";
 
 const steps = [
-  {
-    num: "01",
-    title: "DIAGNÓSTICO",
-    badge: "Gratis",
-    desc: "Platicamos de tu negocio: que haces en Excel, como atiendes clientes, que te gustaria tener. Sin jerga tecnica.",
-    icon: Search,
-    gradient: "from-blue-500/20 to-blue-500/5",
-    border: "border-blue-500/30 hover:border-blue-500/60",
-    iconColor: "text-blue-400",
-    iconBg: "bg-blue-500/10",
-    ringColor: "ring-blue-500/30",
-  },
-  {
-    num: "02",
-    title: "DISEÑO",
-    badge: null,
-    desc: "Te decimos que se puede hacer, cuanto cuesta y en cuanto tiempo. Precio fijo, sin sorpresas ni letra chiquita.",
-    icon: PenTool,
-    gradient: "from-purple-500/20 to-purple-500/5",
-    border: "border-purple-500/30 hover:border-purple-500/60",
-    iconColor: "text-purple-400",
-    iconBg: "bg-purple-500/10",
-    ringColor: "ring-purple-500/30",
-  },
-  {
-    num: "03",
-    title: "IMPLEMENTACIÓN",
-    badge: null,
-    desc: "Lo construimos y te lo mostramos en cada avance. Tu opinas, nosotros ajustamos. Nada de esperar meses sin ver nada.",
-    icon: Rocket,
-    gradient: "from-cyan-500/20 to-cyan-500/5",
-    border: "border-cyan-500/30 hover:border-cyan-500/60",
-    iconColor: "text-cyan-400",
-    iconBg: "bg-cyan-500/10",
-    ringColor: "ring-cyan-500/30",
-  },
-  {
-    num: "04",
-    title: "OPTIMIZACIÓN",
-    badge: "Continuo",
-    desc: "Tu pagina o sistema sale en vivo. Te ensenamos a usarlo y seguimos contigo. Cuando quieras la siguiente fase, aqui estamos.",
-    icon: RefreshCw,
-    gradient: "from-accent/20 to-accent/5",
-    border: "border-accent/30 hover:border-accent/60",
-    iconColor: "text-accent",
-    iconBg: "bg-accent/10",
-    ringColor: "ring-accent/30",
-  },
+  { num: "1", icon: MessageCircle, title: "Platicamos", desc: "Nos cuentas que haces en Excel, como atiendes clientes, que te gustaria tener. Sin jerga tecnica." },
+  { num: "2", icon: FileText, title: "Te cotizamos", desc: "Te decimos que se puede hacer, cuanto cuesta y en cuanto tiempo. Precio fijo, sin sorpresas." },
+  { num: "3", icon: Code, title: "Lo construimos", desc: "Te lo mostramos en cada avance. Tu opinas, nosotros ajustamos. Nada de esperar meses sin ver nada." },
+  { num: "4", icon: Rocket, title: "Lo lanzamos", desc: "Tu pagina o sistema sale en vivo. Te ensenamos a usarlo. Cuando quieras la siguiente fase, aqui estamos." },
 ];
 
 export const Methodology = () => {
   return (
-    <section id="proceso" className="py-32 bg-card relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.08),transparent_60%)]" />
-
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-20"
-        >
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest bg-primary/10 text-primary mb-5 ring-1 ring-primary/20 uppercase">
-            Como Trabajamos
-          </span>
-          <h2 className="text-4xl md:text-5xl font-black mb-4">
+    <section id="proceso" className="py-20 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             4 pasos, sin sorpresas
           </h2>
-          <p className="text-xl text-muted-foreground max-w-xl mx-auto">
+          <p className="text-lg text-slate-500 max-w-xl mx-auto">
             No tienes que hacer todo de una vez. Empezamos con lo que mas necesitas.
           </p>
-        </motion.div>
-
-        {/* Desktop: Horizontal Stepper */}
-        <div className="hidden md:block">
-          {/* Progress line */}
-          <div className="relative flex items-start justify-between gap-0 mb-0">
-            {/* Connecting line */}
-            <div className="absolute top-8 left-[calc(12.5%)] right-[calc(12.5%)] h-px bg-gradient-to-r from-blue-500/30 via-purple-500/30 via-cyan-500/30 to-accent/30" />
-
-            {steps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.5, delay: i * 0.12 }}
-                className="flex-1 flex flex-col items-center text-center px-4"
-              >
-                {/* Circle with number */}
-                <div className={`relative z-10 w-16 h-16 rounded-full bg-background border-2 ${step.border} flex items-center justify-center mb-6 shadow-lg transition-all duration-300 ring-4 ${step.ringColor} group-hover:scale-110`}>
-                  <step.icon className={`w-7 h-7 ${step.iconColor}`} />
-                </div>
-
-                {/* Card */}
-                <div className={`w-full p-6 rounded-3xl bg-gradient-to-b ${step.gradient} border ${step.border} transition-colors duration-300 text-left relative group`}>
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="text-3xl font-black text-foreground/10 leading-none">{step.num}</span>
-                    {step.badge && (
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${step.iconBg} ${step.iconColor} ring-1 ${step.ringColor} whitespace-nowrap`}>
-                        {step.badge}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-black mb-3 tracking-tight">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </div>
 
-        {/* Mobile: Vertical list */}
-        <div className="md:hidden space-y-6">
-          {steps.map((step, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`p-6 rounded-3xl bg-gradient-to-br ${step.gradient} border ${step.border} relative`}
-            >
-              <div className="flex items-start gap-4">
-                <div className={`w-12 h-12 rounded-2xl ${step.iconBg} flex items-center justify-center flex-shrink-0`}>
-                  <step.icon className={`w-6 h-6 ${step.iconColor}`} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-bold text-muted-foreground tracking-widest">FASE {step.num}</span>
-                    {step.badge && (
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.iconBg} ${step.iconColor}`}>
-                        {step.badge}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
-                </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {steps.map((s, i) => (
+            <div key={i} className="text-center">
+              <div className="w-14 h-14 rounded-full bg-teal-700 text-white flex items-center justify-center mx-auto mb-5 text-xl font-bold">
+                {s.num}
               </div>
-            </motion.div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">{s.title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">{s.desc}</p>
+            </div>
           ))}
         </div>
       </div>
