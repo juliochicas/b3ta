@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="como-salir-en-google-guatemala"
   title="Como hacer que tu negocio salga en Google (guia para Guatemala)"
   metaDesc="Guia paso a paso para que tu negocio en Guatemala aparezca en Google. Perfil de negocio, pagina web, SEO basico. Sin tecnicismos."
-  date="2026-04-12"
+  date="2026-03-22"
   readTime="6 min"
   relatedPosts={[
     { label: "Cuanto cuesta una pagina web", href: "/blog/cuanto-cuesta-pagina-web-guatemala" },

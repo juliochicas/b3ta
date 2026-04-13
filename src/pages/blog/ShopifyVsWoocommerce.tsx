@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="shopify-vs-woocommerce-guatemala"
   title="Shopify o WooCommerce: cual es mejor para Guatemala"
   metaDesc="Comparativa real entre Shopify y WooCommerce para vender en Guatemala. Precios, contra entrega, NIT, envios. Pros y contras de cada uno."
-  date="2026-04-12"
+  date="2026-04-05"
   readTime="5 min"
   relatedPosts={[
     { label: "Cuanto cuesta una pagina web", href: "/blog/cuanto-cuesta-pagina-web-guatemala" },

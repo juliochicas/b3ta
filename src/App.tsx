@@ -88,7 +88,7 @@ const App = () => (
           <Route path="/servicios/sap-business-one" element={<SapBusinessOne />} />
           {countries.map((c) => (
             <Route key={c.slug} path={`/servicios/${c.slug}`} element={
-              <CountryPage country={c.country} countryCode={c.code} slug={c.slug} currency={c.currency} city={c.city} lang={c.lang} region={c.region} />
+              <CountryPage country={c.country} countryCode={c.code} slug={c.slug} currency={c.currency} city={c.city} lang={c.lang} region={c.region} localContent={c.localContent} />
             } />
           ))}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

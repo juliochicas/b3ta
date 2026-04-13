@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="sap-vs-odoo-cual-elegir"
   title="SAP Business One vs Odoo: cual te conviene (comparativa real)"
   metaDesc="Comparamos SAP B1 y Odoo sin favoritismos. Precios, facilidad, modulos, implementacion. Para PyMEs que necesitan ERP sin gastar de mas."
-  date="2026-04-12"
+  date="2026-04-03"
   readTime="7 min"
   relatedPosts={[
     { label: "Software de cotizaciones", href: "/blog/mejor-software-cotizaciones" },

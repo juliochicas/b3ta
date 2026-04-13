@@ -6,6 +6,7 @@ import { CoreServices } from "@/components/wow/CoreServices";
 import { Methodology } from "@/components/wow/Methodology";
 import { CaseStudiesCarousel } from "@/components/wow/CaseStudiesCarousel";
 import { PricingSection } from "@/components/wow/PricingSection";
+import { RecentBlog } from "@/components/wow/RecentBlog";
 import { FinalCTA } from "@/components/wow/FinalCTA";
 import { Footer } from "@/components/Footer";
 
@@ -21,6 +22,7 @@ const Index = () => {
         <Methodology />
         <CaseStudiesCarousel />
         <PricingSection />
+        <RecentBlog />
         <FinalCTA />
       </main>
       <Footer />

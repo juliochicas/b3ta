@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="automatizar-negocio-sin-programar"
   title="Como automatizar tu negocio sin saber programar (guia practica)"
   metaDesc="7 cosas que puedes automatizar hoy en tu negocio sin ser programador. WhatsApp, facturas, cotizaciones, recordatorios. Herramientas gratis y de pago."
-  date="2026-04-12"
+  date="2026-04-07"
   readTime="6 min"
   relatedPosts={[
     { label: "Bot de WhatsApp para negocio", href: "/blog/como-crear-bot-whatsapp-negocio" },

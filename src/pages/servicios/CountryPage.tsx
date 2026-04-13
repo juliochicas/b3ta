@@ -8,6 +8,7 @@ interface CountryPageProps {
   countryCode: string;
   slug: string;
   currency: string;
+  localContent?: string;
   city: string;
   lang: "es" | "en" | "pt";
   region: "latam" | "usa" | "europe";
@@ -124,6 +125,9 @@ export const CountryPage = (props: CountryPageProps) => {
         <link rel="canonical" href={url} />
         <meta property="og:title" content={`${t.h1pre} ${props.country} | B3TA`} />
         <meta property="og:description" content={t.metaDesc(props.country)} />
+        <meta httpEquiv="content-language" content={props.lang === "pt" ? "pt" : props.lang === "en" ? "en" : "es"} />
+        <link rel="alternate" hrefLang={props.lang === "pt" ? "pt" : props.lang === "en" ? "en" : "es"} href={url} />
+        <link rel="alternate" hrefLang="x-default" href="https://b3ta.us/" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org", "@type": "Service",
           "name": `${t.h1pre} ${props.country}`,
@@ -162,6 +166,17 @@ export const CountryPage = (props: CountryPageProps) => {
             </div>
           </div>
         </section>
+
+        {props.localContent && (
+          <section className="py-12 bg-teal-50">
+            <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                {props.lang === "en" ? `Why B3TA for ${props.country}` : props.lang === "pt" ? `Por que B3TA para ${props.country}` : `Por que B3TA para ${props.country}`}
+              </h2>
+              <p className="text-slate-600 leading-relaxed">{props.localContent}</p>
+            </div>
+          </section>
+        )}
 
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4 sm:px-6 max-w-4xl">

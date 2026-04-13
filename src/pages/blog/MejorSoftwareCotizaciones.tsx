@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="mejor-software-cotizaciones"
   title="El mejor software de cotizaciones para PyMEs (comparativa honesta)"
   metaDesc="Comparamos Zoho, HubSpot, Bsale, Odoo y sistemas custom para cotizar. Cual te conviene segun tu tamano y presupuesto. Sin humo."
-  date="2026-04-12"
+  date="2026-03-28"
   readTime="7 min"
   relatedPosts={[
     { label: "Automatizar negocio sin programar", href: "/blog/automatizar-negocio-sin-programar" },

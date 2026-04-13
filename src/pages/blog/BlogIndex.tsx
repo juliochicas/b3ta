@@ -3,16 +3,16 @@ import { Footer } from "@/components/Footer";
 import { Helmet } from "react-helmet";
 
 const posts = [
-  { slug: "cuanto-cuesta-pagina-web-guatemala", title: "Cuanto cuesta una pagina web en Guatemala en 2026", desc: "Precios reales: desde Q900 hasta Q10,000+. Que incluye cada rango.", date: "2026-04-12" },
-  { slug: "como-salir-en-google-guatemala", title: "Como hacer que tu negocio salga en Google", desc: "Guia paso a paso. Perfil de negocio, pagina web, SEO basico.", date: "2026-04-12" },
-  { slug: "mejor-software-cotizaciones", title: "El mejor software de cotizaciones para PyMEs", desc: "Zoho, HubSpot, Bsale, Odoo vs sistema custom. Comparativa honesta.", date: "2026-04-12" },
-  { slug: "como-crear-bot-whatsapp-negocio", title: "Como crear un bot de WhatsApp para tu negocio", desc: "Opciones gratis y de pago. Con precios reales.", date: "2026-04-12" },
-  { slug: "sap-vs-odoo-cual-elegir", title: "SAP Business One vs Odoo: cual te conviene", desc: "Comparativa sin favoritismos. Precios, facilidad, para que tipo de empresa.", date: "2026-04-12" },
-  { slug: "shopify-vs-woocommerce-guatemala", title: "Shopify o WooCommerce para Guatemala", desc: "Contra entrega, NIT, envios. Pros y contras reales.", date: "2026-04-12" },
-  { slug: "automatizar-negocio-sin-programar", title: "Como automatizar tu negocio sin saber programar", desc: "7 cosas que puedes automatizar hoy. Herramientas gratis.", date: "2026-04-12" },
-  { slug: "correo-empresarial-barato", title: "Correo empresarial barato: hola@tuempresa.com", desc: "Desde gratis (Zoho) hasta $6/mes (Google). Como configurarlo.", date: "2026-04-12" },
-  { slug: "que-necesito-para-mi-pagina-web", title: "Que necesito para hacer mi pagina web", desc: "Checklist completo para no-tecnicos. Lo que TU preparas vs lo que hace el dev.", date: "2026-04-12" },
   { slug: "cuanto-cobra-programador-guatemala", title: "Cuanto cobra un programador en Guatemala", desc: "Precios por hora y por proyecto. Freelancer vs agencia. Banderas rojas.", date: "2026-04-12" },
+  { slug: "que-necesito-para-mi-pagina-web", title: "Que necesito para hacer mi pagina web", desc: "Checklist completo para no-tecnicos. Lo que TU preparas vs lo que hace el dev.", date: "2026-04-10" },
+  { slug: "correo-empresarial-barato", title: "Correo empresarial barato: hola@tuempresa.com", desc: "Desde gratis (Zoho) hasta $6/mes (Google). Como configurarlo.", date: "2026-04-09" },
+  { slug: "automatizar-negocio-sin-programar", title: "Como automatizar tu negocio sin saber programar", desc: "7 cosas que puedes automatizar hoy. Herramientas gratis.", date: "2026-04-07" },
+  { slug: "shopify-vs-woocommerce-guatemala", title: "Shopify o WooCommerce para Guatemala", desc: "Contra entrega, NIT, envios. Pros y contras reales.", date: "2026-04-05" },
+  { slug: "sap-vs-odoo-cual-elegir", title: "SAP Business One vs Odoo: cual te conviene", desc: "Comparativa sin favoritismos. Precios, facilidad, para que tipo de empresa.", date: "2026-04-03" },
+  { slug: "como-crear-bot-whatsapp-negocio", title: "Como crear un bot de WhatsApp para tu negocio", desc: "Opciones gratis y de pago. Con precios reales.", date: "2026-04-01" },
+  { slug: "mejor-software-cotizaciones", title: "El mejor software de cotizaciones para PyMEs", desc: "Zoho, HubSpot, Bsale, Odoo vs sistema custom. Comparativa honesta.", date: "2026-03-28" },
+  { slug: "como-salir-en-google-guatemala", title: "Como hacer que tu negocio salga en Google", desc: "Guia paso a paso. Perfil de negocio, pagina web, SEO basico.", date: "2026-03-22" },
+  { slug: "cuanto-cuesta-pagina-web-guatemala", title: "Cuanto cuesta una pagina web en Guatemala en 2026", desc: "Precios reales: desde Q900 hasta Q10,000+. Que incluye cada rango.", date: "2026-03-15" },
 ];
 
 export default function BlogIndex() {

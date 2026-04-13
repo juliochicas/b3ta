@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="cuanto-cuesta-pagina-web-guatemala"
   title="Cuanto cuesta una pagina web en Guatemala en 2026"
   metaDesc="Precios reales de paginas web en Guatemala: desde Q900 hasta Q10,000+. Te explicamos que incluye cada rango y como elegir sin que te estafen."
-  date="2026-04-12"
+  date="2026-03-15"
   readTime="5 min"
   relatedPosts={[
     { label: "Que necesito para mi pagina web", href: "/blog/que-necesito-para-mi-pagina-web" },

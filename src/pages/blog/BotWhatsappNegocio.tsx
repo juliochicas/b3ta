@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="como-crear-bot-whatsapp-negocio"
   title="Como crear un bot de WhatsApp para tu negocio (sin ser programador)"
   metaDesc="Guia practica para tener un bot de WhatsApp que atienda clientes 24/7. Opciones gratis y de pago, con precios reales. Para negocios en LATAM."
-  date="2026-04-12"
+  date="2026-04-01"
   readTime="6 min"
   relatedPosts={[
     { label: "Automatizar negocio sin programar", href: "/blog/automatizar-negocio-sin-programar" },

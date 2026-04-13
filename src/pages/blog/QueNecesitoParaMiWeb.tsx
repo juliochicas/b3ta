@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="que-necesito-para-mi-pagina-web"
   title="Que necesito para hacer mi pagina web (checklist completo)"
   metaDesc="Todo lo que necesitas tener listo antes de hacer tu pagina web: dominio, logo, textos, fotos, hosting. Checklist para no-tecnicos."
-  date="2026-04-12"
+  date="2026-04-10"
   readTime="4 min"
   relatedPosts={[
     { label: "Cuanto cuesta una pagina web", href: "/blog/cuanto-cuesta-pagina-web-guatemala" },

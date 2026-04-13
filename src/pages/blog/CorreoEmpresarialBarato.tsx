@@ -4,7 +4,7 @@ export default () => <BlogPost
   slug="correo-empresarial-barato"
   title="Correo empresarial barato: como tener hola@tuempresa.com"
   metaDesc="Como tener correo profesional con tu dominio desde $100 USD al ano. Opciones: Zoho (gratis), Hostinger, Google Workspace. Para negocios en LATAM."
-  date="2026-04-12"
+  date="2026-04-09"
   readTime="4 min"
   relatedPosts={[
     { label: "Cuanto cuesta una pagina web", href: "/blog/cuanto-cuesta-pagina-web-guatemala" },
