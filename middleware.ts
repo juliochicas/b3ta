@@ -40,6 +40,7 @@ export const config = {
   matcher: [
     "/crm/:path*",
     "/quotations/:path*",
+    "/briefs/:path*",
     "/reports/:path*",
     "/meetings/:path*",
     "/email/:path*",

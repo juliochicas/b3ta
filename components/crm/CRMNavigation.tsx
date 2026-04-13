@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
   { label: "CRM", path: "/crm", icon: <Home className="h-4 w-4" /> },
   { label: "Informes", path: "/reports", icon: <FileText className="h-4 w-4" /> },
   { label: "Cotizaciones", path: "/quotations", icon: <DollarSign className="h-4 w-4" /> },
+  { label: "Briefs", path: "/briefs", icon: <FileText className="h-4 w-4" /> },
   { label: "Reuniones", path: "/meetings", icon: <Clock className="h-4 w-4" /> },
   { label: "Correo", path: "/email", icon: <Mail className="h-4 w-4" /> },
   { label: "Páginas", path: "/client-pages", icon: <Globe className="h-4 w-4" /> },
