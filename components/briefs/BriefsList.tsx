@@ -189,15 +189,77 @@ export function BriefsList() {
     setTimeout(() => win.print(), 300);
   };
 
-  const handleDownload = (brief: Brief) => {
-    const content = generatePrintContent(brief);
-    const blob = new Blob([content], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `brief-${brief.company_name.toLowerCase().replace(/\s+/g, "-")}.html`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleDownload = async (brief: Brief) => {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 20;
+
+    const addText = (text: string, size: number, bold: boolean, color: [number, number, number] = [30, 41, 59]) => {
+      doc.setFontSize(size);
+      doc.setFont("helvetica", bold ? "bold" : "normal");
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      if (y + lines.length * (size * 0.5) > 275) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(lines, margin, y);
+      y += lines.length * (size * 0.45) + 2;
+    };
+
+    const addField = (label: string, value: string | null) => {
+      if (!value) return;
+      addText(`${label}: ${value}`, 10, false);
+    };
+
+    const addSection = (title: string) => {
+      y += 4;
+      doc.setDrawColor(15, 118, 110);
+      doc.setLineWidth(0.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 6;
+      addText(title, 13, true, [15, 118, 110]);
+      y += 2;
+    };
+
+    // Header
+    addText(brief.company_name, 22, true);
+    addText(`Brief creativo — ${brief.client_name}`, 11, false, [100, 116, 139]);
+    y += 4;
+
+    // Contacto
+    addSection("Contacto");
+    addField("Nombre", brief.client_name);
+    addField("Email", brief.client_email);
+    addField("Telefono", brief.client_phone);
+
+    // Negocio
+    addSection("Negocio");
+    addField("Rubro", brief.industry);
+    addField("Descripcion", brief.business_description);
+    addField("Publico objetivo", brief.target_audience);
+    addField("Servicios", brief.services_offered);
+
+    // Diseno
+    addSection("Diseno");
+    addField("Colores", brief.brand_colors);
+    addField("Estilo", brief.style_preference ? (styleLabels[brief.style_preference] || brief.style_preference) : null);
+    addField("Referencias", brief.reference_websites);
+    if (brief.logo_url) {
+      addField("Logo", brief.logo_url);
+    }
+
+    // Footer
+    y += 6;
+    doc.setDrawColor(226, 232, 240);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 5;
+    addText(`Recibido: ${format(new Date(brief.created_at), "d 'de' MMMM yyyy, HH:mm", { locale: es })}`, 8, false, [148, 163, 184]);
+
+    doc.save(`brief-${brief.company_name.toLowerCase().replace(/\s+/g, "-")}.pdf`);
   };
 
   if (loading) {
