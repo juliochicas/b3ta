@@ -6,7 +6,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background dark">
+    <div className="min-h-screen bg-muted/30">
       {children}
     </div>
   );
