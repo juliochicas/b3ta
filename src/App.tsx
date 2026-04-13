@@ -26,6 +26,8 @@ import AutomatizacionWhatsapp from "./pages/servicios/AutomatizacionWhatsapp";
 import SistemasAMedida from "./pages/servicios/SistemasAMedida";
 import CorreoEmpresarial from "./pages/servicios/CorreoEmpresarial";
 import SapBusinessOne from "./pages/servicios/SapBusinessOne";
+import { CountryPage } from "./pages/servicios/CountryPage";
+import { countries } from "./pages/servicios/countries";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +64,11 @@ const App = () => (
           <Route path="/servicios/sistemas-a-medida" element={<SistemasAMedida />} />
           <Route path="/servicios/correo-empresarial" element={<CorreoEmpresarial />} />
           <Route path="/servicios/sap-business-one" element={<SapBusinessOne />} />
+          {countries.map((c) => (
+            <Route key={c.slug} path={`/servicios/${c.slug}`} element={
+              <CountryPage country={c.country} countryCode={c.code} slug={c.slug} currency={c.currency} city={c.city} lang={c.lang} region={c.region} />
+            } />
+          ))}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
