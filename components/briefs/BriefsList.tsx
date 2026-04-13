@@ -13,6 +13,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Building2,
   Mail,
   Phone,
@@ -27,6 +37,9 @@ import {
   Eye,
   LinkIcon,
   Image as ImageIcon,
+  Download,
+  Printer,
+  Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -73,6 +86,7 @@ export function BriefsList() {
   const [briefs, setBriefs] = useState<Brief[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Brief | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Brief | null>(null);
 
   const fetchBriefs = async () => {
     const { data, error } = await (supabase as any)
@@ -105,6 +119,85 @@ export function BriefsList() {
       fetchBriefs();
       if (selected?.id === id) setSelected({ ...selected, status });
     }
+  };
+
+  const deleteBrief = async (brief: Brief) => {
+    const { error } = await (supabase as any)
+      .from("briefs")
+      .delete()
+      .eq("id", brief.id);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Brief eliminado" });
+      setSelected(null);
+      setDeleteTarget(null);
+      fetchBriefs();
+    }
+  };
+
+  const generatePrintContent = (brief: Brief) => {
+    return `
+      <html>
+      <head>
+        <title>Brief - ${brief.company_name}</title>
+        <style>
+          body { font-family: 'Segoe UI', system-ui, sans-serif; max-width: 700px; margin: 0 auto; padding: 40px 20px; color: #1e293b; }
+          h1 { font-size: 24px; margin-bottom: 4px; }
+          h2 { font-size: 16px; color: #0f766e; margin-top: 28px; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+          .subtitle { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+          .field { margin-bottom: 10px; font-size: 14px; line-height: 1.6; }
+          .field strong { color: #334155; }
+          .logo { max-height: 60px; margin-bottom: 16px; }
+          .meta { font-size: 12px; color: #94a3b8; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+          @media print { body { padding: 20px; } }
+        </style>
+      </head>
+      <body>
+        ${brief.logo_url ? `<img src="${brief.logo_url}" class="logo" />` : ""}
+        <h1>${brief.company_name}</h1>
+        <p class="subtitle">Brief creativo — ${brief.client_name}</p>
+
+        <h2>Contacto</h2>
+        <div class="field"><strong>Nombre:</strong> ${brief.client_name}</div>
+        <div class="field"><strong>Email:</strong> ${brief.client_email}</div>
+        ${brief.client_phone ? `<div class="field"><strong>Telefono:</strong> ${brief.client_phone}</div>` : ""}
+
+        <h2>Negocio</h2>
+        <div class="field"><strong>Rubro:</strong> ${brief.industry}</div>
+        <div class="field"><strong>Descripcion:</strong> ${brief.business_description}</div>
+        ${brief.target_audience ? `<div class="field"><strong>Publico objetivo:</strong> ${brief.target_audience}</div>` : ""}
+        ${brief.services_offered ? `<div class="field"><strong>Servicios:</strong> ${brief.services_offered}</div>` : ""}
+
+        <h2>Diseno</h2>
+        ${brief.brand_colors ? `<div class="field"><strong>Colores:</strong> ${brief.brand_colors}</div>` : ""}
+        ${brief.style_preference ? `<div class="field"><strong>Estilo:</strong> ${styleLabels[brief.style_preference] || brief.style_preference}</div>` : ""}
+        ${brief.reference_websites ? `<div class="field"><strong>Referencias:</strong><br/>${brief.reference_websites.replace(/\n/g, "<br/>")}</div>` : ""}
+
+        <div class="meta">Recibido: ${format(new Date(brief.created_at), "d 'de' MMMM yyyy, HH:mm", { locale: es })}</div>
+      </body>
+      </html>
+    `;
+  };
+
+  const handlePrint = (brief: Brief) => {
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(generatePrintContent(brief));
+    win.document.close();
+    setTimeout(() => win.print(), 300);
+  };
+
+  const handleDownload = (brief: Brief) => {
+    const content = generatePrintContent(brief);
+    const blob = new Blob([content], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `brief-${brief.company_name.toLowerCase().replace(/\s+/g, "-")}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -201,6 +294,35 @@ export function BriefsList() {
                   ))}
                 </div>
 
+                {/* Actions */}
+                <div className="flex items-center gap-2 border-t pt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownload(selected)}
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    Descargar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePrint(selected)}
+                  >
+                    <Printer className="h-4 w-4 mr-1" />
+                    Imprimir
+                  </Button>
+                  <div className="flex-1" />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setDeleteTarget(selected)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Eliminar
+                  </Button>
+                </div>
+
                 {/* Contacto */}
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                   <h3 className="text-sm font-semibold text-foreground flex items-center gap-1">
@@ -293,6 +415,27 @@ export function BriefsList() {
           )}
         </DialogContent>
       </Dialog>
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminar brief</AlertDialogTitle>
+            <AlertDialogDescription>
+              Estas seguro que quieres eliminar el brief de{" "}
+              <strong>{deleteTarget?.company_name}</strong>? Esta accion no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteTarget && deleteBrief(deleteTarget)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
