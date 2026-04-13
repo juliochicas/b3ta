@@ -23,6 +23,7 @@ export const MainHeader = () => {
     { label: "Proceso", id: "proceso" },
     { label: "Proyectos", id: "casos" },
     { label: "Precios", id: "precios" },
+    { label: "Blog", id: "blog-link" },
   ];
 
   return (
@@ -34,11 +35,12 @@ export const MainHeader = () => {
         </div>
 
         <nav className="hidden md:flex items-center gap-8">
-          {links.map((l) => (
+          {links.filter(l => l.id !== "blog-link").map((l) => (
             <a key={l.id} href={"/#" + l.id} onClick={(e) => go(e, l.id)} className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
               {l.label}
             </a>
           ))}
+          <Link to="/blog" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Blog</Link>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -57,11 +59,12 @@ export const MainHeader = () => {
 
       {open && (
         <div className="md:hidden bg-white border-b border-gray-100 px-4 py-4 space-y-3">
-          {links.map((l) => (
+          {links.filter(l => l.id !== "blog-link").map((l) => (
             <a key={l.id} href={"/#" + l.id} onClick={(e) => go(e, l.id)} className="block text-base text-slate-600 hover:text-slate-900 py-2">
               {l.label}
             </a>
           ))}
+          <Link to="/blog" onClick={() => setOpen(false)} className="block text-base text-slate-600 hover:text-slate-900 py-2">Blog</Link>
           <a href="#contact" onClick={(e) => go(e, "contact")} className="block text-center font-semibold bg-amber-400 hover:bg-amber-500 text-slate-900 py-3 rounded-full">
             Cotizar Gratis
           </a>
