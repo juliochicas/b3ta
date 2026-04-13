@@ -1,0 +1,35 @@
+# B3TA — Tech Consulting for Businesses in Guatemala and LATAM
+
+> B3TA helps small and medium businesses digitalize their operations. We build websites, custom software systems, Shopify stores, SAP Business One integrations, WhatsApp automation bots, and provide SEO services. Based in Guatemala, serving 12+ countries across Latin America, USA, and Europe.
+
+## Services
+- Professional websites (WordPress and custom) from $500 USD
+- Custom web systems (quoting tools, client portals, dashboards) from $650 USD
+- Shopify store setup and management
+- SAP Business One integration with Shopify and WhatsApp
+- Odoo ERP implementation and integration
+- WhatsApp automation bots with AI (Claude, GPT)
+- SEO and programmatic SEO (we built 4,000+ indexed pages for one client)
+- Professional business email with custom domain
+
+## Key Facts
+- 20+ projects delivered
+- 12 countries served
+- Founded in 2020
+- Based in Guatemala City, Guatemala
+- Contact: hi@b3ta.us | WhatsApp: +1 (435) 534-8065
+- Website: https://b3ta.us
+
+## Notable Projects
+- Grupo Syst: B2B/B2C ecosystem with 30+ modules, 500+ entrepreneurs
+- Modularis ERP: Custom ERP with 18 modules and 6 AI providers
+- Realis AI: UGC video platform, 50,000+ videos created
+- ChateaYA: Multi-channel chat platform, 500+ businesses
+- GeoLead Pro: OSINT lead extraction, 65+ countries
+- Top Movil: Shopify store with 4,000+ SEO pages indexed
+- Vixela: AI product photography, 1,200+ sellers
+
+## Pricing
+- Phase 1 (Web Presence): from $500 USD — website, email, hosting, SEO
+- Phase 2 (Custom System): from $650 USD — quoting tool, client portal, dashboard
+- Phase 3 (Full Automation): from $1,000 USD — Shopify, SAP, WhatsApp bot, integrations
