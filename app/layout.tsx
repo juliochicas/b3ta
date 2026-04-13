@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  themeColor: "#0f766e",
   authors: [{ name: "B3TA" }],
   metadataBase: new URL("https://b3ta.us"),
   alternates: { canonical: "/" },

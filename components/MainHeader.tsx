@@ -54,7 +54,7 @@ export const MainHeader = () => {
           <a href="#contact" onClick={(e) => go(e, "contact")} className="text-sm font-semibold bg-amber-400 hover:bg-amber-500 text-slate-900 py-2.5 px-5 rounded-full transition-colors hidden sm:inline-flex">
             Cotizar Gratis
           </a>
-          <button className="md:hidden p-2 text-slate-600" onClick={() => setOpen(!open)} aria-label="Menu">
+          <button className="md:hidden p-3 min-w-[48px] min-h-[48px] flex items-center justify-center text-slate-600" onClick={() => setOpen(!open)} aria-label="Abrir menu de navegacion">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
