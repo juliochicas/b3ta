@@ -1,6 +1,7 @@
 import { MainHeader } from "@/components/MainHeader";
 import { HeroB3ta } from "@/components/wow/HeroB3ta";
 import { ProblemSolution } from "@/components/wow/ProblemSolution";
+import { HowItWorks } from "@/components/wow/HowItWorks";
 import { CoreServices } from "@/components/wow/CoreServices";
 import { Methodology } from "@/components/wow/Methodology";
 import { CaseStudiesCarousel } from "@/components/wow/CaseStudiesCarousel";
@@ -15,6 +16,7 @@ const Index = () => {
       <main>
         <HeroB3ta />
         <ProblemSolution />
+        <HowItWorks />
         <CoreServices />
         <Methodology />
         <CaseStudiesCarousel />
