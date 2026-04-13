@@ -189,6 +189,23 @@ export function BriefsList() {
     setTimeout(() => win.print(), 300);
   };
 
+  const loadImageAsBase64 = (url: string): Promise<string | null> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  };
+
   const handleDownload = async (brief: Brief) => {
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -225,6 +242,19 @@ export function BriefsList() {
       y += 2;
     };
 
+    // Logo
+    if (brief.logo_url) {
+      try {
+        const base64 = await loadImageAsBase64(brief.logo_url);
+        if (base64) {
+          doc.addImage(base64, "PNG", margin, y, 25, 25);
+          y += 30;
+        }
+      } catch {
+        // skip logo if it fails
+      }
+    }
+
     // Header
     addText(brief.company_name, 22, true);
     addText(`Brief creativo — ${brief.client_name}`, 11, false, [100, 116, 139]);
@@ -248,9 +278,6 @@ export function BriefsList() {
     addField("Colores", brief.brand_colors);
     addField("Estilo", brief.style_preference ? (styleLabels[brief.style_preference] || brief.style_preference) : null);
     addField("Referencias", brief.reference_websites);
-    if (brief.logo_url) {
-      addField("Logo", brief.logo_url);
-    }
 
     // Footer
     y += 6;
