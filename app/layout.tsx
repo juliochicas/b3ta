@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     "automatizacion empresas",
     "sistemas a medida",
   ],
+  icons: {
+    icon: "/favicon.ico",
+  },
   authors: [{ name: "B3TA" }],
   metadataBase: new URL("https://b3ta.us"),
   alternates: { canonical: "/" },
