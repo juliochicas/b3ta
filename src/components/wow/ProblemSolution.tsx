@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 const pains = [
-  "Paso pedidos de Shopify a SAP copiando y pegando",
-  "Mi inventario dice una cosa y la bodega otra",
-  "Contesto WhatsApp uno por uno, todo el dia",
-  "Pague por una web pero no genera ni un lead",
-  "No se cuanto gano por cliente ni por producto",
-  "Tengo 3 sistemas que no se hablan entre si",
+  "Todo lo tengo en Excel y Word, quiero pasarlo a un sistema",
+  "Mis clientes no me ven formal, no tengo pagina ni correo propio",
+  "No me encuentran en Google ni en redes",
+  "Las notificaciones a clientes las mando manual por WhatsApp",
+  "No tengo mucho presupuesto, pero quiero empezar a ordenarme",
+  "Mi programador me dice 'no se puede' o tarda meses",
 ];
 
 export const ProblemSolution = () => {
@@ -26,12 +26,12 @@ export const ProblemSolution = () => {
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Si algo de esto te pasa,
+            Esto nos dicen nuestros clientes
             <br />
-            <span className="text-destructive">podemos ayudarte.</span>
+            <span className="text-destructive">antes de trabajar con nosotros.</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Marca los que reconozcas — te decimos como resolverlos.
+            Si te identificas con alguno, marca los que aplican.
           </p>
         </div>
 
@@ -102,15 +102,15 @@ export const ProblemSolution = () => {
                 <div className="w-14 h-14 rounded-2xl bg-destructive/10 flex items-center justify-center mb-8">
                   <AlertTriangle className="w-7 h-7 text-destructive" />
                 </div>
-                <h3 className="text-3xl font-black mb-4 tracking-tight">Asi se ve el dia a dia sin integracion.</h3>
+                <h3 className="text-3xl font-black mb-4 tracking-tight">Asi trabajan hoy.</h3>
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                  El equipo trabaja duro, pero la mitad del esfuerzo se va en tareas que deberian ser automaticas.
+                  Hacen todo manual, pierden tiempo y no se ven profesionales ante sus clientes.
                 </p>
                 <ul className="space-y-4">
                   {[
-                    "Doble digitacion entre Shopify, SAP y Excel.",
-                    "Pedidos que se pierden entre sistemas.",
-                    "Nadie sabe el stock real hasta que revisan la bodega.",
+                    "Cotizaciones en Excel que se pierden.",
+                    "Correo de Gmail que no genera confianza.",
+                    "Nadie los encuentra en Google.",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <X className="w-6 h-6 text-destructive shrink-0 mt-0.5" />
@@ -135,15 +135,15 @@ export const ProblemSolution = () => {
                 <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center mb-8">
                   <CheckCircle2 className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="text-3xl font-black mb-4 tracking-tight">Asi se ve despues de integrarnos.</h3>
+                <h3 className="text-3xl font-black mb-4 tracking-tight">Asi trabajan despues.</h3>
                 <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-                  Conectamos SAP, tu tienda y WhatsApp. Tu equipo se enfoca en vender, no en cargar datos.
+                  Con su propia pagina, su sistema y sus clientes encontrandolos solos.
                 </p>
                 <ul className="space-y-6">
                   {[
-                    "Pedido en Shopify → SAP lo registra solo.",
-                    "WhatsApp bot responde preguntas frecuentes.",
-                    "Dashboard con ventas, inventario y margenes en tiempo real.",
+                    "Cotizas desde tu celular en tu propio sistema.",
+                    "Tus clientes te encuentran en Google y te ven profesional.",
+                    "WhatsApp avisa automatico, tu ya no tienes que perseguir a nadie.",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-4">
                       <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">

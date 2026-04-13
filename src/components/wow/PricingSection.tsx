@@ -21,7 +21,7 @@ export const PricingSection = () => {
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-black mb-6"
           >
-            Que incluye y <span className="gradient-text">cuanto cuesta.</span>
+            Empieza con lo que <span className="gradient-text">necesitas hoy.</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -30,7 +30,7 @@ export const PricingSection = () => {
             transition={{ delay: 0.1 }}
             className="text-xl text-muted-foreground"
           >
-            Precio fijo por proyecto, sin cargos por hora ni letras chiquitas. Sabes exactamente que vas a recibir.
+            No tienes que hacer todo de una vez. Elige la fase que se ajusta a tu presupuesto y vamos creciendo juntos.
           </motion.p>
         </div>
 
@@ -47,8 +47,8 @@ export const PricingSection = () => {
               <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
                 <Zap className="h-7 w-7 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Web de Conversión</h3>
-              <p className="text-muted-foreground mb-6 h-12">Sitio web profesional que carga rapido, se ve bien en celular y esta hecho para generar contactos.</p>
+              <h3 className="text-2xl font-bold mb-2">Fase 1: Tu Presencia</h3>
+              <p className="text-muted-foreground mb-6 h-12">Tu pagina web, correo profesional y que te encuentren en Google. Lo basico para verte formal.</p>
               
               <div className="mb-8">
                 <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
@@ -96,8 +96,8 @@ export const PricingSection = () => {
               <div className="h-14 w-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6">
                 <Code2 className="h-7 w-7 text-secondary" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Plataforma / App a Medida</h3>
-              <p className="text-muted-foreground mb-6 h-12">Tu propio sistema web: panel de control, CRM o plataforma a medida con login y roles.</p>
+              <h3 className="text-2xl font-bold mb-2">Fase 2: Tu Sistema</h3>
+              <p className="text-muted-foreground mb-6 h-12">Deja el Excel. Tu propio cotizador, portal de clientes o sistema a medida desde el celular.</p>
               
               <div className="mb-8">
                 <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>
@@ -142,8 +142,8 @@ export const PricingSection = () => {
               <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
                 <Bot className="h-7 w-7 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Automatización (IA)</h3>
-              <p className="text-muted-foreground mb-6 h-12">Integraciones entre SAP, Shopify, WhatsApp y bots de IA para tu operacion diaria.</p>
+              <h3 className="text-2xl font-bold mb-2">Fase 3: Todo Automatico</h3>
+              <p className="text-muted-foreground mb-6 h-12">WhatsApp bot, notificaciones automaticas, tienda online conectada. Tu negocio funciona solo.</p>
               
               <div className="mb-8">
                 <span className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Desde</span>

@@ -6,7 +6,7 @@ const steps = [
     num: "01",
     title: "DIAGNÓSTICO",
     badge: "Gratis",
-    desc: "Revisamos como trabaja tu equipo hoy: que sistemas usan, donde se traban y que datos se pierden en el camino.",
+    desc: "Platicamos de tu negocio: que haces en Excel, como atiendes clientes, que te gustaria tener. Sin jerga tecnica.",
     icon: Search,
     gradient: "from-blue-500/20 to-blue-500/5",
     border: "border-blue-500/30 hover:border-blue-500/60",
@@ -18,7 +18,7 @@ const steps = [
     num: "02",
     title: "DISEÑO",
     badge: null,
-    desc: "Te presentamos un plan claro: que se conecta con que, cuanto cuesta y en cuanto tiempo queda listo.",
+    desc: "Te decimos que se puede hacer, cuanto cuesta y en cuanto tiempo. Precio fijo, sin sorpresas ni letra chiquita.",
     icon: PenTool,
     gradient: "from-purple-500/20 to-purple-500/5",
     border: "border-purple-500/30 hover:border-purple-500/60",
@@ -30,7 +30,7 @@ const steps = [
     num: "03",
     title: "IMPLEMENTACIÓN",
     badge: null,
-    desc: "Construimos las integraciones, probamos con datos reales de tu negocio y entrenamos a tu equipo para que lo usen desde el dia uno.",
+    desc: "Lo construimos y te lo mostramos en cada avance. Tu opinas, nosotros ajustamos. Nada de esperar meses sin ver nada.",
     icon: Rocket,
     gradient: "from-cyan-500/20 to-cyan-500/5",
     border: "border-cyan-500/30 hover:border-cyan-500/60",
@@ -42,7 +42,7 @@ const steps = [
     num: "04",
     title: "OPTIMIZACIÓN",
     badge: "Continuo",
-    desc: "Seguimos contigo despues del lanzamiento. Ajustamos lo que haga falta y agregamos funciones conforme crece tu operacion.",
+    desc: "Tu pagina o sistema sale en vivo. Te ensenamos a usarlo y seguimos contigo. Cuando quieras la siguiente fase, aqui estamos.",
     icon: RefreshCw,
     gradient: "from-accent/20 to-accent/5",
     border: "border-accent/30 hover:border-accent/60",
@@ -73,7 +73,7 @@ export const Methodology = () => {
             4 pasos, sin sorpresas
           </h2>
           <p className="text-xl text-muted-foreground max-w-xl mx-auto">
-            Asi funciona cada proyecto con nosotros.
+            No tienes que hacer todo de una vez. Empezamos con lo que mas necesitas.
           </p>
         </motion.div>
 

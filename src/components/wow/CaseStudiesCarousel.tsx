@@ -102,10 +102,10 @@ export const CaseStudiesCarousel = () => {
             Casos Reales
           </span>
           <h2 className="text-4xl md:text-5xl font-black mb-4">
-            Proyectos <span className="text-secondary">que hemos hecho</span>
+            Mira lo que <span className="text-secondary">hemos construido</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            Algunos ejemplos de lo que construimos para nuestros clientes.
+            Desde paginas web sencillas hasta sistemas completos con IA. Cada uno empezo con una platica.
           </p>
         </motion.div>
 

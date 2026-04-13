@@ -65,11 +65,11 @@ export const FinalCTA = () => {
         </div>
         
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight tracking-tighter">
-          Platicanos tu proyecto
+          Cuentanos que necesitas
         </h2>
 
         <p className="text-xl md:text-2xl text-muted-foreground font-medium mb-4 max-w-3xl mx-auto">
-          Cuentanos que necesitas y te decimos si podemos ayudarte, cuanto cuesta y en cuanto tiempo.
+          Algo sencillo como una pagina web, o algo complejo como un sistema completo. Te decimos cuanto cuesta y en cuanto tiempo.
         </p>
 
         {/* Trust bar */}
@@ -90,7 +90,7 @@ export const FinalCTA = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0 pointer-events-none" />
           <div className="space-y-6 text-left relative z-10">
             <label className="block text-foreground font-bold text-lg md:text-xl">
-              Que necesitas? Cuentanos en una linea:
+              Que te gustaria tener para tu negocio?
             </label>
             <div className="flex flex-col md:flex-row gap-4">
               <Input 
@@ -105,7 +105,7 @@ export const FinalCTA = () => {
               <Input 
                 value={pain}
                 onChange={(e) => setPain(e.target.value)}
-                placeholder="Ej: Necesito conectar Shopify con SAP, o quiero una web nueva..." 
+                placeholder="Ej: Quiero mi pagina web, o quiero dejar de usar Excel..." 
                 className="h-16 text-lg bg-background/50 border-border text-foreground placeholder:text-muted-foreground rounded-2xl px-6 focus-visible:ring-primary md:w-2/3"
                 required
                 disabled={isLoading}

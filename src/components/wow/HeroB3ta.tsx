@@ -6,33 +6,33 @@ import { useState, useEffect } from "react";
 // The animated sequence cards that appear on the right
 const tabs = [
   {
-    id: "ventas",
-    label: "Ventas",
+    id: "antes",
+    label: "Antes",
     steps: [
-      { icon: MessageCircle, text: "Lead entra por WhatsApp", done: false, color: "text-green-400" },
-      { icon: Zap, text: "IA califica automáticamente", done: false, color: "text-yellow-400" },
-      { icon: CheckCircle2, text: "CRM actualizado al instante", done: false, color: "text-primary" },
-      { icon: BarChart3, text: "Venta cerrada — sin intervención", done: true, color: "text-accent" },
+      { icon: MessageCircle, text: "Cotizas en Excel y lo mandas por WhatsApp", done: false, color: "text-red-400" },
+      { icon: Zap, text: "El cliente no te ve profesional", done: false, color: "text-red-400" },
+      { icon: CheckCircle2, text: "No te encuentran en Google", done: false, color: "text-red-400" },
+      { icon: BarChart3, text: "Pierdes clientes por falta de presencia", done: true, color: "text-red-400" },
     ],
   },
   {
-    id: "operaciones",
-    label: "Operaciones",
+    id: "despues",
+    label: "Despues",
     steps: [
-      { icon: CheckCircle2, text: "Pedido entra en Shopify", done: false, color: "text-blue-400" },
-      { icon: Zap, text: "SAP sincronizado en 0.3s", done: false, color: "text-yellow-400" },
-      { icon: BarChart3, text: "Inventario actualizado", done: false, color: "text-purple-400" },
-      { icon: CheckCircle2, text: "Envío notificado al cliente", done: true, color: "text-accent" },
+      { icon: CheckCircle2, text: "Cotizas desde el celular en tu propio sistema", done: false, color: "text-green-400" },
+      { icon: Zap, text: "Correo profesional: hola@tuempresa.com", done: false, color: "text-green-400" },
+      { icon: BarChart3, text: "Tu pagina aparece en Google", done: false, color: "text-green-400" },
+      { icon: MessageCircle, text: "Tus clientes te ven formal y te contratan", done: true, color: "text-accent" },
     ],
   },
   {
-    id: "ia",
-    label: "IA",
+    id: "avanzado",
+    label: "Pro",
     steps: [
-      { icon: MessageCircle, text: "Cliente escribe a las 2am", done: false, color: "text-cyan-400" },
-      { icon: Zap, text: "Agente IA responde al instante", done: false, color: "text-yellow-400" },
-      { icon: CheckCircle2, text: "Resuelve, agenda o escala", done: false, color: "text-primary" },
-      { icon: BarChart3, text: "Cliente atendido — tú dormías", done: true, color: "text-accent" },
+      { icon: Zap, text: "WhatsApp bot atiende clientes 24/7", done: false, color: "text-cyan-400" },
+      { icon: CheckCircle2, text: "Portal donde tu cliente ve su historial", done: false, color: "text-blue-400" },
+      { icon: BarChart3, text: "Notificaciones automaticas a tus clientes", done: false, color: "text-purple-400" },
+      { icon: MessageCircle, text: "Tu negocio funciona aunque no estes", done: true, color: "text-accent" },
     ],
   },
 ];
@@ -147,7 +147,7 @@ export const HeroB3ta = () => {
             >
               <Sparkles className="h-4 w-4 text-secondary animate-pulse" />
               <span className="text-sm font-medium text-foreground">
-                Consultoria tech para empresas en Guatemala y LATAM
+                Tu programador te dice "no se puede"? Nosotros si podemos.
               </span>
             </motion.div>
 
@@ -157,10 +157,10 @@ export const HeroB3ta = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="text-5xl sm:text-6xl md:text-7xl font-black text-foreground leading-[1.05] tracking-tighter"
             >
-              CONECTAMOS TU
+              DEJA EL EXCEL.
               <br />
               <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                SAP, TIENDA Y EQUIPO
+                TEN TU PROPIO SISTEMA.
               </span>
             </motion.h1>
 
@@ -170,8 +170,8 @@ export const HeroB3ta = () => {
               transition={{ duration: 0.7, delay: 0.4 }}
               className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed"
             >
-              Tu Shopify no habla con SAP, tu equipo carga pedidos a mano y WhatsApp se come tu dia.{" "}
-              <strong className="text-foreground">Nosotros arreglamos eso.</strong>
+              Pagina web, correo profesional, cotizador desde el celular, portal para tus clientes y que te encuentren en Google.{" "}
+              <strong className="text-foreground">Empezamos con lo basico y creces a tu ritmo.</strong>
             </motion.p>
 
             {/* Bullet list */}
@@ -182,9 +182,9 @@ export const HeroB3ta = () => {
               className="space-y-3 text-base text-muted-foreground max-w-sm mx-auto lg:mx-0"
             >
               {[
-                "Pedidos de Shopify entran a SAP solos",
-                "Bot de WhatsApp atiende mientras duermes",
-                "Dashboards con tus numeros reales, no Excel",
+                "Deja de cotizar en Excel, ten tu propio sistema",
+                "Que tus clientes te encuentren en Google",
+                "Notifica a tus clientes automatico, no manual",
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
@@ -270,9 +270,9 @@ export const HeroB3ta = () => {
             {/* Floating stat badges */}
             <div className="flex gap-3 flex-wrap justify-center lg:justify-start">
               {[
-                { label: "Proyectos entregados", value: "50+" },
-                { label: "Paises en LATAM", value: "12" },
-                { label: "Desde", value: "2020" },
+                { label: "Proyectos entregados", value: "20+" },
+                { label: "Paises", value: "12" },
+                { label: "Por fases", value: "Si" },
               ].map((badge, i) => (
                 <motion.div
                   key={i}

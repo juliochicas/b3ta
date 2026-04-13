@@ -4,33 +4,33 @@ import { Workflow, ShoppingCart, TrendingUp, Cpu, Store } from "lucide-react";
 export const CoreServices = () => {
   const services = [
     {
-      title: "AUTOMATIZACION CON N8N",
-      description: "Conectamos tus apps con flujos automaticos. Si hoy lo haces a mano, probablemente se puede automatizar.",
-      example: "Ej: Pedido en Shopify → factura en SAP → aviso al cliente por WhatsApp",
+      title: "DEJAR DE HACER TODO MANUAL",
+      description: "Si hoy mandas WhatsApp uno por uno o copias datos de un lado a otro, eso lo automatizamos.",
+      example: "Ej: Cliente compra → le llega su factura y aviso automatico",
       icon: Workflow,
       color: "from-primary/20",
       borderColor: "hover:border-primary/50"
     },
     {
-      title: "SAP B1 + PUNTO DE VENTA",
-      description: "Implementamos SAP Business One y POS conectado. Tu tienda fisica y online ven el mismo inventario.",
-      example: "Venta en sucursal → SAP actualiza stock → Shopify refleja disponibilidad",
+      title: "TU PAGINA WEB + CORREO PROFESIONAL",
+      description: "Que tus clientes te encuentren en Google y te vean formal. Con correo de tu empresa, no Gmail.",
+      example: "Ej: tuempresa.com + hola@tuempresa.com listos en dias",
       icon: Store,
       color: "from-secondary/20",
       borderColor: "hover:border-secondary/50"
     },
     {
-      title: "SEO PROGRAMATICO",
-      description: "Generamos miles de paginas optimizadas a partir de tu catalogo de productos, con schema markup.",
-      example: "Ej: 4,057 paginas indexadas para un portal de celulares en Guatemala",
+      title: "TIENDA ONLINE O CATALOGO",
+      description: "Vende por internet con Shopify o muestra tu catalogo en linea. Pagos, envios y todo incluido.",
+      example: "Ej: Tu tienda online lista para vender en una semana",
       icon: TrendingUp,
       color: "from-accent/20",
       borderColor: "hover:border-accent/50"
     },
     {
-      title: "APPS Y DASHBOARDS A MEDIDA",
-      description: "Paneles de control, portales B2B y herramientas internas hechas en React + Supabase.",
-      example: "Ej: Portal de clientes con cotizaciones, reportes y firmas digitales",
+      title: "TU PROPIO SISTEMA (DEJA EL EXCEL)",
+      description: "Cotizador, portal de clientes, control de inventario. Tu sistema web en vez de hojas de calculo.",
+      example: "Ej: Cotiza desde tu celular y el cliente recibe PDF profesional",
       icon: Cpu,
       color: "from-orange-500/20",
       borderColor: "hover:border-orange-500/50"
@@ -55,10 +55,10 @@ export const CoreServices = () => {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Lo que <span className="gradient-text">hacemos</span>
+            Como te <span className="gradient-text">ayudamos</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            Estas son las areas donde podemos ayudarte.
+            No importa si es algo sencillo o complejo. Lo hacemos por fases, a tu presupuesto.
           </p>
         </div>
 
