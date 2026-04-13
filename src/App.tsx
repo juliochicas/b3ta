@@ -27,6 +27,17 @@ import SistemasAMedida from "./pages/servicios/SistemasAMedida";
 import CorreoEmpresarial from "./pages/servicios/CorreoEmpresarial";
 import SapBusinessOne from "./pages/servicios/SapBusinessOne";
 import { CountryPage } from "./pages/servicios/CountryPage";
+import BlogIndex from "./pages/blog/BlogIndex";
+import CuantoCuestaPaginaWeb from "./pages/blog/CuantoCuestaPaginaWeb";
+import ComoSalirEnGoogle from "./pages/blog/ComoSalirEnGoogle";
+import MejorSoftwareCotizaciones from "./pages/blog/MejorSoftwareCotizaciones";
+import BotWhatsappNegocio from "./pages/blog/BotWhatsappNegocio";
+import SapVsOdoo from "./pages/blog/SapVsOdoo";
+import ShopifyVsWoocommerce from "./pages/blog/ShopifyVsWoocommerce";
+import AutomatizarNegocio from "./pages/blog/AutomatizarNegocio";
+import CorreoEmpresarialBarato from "./pages/blog/CorreoEmpresarialBarato";
+import QueNecesitoParaMiWeb from "./pages/blog/QueNecesitoParaMiWeb";
+import CuantoCobraProgramador from "./pages/blog/CuantoCobraProgramador";
 import { countries } from "./pages/servicios/countries";
 
 const queryClient = new QueryClient();
@@ -52,6 +63,17 @@ const App = () => (
           <Route path="/informe/:slug" element={<PublicReport />} />
           <Route path="/p/:slug" element={<ClientPage />} />
           <Route path="/client-pages" element={<ProtectedRoute><ClientPages /></ProtectedRoute>} />
+          <Route path="/blog" element={<BlogIndex />} />
+          <Route path="/blog/cuanto-cuesta-pagina-web-guatemala" element={<CuantoCuestaPaginaWeb />} />
+          <Route path="/blog/como-salir-en-google-guatemala" element={<ComoSalirEnGoogle />} />
+          <Route path="/blog/mejor-software-cotizaciones" element={<MejorSoftwareCotizaciones />} />
+          <Route path="/blog/como-crear-bot-whatsapp-negocio" element={<BotWhatsappNegocio />} />
+          <Route path="/blog/sap-vs-odoo-cual-elegir" element={<SapVsOdoo />} />
+          <Route path="/blog/shopify-vs-woocommerce-guatemala" element={<ShopifyVsWoocommerce />} />
+          <Route path="/blog/automatizar-negocio-sin-programar" element={<AutomatizarNegocio />} />
+          <Route path="/blog/correo-empresarial-barato" element={<CorreoEmpresarialBarato />} />
+          <Route path="/blog/que-necesito-para-mi-pagina-web" element={<QueNecesitoParaMiWeb />} />
+          <Route path="/blog/cuanto-cobra-programador-guatemala" element={<CuantoCobraProgramador />} />
           <Route path="/privacidad" element={<Privacy />} />
           <Route path="/terminos" element={<Terms />} />
           <Route path="/servicios/paginas-web-guatemala" element={<PaginasWeb />} />
