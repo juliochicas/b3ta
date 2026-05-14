@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2, CheckCircle, XCircle } from "lucide-react";
+import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
 import {
   DropdownMenu,
@@ -364,6 +364,10 @@ export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
                           <DropdownMenuItem onClick={() => handleStatusChange(quotation.id, 'rejected')}>
                             <XCircle className="h-4 w-4 mr-2 text-destructive" />
                             Marcar como Rechazada
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quotation.id, 'expired')}>
+                            <Clock className="h-4 w-4 mr-2 text-amber-500" />
+                            Marcar como Expirada (Sin Respuesta)
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
 
