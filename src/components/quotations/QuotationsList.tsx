@@ -26,6 +26,7 @@ interface Quotation {
   customers: {
     name: string;
     email: string;
+    phone: string | null;
     company: string | null;
   };
   status: string;
@@ -46,7 +47,7 @@ interface Quotation {
   sent_at: string | null;
 }
 
-export const QuotationsList = () => {
+export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [filteredQuotations, setFilteredQuotations] = useState<Quotation[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,6 +63,21 @@ export const QuotationsList = () => {
 
   useEffect(() => {
     loadQuotations();
+  }, [currentPage, refreshKey]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('quotations-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'quotations' }, () => {
+        loadQuotations().catch(err => {
+          console.error('Error reloading quotations:', err);
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [currentPage]);
 
   useEffect(() => {
@@ -94,6 +110,7 @@ export const QuotationsList = () => {
           customers!fk_quotations_customer (
             name,
             email,
+            phone,
             company
           )
         `)

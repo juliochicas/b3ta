@@ -17,7 +17,7 @@ interface ProductService {
   is_active: boolean;
 }
 
-export const ProductsServicesList = () => {
+export const ProductsServicesList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
   const [items, setItems] = useState<ProductService[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<ProductService | null>(null);
@@ -28,6 +28,21 @@ export const ProductsServicesList = () => {
 
   useEffect(() => {
     loadItems();
+  }, [currentPage, refreshKey]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('products-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products_services' }, () => {
+        loadItems().catch(err => {
+          console.error('Error reloading products:', err);
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [currentPage]);
 
   const loadItems = async () => {
