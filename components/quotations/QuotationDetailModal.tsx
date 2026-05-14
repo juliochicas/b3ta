@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown, Edit, Trash2, Plus } from "lucide-react";
+import { DollarSign, Send, ExternalLink, FileText, Download, Edit2, Save, X, Receipt, TrendingDown, Edit, Trash2, Plus, Copy } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { InvoiceDetailModal } from "./InvoiceDetailModal";
@@ -1638,7 +1638,21 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                     onClick={() => window.open(stripePaymentLink, '_blank')}
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    Ver Link de Pago
+                    Ver Link
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(stripePaymentLink);
+                      toast({
+                        title: "Link Copiado",
+                        description: "El link de pago ha sido copiado al portapapeles",
+                      });
+                    }}
+                  >
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copiar
                   </Button>
                   <Button
                     variant="outline"
@@ -1647,7 +1661,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                     disabled={isCreatingPaymentLink}
                   >
                     <DollarSign className="mr-2 h-4 w-4" />
-                    {isCreatingPaymentLink ? 'Regenerando...' : 'Regenerar Link'}
+                    {isCreatingPaymentLink ? 'Regenerando...' : 'Regenerar'}
                   </Button>
                 </>
               ) : (
