@@ -15,7 +15,7 @@ async function main() {
     name: "hosting_deployStaticWebsite",
     arguments: {
       domain: "b3ta.us",
-      archivePath: "/Users/jchicas/b3ta/b3ta_20260324_140000.zip",
+      archivePath: "/Users/jchicas/b3ta/b3ta_deploy_20260514.zip",
       removeArchive: false
     }
   });
