@@ -20,6 +20,7 @@ import { TermsAIAssistant } from "./TermsAIAssistant";
 import { EditQuotationItemModal } from "./EditQuotationItemModal";
 import { AddQuotationItemModal } from "./AddQuotationItemModal";
 import { formatCurrencyDisplay, formatCurrencyForPDF } from "@/lib/currency";
+import { Switch } from "@/components/ui/switch";
 
 interface Quotation {
   id: string;
@@ -86,8 +87,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
     customer_company: quotation.customers.company || "",
     valid_until: quotation.valid_until || "",
     currency: quotation.currency,
-    tax_rate: quotation.tax_rate.toString(),
-    discount_percentage: quotation.discount_percentage.toString(),
+    tax_rate: quotation.tax_rate?.toString() || "0",
+    discount_percentage: quotation.discount_percentage?.toString() || "0",
+    apply_credit_card_fee: quotation.apply_credit_card_fee || false,
     exchange_rate: initialExchangeRate || "",
     secondary_currency: initialSecondaryCurrency || ""
   });
@@ -638,6 +640,10 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
 
       totRow(`IVA (${quotation.tax_rate}%):`, formatCurrencyForPDF(quotation.tax_amount, quotation.currency));
 
+      if (quotation.apply_credit_card_fee) {
+        totRow('Recargo Tarjeta Crédito (5%):', formatCurrencyForPDF(quotation.credit_card_fee_amount || 0, quotation.currency), false, [200, 120, 30]);
+      }
+
       y += 4;
       draw(43, 79, 224); doc.setLineWidth(1);
       doc.line(tLabelX, y, MR, y);
@@ -960,7 +966,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       const globalDiscount = subtotal * (discountPercentageNum / 100);
       const subtotalAfterDiscount = subtotal - globalDiscount;
       const taxAmount = subtotalAfterDiscount * (taxRateNum / 100);
-      const totalAmount = subtotalAfterDiscount + taxAmount;
+      const creditCardFeeAmount = globalData.apply_credit_card_fee ? (subtotalAfterDiscount + taxAmount) * 0.05 : 0;
+      const totalAmount = subtotalAfterDiscount + taxAmount + creditCardFeeAmount;
 
       // Handle Exchange Rate tag
       let currentTags = quotation.tags || [];
@@ -981,6 +988,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
           discount_percentage: discountPercentageNum,
           discount_amount: globalDiscount,
           tax_amount: taxAmount,
+          apply_credit_card_fee: globalData.apply_credit_card_fee,
+          credit_card_fee_amount: creditCardFeeAmount,
           total: totalAmount,
           tags: currentTags
         })
@@ -1156,6 +1165,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                   <div className="space-y-2">
                     <Label className="text-xs">Descuento Global (%)</Label>
                     <Input type="number" step="0.1" value={globalData.discount_percentage} onChange={(e) => setGlobalData({...globalData, discount_percentage: e.target.value})} />
+                  </div>
+                  <div className="space-y-2 flex flex-col justify-center">
+                    <Label className="text-xs mb-2">Recargo Tarjeta Crédito (5%)</Label>
+                    <Switch 
+                      checked={globalData.apply_credit_card_fee} 
+                      onCheckedChange={(checked) => setGlobalData({...globalData, apply_credit_card_fee: checked})} 
+                    />
                   </div>
                 </div>
 
@@ -1440,6 +1456,12 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                         <span>IVA ({quotation.tax_rate}%):</span>
                         <span>{formatCurrencyDisplay(quotation.tax_amount, quotation.currency)}</span>
                       </div>
+                      {quotation.apply_credit_card_fee && (
+                        <div className="flex justify-between text-amber-600 font-medium">
+                          <span>Recargo Tarjeta Crédito (5%):</span>
+                          <span>{formatCurrencyDisplay(quotation.credit_card_fee_amount || 0, quotation.currency)}</span>
+                        </div>
+                      )}
                       <Separator />
                       <div className="flex justify-between items-start text-lg font-bold">
                         <span>Total:</span>

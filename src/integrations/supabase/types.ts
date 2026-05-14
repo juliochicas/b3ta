@@ -1059,8 +1059,10 @@ export type Database = {
       }
       quotations: {
         Row: {
+          apply_credit_card_fee: boolean | null
           created_at: string
           created_by: string
+          credit_card_fee_amount: number | null
           currency: string
           customer_id: string
           discount_amount: number | null
@@ -1084,8 +1086,10 @@ export type Database = {
           valid_until: string | null
         }
         Insert: {
+          apply_credit_card_fee?: boolean | null
           created_at?: string
           created_by?: string
+          credit_card_fee_amount?: number | null
           currency?: string
           customer_id: string
           discount_amount?: number | null
@@ -1109,8 +1113,10 @@ export type Database = {
           valid_until?: string | null
         }
         Update: {
+          apply_credit_card_fee?: boolean | null
           created_at?: string
           created_by?: string
+          credit_card_fee_amount?: number | null
           currency?: string
           customer_id?: string
           discount_amount?: number | null

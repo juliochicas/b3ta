@@ -61,9 +61,19 @@ export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
   const pageSize = 10;
   const { toast } = useToast();
 
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // Reset to page 1 on new search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   useEffect(() => {
     loadQuotations();
-  }, [currentPage, refreshKey]);
+  }, [currentPage, refreshKey, debouncedSearchTerm]);
 
   useEffect(() => {
     const channel = supabase
@@ -80,30 +90,22 @@ export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
     };
   }, [currentPage]);
 
+  // Client-side filter is no longer needed since we do it on the server
+  // We keep filteredQuotations mapped to quotations for compatibility
   useEffect(() => {
-    if (searchTerm) {
-      setFilteredQuotations(
-        quotations.filter(q =>
-          q.quotation_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.customers.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.customers.email.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredQuotations(quotations);
-    }
-  }, [searchTerm, quotations]);
+    setFilteredQuotations(quotations);
+  }, [quotations]);
 
   const loadQuotations = async () => {
     try {
       const from = (currentPage - 1) * pageSize;
       const to = from + pageSize - 1;
 
-      const { count } = await supabase
+      let countQuery = supabase
         .from('quotations')
         .select('*', { count: 'exact', head: true });
 
-      const { data, error } = await supabase
+      let dataQuery = supabase
         .from('quotations')
         .select(`
           *,
@@ -113,7 +115,31 @@ export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
             phone,
             company
           )
-        `)
+        `);
+
+      if (debouncedSearchTerm) {
+        // Find matching customer IDs first since we can't easily do OR across tables in Supabase JS
+        const { data: customersMatch } = await supabase
+          .from('customers')
+          .select('id')
+          .or(`name.ilike.%${debouncedSearchTerm}%,email.ilike.%${debouncedSearchTerm}%`);
+        
+        const customerIds = customersMatch?.map(c => c.id) || [];
+        
+        if (customerIds.length > 0) {
+          const filterStr = `quotation_number.ilike.%${debouncedSearchTerm}%,customer_id.in.(${customerIds.join(',')})`;
+          countQuery = countQuery.or(filterStr);
+          dataQuery = dataQuery.or(filterStr);
+        } else {
+          const filterStr = `quotation_number.ilike.%${debouncedSearchTerm}%`;
+          countQuery = countQuery.or(filterStr);
+          dataQuery = dataQuery.or(filterStr);
+        }
+      }
+
+      const { count } = await countQuery;
+      
+      const { data, error } = await dataQuery
         .order('created_at', { ascending: false })
         .range(from, to);
 
