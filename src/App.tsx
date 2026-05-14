@@ -9,6 +9,7 @@ import CRM from "./pages/CRM";
 import Quotations from "./pages/Quotations";
 import Reports from "./pages/Reports";
 import PublicReport from "./pages/PublicReport";
+import PublicBooking from "./pages/PublicBooking";
 import Meetings from "./pages/Meetings";
 import Email from "./pages/Email";
 import ClientPage from "./pages/ClientPage";
@@ -61,6 +62,7 @@ const App = () => (
           <Route path="/email" element={<ProtectedRoute><Email /></ProtectedRoute>} />
           <Route path="/team" element={<ProtectedRoute><Team /></ProtectedRoute>} />
           <Route path="/informe/:slug" element={<PublicReport />} />
+          <Route path="/book/:username" element={<PublicBooking />} />
           <Route path="/p/:slug" element={<ClientPage />} />
           <Route path="/client-pages" element={<ProtectedRoute><ClientPages /></ProtectedRoute>} />
           <Route path="/blog" element={<BlogIndex />} />

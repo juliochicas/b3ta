@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Trash2, Calendar } from "lucide-react";
+import { Trash2, Calendar, Copy, ExternalLink, Link as LinkIcon } from "lucide-react";
 
 const DAYS_OF_WEEK = [
   { value: 0, label: "Domingo" },
@@ -40,6 +40,13 @@ export const AvailabilitySettings = () => {
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
   const [timezone, setTimezone] = useState("America/Mexico_City");
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useState(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setUserId(data.user.id);
+    });
+  });
 
   const { data: availability, refetch } = useQuery({
     queryKey: ["user-availability"],
@@ -146,6 +153,48 @@ export const AvailabilitySettings = () => {
 
   return (
     <div className="space-y-6">
+      <Card className="bg-primary/5 border-primary/20">
+        <CardContent className="pt-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <LinkIcon className="w-5 h-5 text-primary" />
+                Tu Link de Reservas Público
+              </h3>
+              <p className="text-sm text-slate-600 mt-1">
+                Comparte este enlace con tus clientes para que puedan agendar reuniones contigo según tu disponibilidad.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <Input 
+                readOnly 
+                value={userId ? `${window.location.origin}/book/${userId}` : "Cargando..."} 
+                className="bg-white"
+              />
+              <Button 
+                onClick={() => {
+                  if (userId) {
+                    navigator.clipboard.writeText(`${window.location.origin}/book/${userId}`);
+                    toast.success("Enlace copiado al portapapeles");
+                  }
+                }}
+                disabled={!userId}
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Copiar
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => window.open(`/book/${userId}`, '_blank')}
+                disabled={!userId}
+              >
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Añadir Disponibilidad</CardTitle>
