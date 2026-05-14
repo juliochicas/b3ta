@@ -1326,6 +1326,7 @@ export type Database = {
       user_settings: {
         Row: {
           created_at: string
+          default_bank_accounts: string | null
           default_terms_conditions: string | null
           id: string
           updated_at: string
@@ -1333,6 +1334,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          default_bank_accounts?: string | null
           default_terms_conditions?: string | null
           id?: string
           updated_at?: string
@@ -1340,6 +1342,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          default_bank_accounts?: string | null
           default_terms_conditions?: string | null
           id?: string
           updated_at?: string

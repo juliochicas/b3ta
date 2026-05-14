@@ -64,6 +64,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
   const [items, setItems] = useState<QuotationItem[]>([]);
   const [products, setProducts] = useState<ProductService[]>([]);
   const [reports, setReports] = useState<any[]>([]);
+  const [defaultBankAccounts, setDefaultBankAccounts] = useState("");
   const [isSavingAsDefault, setIsSavingAsDefault] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string>("");
   const [showProductSelector, setShowProductSelector] = useState(false);
@@ -153,7 +154,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
 
       const { data, error } = await supabase
         .from('user_settings')
-        .select('default_terms_conditions')
+        .select('default_terms_conditions, default_bank_accounts')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -164,6 +165,10 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           ...prev,
           terms_conditions: data.default_terms_conditions
         }));
+      }
+      
+      if (data?.default_bank_accounts) {
+        setDefaultBankAccounts(data.default_bank_accounts);
       }
     } catch (error) {
       console.error('Error loading default terms:', error);
@@ -327,6 +332,10 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       const tagsArray = formData.tags
         ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
         : [];
+
+      if (defaultBankAccounts) {
+        tagsArray.push(`bank:${encodeURIComponent(defaultBankAccounts)}`);
+      }
 
       const { data: quotation, error: quotationError } = await supabase
         .from('quotations')

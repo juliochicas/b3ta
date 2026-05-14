@@ -105,6 +105,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const initialBank = initialBankTag ? decodeURIComponent(initialBankTag.substring(5)) : "";
   const [bankAccounts, setBankAccounts] = useState(initialBank);
   const [isEditingBank, setIsEditingBank] = useState(false);
+  const [isSavingDefaultBank, setIsSavingDefaultBank] = useState(false);
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -139,6 +140,38 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const saveAsDefaultBank = async () => {
+    setIsSavingDefaultBank(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          default_bank_accounts: bankAccounts
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Cuentas guardadas",
+        description: "Las cuentas bancarias se han guardado como predeterminadas",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar las cuentas predeterminadas",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingDefaultBank(false);
     }
   };
 
@@ -1519,6 +1552,14 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                       <Button onClick={updateBankAccounts} size="sm">
                         <Save className="h-4 w-4 mr-2" />
                         Guardar
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={saveAsDefaultBank}
+                        disabled={isSavingDefaultBank}
+                      >
+                        {isSavingDefaultBank ? 'Guardando...' : 'Guardar como Predeterminado'}
                       </Button>
                       <Button
                         variant="outline"
