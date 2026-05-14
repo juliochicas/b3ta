@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "sistemas a medida",
   ],
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.ico?v=2",
   },
   themeColor: "#0f766e",
   authors: [{ name: "B3TA" }],
