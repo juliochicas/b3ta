@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2, CheckCircle, XCircle } from "lucide-react";
+import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
 import {
   DropdownMenu,
@@ -28,6 +28,7 @@ interface Quotation {
   customers: {
     name: string;
     email: string;
+    phone: string | null;
     company: string | null;
   };
   status: string;
@@ -48,7 +49,7 @@ interface Quotation {
   sent_at: string | null;
 }
 
-export const QuotationsList = () => {
+export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [filteredQuotations, setFilteredQuotations] = useState<Quotation[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,43 +63,85 @@ export const QuotationsList = () => {
   const pageSize = 10;
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadQuotations();
-  }, [currentPage]);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   useEffect(() => {
-    if (searchTerm) {
-      setFilteredQuotations(
-        quotations.filter(q =>
-          q.quotation_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.customers.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.customers.email.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredQuotations(quotations);
-    }
-  }, [searchTerm, quotations]);
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // Reset to page 1 on new search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    loadQuotations();
+  }, [currentPage, refreshKey, debouncedSearchTerm]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('quotations-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'quotations' }, () => {
+        loadQuotations().catch(err => {
+          console.error('Error reloading quotations:', err);
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentPage]);
+
+  // Client-side filter is no longer needed since we do it on the server
+  // We keep filteredQuotations mapped to quotations for compatibility
+  useEffect(() => {
+    setFilteredQuotations(quotations);
+  }, [quotations]);
 
   const loadQuotations = async () => {
     try {
       const from = (currentPage - 1) * pageSize;
       const to = from + pageSize - 1;
 
-      const { count } = await supabase
+      let countQuery = supabase
         .from('quotations')
         .select('*', { count: 'exact', head: true });
 
-      const { data, error } = await supabase
+      let dataQuery = supabase
         .from('quotations')
         .select(`
           *,
           customers!fk_quotations_customer (
             name,
             email,
+            phone,
             company
           )
-        `)
+        `);
+
+      if (debouncedSearchTerm) {
+        // Find matching customer IDs first since we can't easily do OR across tables in Supabase JS
+        const { data: customersMatch } = await supabase
+          .from('customers')
+          .select('id')
+          .or(`name.ilike.%${debouncedSearchTerm}%,email.ilike.%${debouncedSearchTerm}%`);
+        
+        const customerIds = customersMatch?.map(c => c.id) || [];
+        
+        if (customerIds.length > 0) {
+          const filterStr = `quotation_number.ilike.%${debouncedSearchTerm}%,customer_id.in.(${customerIds.join(',')})`;
+          countQuery = countQuery.or(filterStr);
+          dataQuery = dataQuery.or(filterStr);
+        } else {
+          const filterStr = `quotation_number.ilike.%${debouncedSearchTerm}%`;
+          countQuery = countQuery.or(filterStr);
+          dataQuery = dataQuery.or(filterStr);
+        }
+      }
+
+      const { count } = await countQuery;
+      
+      const { data, error } = await dataQuery
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -323,6 +366,10 @@ export const QuotationsList = () => {
                           <DropdownMenuItem onClick={() => handleStatusChange(quotation.id, 'rejected')}>
                             <XCircle className="h-4 w-4 mr-2 text-destructive" />
                             Marcar como Rechazada
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quotation.id, 'expired')}>
+                            <Clock className="h-4 w-4 mr-2 text-amber-500" />
+                            Marcar como Expirada (Sin Respuesta)
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
 

@@ -14,6 +14,7 @@ import { X, Plus, Trash2, Search, Sparkles } from "lucide-react";
 import { formatCurrencyDisplay } from "@/lib/currency";
 import { TermsAIAssistant } from "./TermsAIAssistant";
 import { GrandSlamGenerator } from "./GrandSlamGenerator";
+import { Switch } from "@/components/ui/switch";
 
 interface ProductService {
   id: string;
@@ -49,6 +50,7 @@ export const CreateQuotationModal = ({ onClose, onSuccess, leadId, grandSlamResu
     currency: "USD",
     tax_rate: "16",
     discount_percentage: "0",
+    apply_credit_card_fee: false,
     valid_days: "30",
     tracking_number: "",
     notes: "",
@@ -66,6 +68,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
   const [items, setItems] = useState<QuotationItem[]>([]);
   const [products, setProducts] = useState<ProductService[]>([]);
   const [reports, setReports] = useState<any[]>([]);
+  const [defaultBankAccounts, setDefaultBankAccounts] = useState("");
   const [isSavingAsDefault, setIsSavingAsDefault] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string>("");
   const [showProductSelector, setShowProductSelector] = useState(false);
@@ -155,7 +158,7 @@ Para proceder con esta cotización, por favor realice el pago a través del link
 
       const { data, error } = await supabase
         .from('user_settings')
-        .select('default_terms_conditions')
+        .select('default_terms_conditions, default_bank_accounts')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -166,6 +169,10 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           ...prev,
           terms_conditions: data.default_terms_conditions
         }));
+      }
+      
+      if (data?.default_bank_accounts) {
+        setDefaultBankAccounts(data.default_bank_accounts);
       }
     } catch (error) {
       console.error('Error loading default terms:', error);
@@ -253,8 +260,9 @@ Para proceder con esta cotización, por favor realice el pago a través del link
     const globalDiscount = subtotal * (parseFloat(formData.discount_percentage) / 100);
     const subtotalAfterDiscount = subtotal - globalDiscount;
     const taxAmount = subtotalAfterDiscount * (parseFloat(formData.tax_rate) / 100);
-    const total = subtotalAfterDiscount + taxAmount;
-    return { subtotal, globalDiscount, subtotalAfterDiscount, taxAmount, total };
+    const creditCardFeeAmount = formData.apply_credit_card_fee ? (subtotalAfterDiscount + taxAmount) * 0.05 : 0;
+    const total = subtotalAfterDiscount + taxAmount + creditCardFeeAmount;
+    return { subtotal, globalDiscount, subtotalAfterDiscount, taxAmount, creditCardFeeAmount, total };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -330,6 +338,10 @@ Para proceder con esta cotización, por favor realice el pago a través del link
         ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
         : [];
 
+      if (defaultBankAccounts) {
+        tagsArray.push(`bank:${encodeURIComponent(defaultBankAccounts)}`);
+      }
+
       const { data: quotation, error: quotationError } = await supabase
         .from('quotations')
         .insert([{
@@ -340,6 +352,8 @@ Para proceder con esta cotización, por favor realice el pago a través del link
           discount_amount: globalDiscount,
           tax_rate: parseFloat(formData.tax_rate),
           tax_amount: taxAmount,
+          apply_credit_card_fee: formData.apply_credit_card_fee,
+          credit_card_fee_amount: creditCardFeeAmount,
           total,
           currency: formData.currency,
           valid_until: validUntil.toISOString().split('T')[0],
@@ -378,10 +392,11 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       });
 
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Error creating quotation:", error);
       toast({
         title: "Error",
-        description: "No se pudo crear la cotización",
+        description: error.message || "No se pudo crear la cotización",
         variant: "destructive",
       });
     } finally {
@@ -663,9 +678,21 @@ Para proceder con esta cotización, por favor realice el pago a través del link
                     <span>%</span>
                     <span className="font-semibold">{formatCurrencyDisplay(taxAmount, formData.currency)}</span>
                   </div>
+                  <div className="flex justify-between w-80 items-center">
+                    <span>Recargo Tarjeta (5%):</span>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={formData.apply_credit_card_fee}
+                        onCheckedChange={(checked) => setFormData({ ...formData, apply_credit_card_fee: checked })}
+                      />
+                      <span className="font-semibold text-amber-600 w-20 text-right">
+                        {formData.apply_credit_card_fee ? formatCurrencyDisplay(calculateTotals().creditCardFeeAmount, formData.currency) : '$0.00'}
+                      </span>
+                    </div>
+                  </div>
                   <div className="flex justify-between w-80 text-lg font-bold">
                     <span>Total:</span>
-                    <span className="text-primary">{formatCurrencyDisplay(total, formData.currency)}</span>
+                    <span className="text-primary">{formatCurrencyDisplay(calculateTotals().total, formData.currency)}</span>
                   </div>
                 </div>
               </div>

@@ -22,6 +22,7 @@ import { TermsAIAssistant } from "./TermsAIAssistant";
 import { EditQuotationItemModal } from "./EditQuotationItemModal";
 import { AddQuotationItemModal } from "./AddQuotationItemModal";
 import { formatCurrencyDisplay, formatCurrencyForPDF } from "@/lib/currency";
+import { Switch } from "@/components/ui/switch";
 
 interface Quotation {
   id: string;
@@ -30,6 +31,7 @@ interface Quotation {
   customers: {
     name: string;
     email: string;
+    phone: string | null;
     company: string | null;
   };
   status: string;
@@ -83,11 +85,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const [globalData, setGlobalData] = useState({
     customer_name: quotation.customers.name,
     customer_email: quotation.customers.email,
+    customer_phone: quotation.customers.phone || "",
     customer_company: quotation.customers.company || "",
     valid_until: quotation.valid_until || "",
     currency: quotation.currency,
-    tax_rate: quotation.tax_rate.toString(),
-    discount_percentage: quotation.discount_percentage.toString(),
+    tax_rate: quotation.tax_rate?.toString() || "0",
+    discount_percentage: quotation.discount_percentage?.toString() || "0",
+    apply_credit_card_fee: quotation.apply_credit_card_fee || false,
     exchange_rate: initialExchangeRate || "",
     secondary_currency: initialSecondaryCurrency || ""
   });
@@ -105,6 +109,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const initialBank = initialBankTag ? decodeURIComponent(initialBankTag.substring(5)) : "";
   const [bankAccounts, setBankAccounts] = useState(initialBank);
   const [isEditingBank, setIsEditingBank] = useState(false);
+  const [isSavingDefaultBank, setIsSavingDefaultBank] = useState(false);
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   const [relatedInvoice, setRelatedInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -139,6 +144,38 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const saveAsDefaultBank = async () => {
+    setIsSavingDefaultBank(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          default_bank_accounts: bankAccounts
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Cuentas guardadas",
+        description: "Las cuentas bancarias se han guardado como predeterminadas",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar las cuentas predeterminadas",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingDefaultBank(false);
     }
   };
 
@@ -549,29 +586,40 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       doc.line(ML, y - 6, MR, y - 6);
 
       items.forEach((item) => {
+        // Set font for name calculation
+        fnt('bold', 9.5);
+        const nameLines = doc.splitTextToSize(item.item_name, COL.qty - COL.desc - 16);
+        
+        // Set font for description calculation
+        fnt('normal', 8.5);
         const descLines = item.description
-          ? doc.splitTextToSize(item.description, COL.qty - COL.desc - 8)
+          ? doc.splitTextToSize(item.description, COL.qty - COL.desc - 16)
           : [];
-        const rowH2 = 22 + (descLines.length > 0 ? descLines.length * 11 : 0);
+          
+        const nameHeight = nameLines.length * 14;
+        const descHeight = descLines.length > 0 ? descLines.length * 12 : 0;
+        const rowH2 = Math.max(30, nameHeight + descHeight + 10);
 
         if (y + rowH2 > PH - 80) { doc.addPage(); y = 60; }
 
         rgb(15, 23, 42); fnt('bold', 9.5);
-        txt(item.item_name, COL.desc + 4, y + 11);
+        nameLines.forEach((line: string, i: number) => {
+          txt(line, COL.desc + 4, y + 14 + i * 14);
+        });
 
         if (descLines.length > 0) {
           fnt('normal', 8.5); rgb(120, 130, 150);
           descLines.forEach((line: string, i: number) => {
-            txt(line, COL.desc + 4, y + 22 + i * 11);
+            txt(line, COL.desc + 4, y + 14 + nameHeight + (i * 12));
           });
         }
 
         fnt('normal', 9.5); rgb(15, 23, 42);
-        txt(String(item.quantity), COL.qty, y + 11);
-        txt(formatCurrencyForPDF(item.unit_price, quotation.currency), COL.unit, y + 11);
-        txt(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '-', COL.disc, y + 11);
+        txt(String(item.quantity), COL.qty, y + 14);
+        txt(formatCurrencyForPDF(item.unit_price, quotation.currency), COL.unit, y + 14);
+        txt(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '-', COL.disc, y + 14);
         fnt('bold', 9.5);
-        txt(formatCurrencyForPDF(item.total, quotation.currency), COL.total, y + 11, { align: 'right' });
+        txt(formatCurrencyForPDF(item.total, quotation.currency), COL.total, y + 14, { align: 'right' });
 
         y += rowH2;
         draw(230, 235, 245); doc.line(ML, y, MR, y);
@@ -604,6 +652,10 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       }
 
       totRow(`IVA (${quotation.tax_rate}%):`, formatCurrencyForPDF(quotation.tax_amount, quotation.currency));
+
+      if (quotation.apply_credit_card_fee) {
+        totRow('Recargo Tarjeta Crédito (5%):', formatCurrencyForPDF(quotation.credit_card_fee_amount || 0, quotation.currency), false, [200, 120, 30]);
+      }
 
       y += 4;
       draw(43, 79, 224); doc.setLineWidth(1);
@@ -905,6 +957,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
         .update({
           name: globalData.customer_name,
           email: globalData.customer_email,
+          phone: globalData.customer_phone || null,
           company: globalData.customer_company || null
         })
         .eq('id', quotation.customer_id);
@@ -926,7 +979,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       const globalDiscount = subtotal * (discountPercentageNum / 100);
       const subtotalAfterDiscount = subtotal - globalDiscount;
       const taxAmount = subtotalAfterDiscount * (taxRateNum / 100);
-      const totalAmount = subtotalAfterDiscount + taxAmount;
+      const creditCardFeeAmount = globalData.apply_credit_card_fee ? (subtotalAfterDiscount + taxAmount) * 0.05 : 0;
+      const totalAmount = subtotalAfterDiscount + taxAmount + creditCardFeeAmount;
 
       // Handle Exchange Rate tag
       let currentTags = quotation.tags || [];
@@ -947,6 +1001,8 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
           discount_percentage: discountPercentageNum,
           discount_amount: globalDiscount,
           tax_amount: taxAmount,
+          apply_credit_card_fee: globalData.apply_credit_card_fee,
+          credit_card_fee_amount: creditCardFeeAmount,
           total: totalAmount,
           tags: currentTags
         })
@@ -960,8 +1016,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       });
       setIsEditingGlobals(false);
       onUpdate();
-    } catch (e) {
-      toast({ title: "Error", description: "No se pudieron actualizar los datos", variant: "destructive" });
+    } catch (e: any) {
+      console.error("Error updating globals:", e);
+      toast({ title: "Error", description: e?.message || "No se pudieron actualizar los datos", variant: "destructive" });
     }
   };
 
@@ -1026,6 +1083,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                         <p className="text-muted-foreground">{quotation.customers.company}</p>
                       )}
                       <p className="text-muted-foreground">{quotation.customers.email}</p>
+                      {quotation.customers.phone && (
+                        <p className="text-muted-foreground">{quotation.customers.phone}</p>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -1080,6 +1140,10 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                     <Input value={globalData.customer_email} onChange={(e) => setGlobalData({...globalData, customer_email: e.target.value})} />
                   </div>
                   <div className="space-y-2">
+                    <Label className="text-xs">Teléfono del Cliente</Label>
+                    <Input type="tel" placeholder="+502 0000-0000" value={globalData.customer_phone} onChange={(e) => setGlobalData({...globalData, customer_phone: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
                     <Label className="text-xs">Empresa (Opcional)</Label>
                     <Input value={globalData.customer_company} onChange={(e) => setGlobalData({...globalData, customer_company: e.target.value})} />
                   </div>
@@ -1114,6 +1178,13 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                   <div className="space-y-2">
                     <Label className="text-xs">Descuento Global (%)</Label>
                     <Input type="number" step="0.1" value={globalData.discount_percentage} onChange={(e) => setGlobalData({...globalData, discount_percentage: e.target.value})} />
+                  </div>
+                  <div className="space-y-2 flex flex-col justify-center">
+                    <Label className="text-xs mb-2">Recargo Tarjeta Crédito (5%)</Label>
+                    <Switch 
+                      checked={globalData.apply_credit_card_fee} 
+                      onCheckedChange={(checked) => setGlobalData({...globalData, apply_credit_card_fee: checked})} 
+                    />
                   </div>
                 </div>
 
@@ -1398,6 +1469,12 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                         <span>IVA ({quotation.tax_rate}%):</span>
                         <span>{formatCurrencyDisplay(quotation.tax_amount, quotation.currency)}</span>
                       </div>
+                      {quotation.apply_credit_card_fee && (
+                        <div className="flex justify-between text-amber-600 font-medium">
+                          <span>Recargo Tarjeta Crédito (5%):</span>
+                          <span>{formatCurrencyDisplay(quotation.credit_card_fee_amount || 0, quotation.currency)}</span>
+                        </div>
+                      )}
                       <Separator />
                       <div className="flex justify-between items-start text-lg font-bold">
                         <span>Total:</span>
@@ -1510,6 +1587,14 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                       <Button onClick={updateBankAccounts} size="sm">
                         <Save className="h-4 w-4 mr-2" />
                         Guardar
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={saveAsDefaultBank}
+                        disabled={isSavingDefaultBank}
+                      >
+                        {isSavingDefaultBank ? 'Guardando...' : 'Guardar como Predeterminado'}
                       </Button>
                       <Button
                         variant="outline"
