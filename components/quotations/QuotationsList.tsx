@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Search, Eye, Send, DollarSign, Calendar, FileText, ChevronLeft, ChevronRight, Trash2, Archive, MoreVertical, Edit2, CheckCircle, XCircle, Clock, Copy } from "lucide-react";
 import { AlertDeleteDialog } from "@/components/ui/alert-delete-dialog";
 import {
   DropdownMenu,
@@ -97,6 +97,14 @@ export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
   useEffect(() => {
     setFilteredQuotations(quotations);
   }, [quotations]);
+
+  const handleCopyLink = (link: string) => {
+    navigator.clipboard.writeText(link);
+    toast({
+      title: "Link Copiado",
+      description: "El link de pago ha sido copiado al portapapeles",
+    });
+  };
 
   const loadQuotations = async () => {
     try {
@@ -357,6 +365,13 @@ export const QuotationsList = ({ refreshKey = 0 }: { refreshKey?: number }) => {
                             <Edit2 className="h-4 w-4 mr-2" />
                             Editar Cotización
                           </DropdownMenuItem>
+                          
+                          {quotation.stripe_payment_link && (
+                            <DropdownMenuItem onClick={() => handleCopyLink(quotation.stripe_payment_link!)}>
+                              <Copy className="h-4 w-4 mr-2 text-primary" />
+                              Copiar Link de Pago
+                            </DropdownMenuItem>
+                          )}
 
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleStatusChange(quotation.id, 'accepted')}>
