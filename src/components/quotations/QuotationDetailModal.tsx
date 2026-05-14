@@ -584,29 +584,35 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       doc.line(ML, y - 6, MR, y - 6);
 
       items.forEach((item) => {
+        const nameLines = doc.splitTextToSize(item.item_name, COL.qty - COL.desc - 16);
         const descLines = item.description
-          ? doc.splitTextToSize(item.description, COL.qty - COL.desc - 8)
+          ? doc.splitTextToSize(item.description, COL.qty - COL.desc - 16)
           : [];
-        const rowH2 = 22 + (descLines.length > 0 ? descLines.length * 11 : 0);
+          
+        const nameHeight = nameLines.length * 14;
+        const descHeight = descLines.length > 0 ? descLines.length * 12 : 0;
+        const rowH2 = Math.max(30, nameHeight + descHeight + 10);
 
         if (y + rowH2 > PH - 80) { doc.addPage(); y = 60; }
 
         rgb(15, 23, 42); fnt('bold', 9.5);
-        txt(item.item_name, COL.desc + 4, y + 11);
+        nameLines.forEach((line: string, i: number) => {
+          txt(line, COL.desc + 4, y + 14 + i * 14);
+        });
 
         if (descLines.length > 0) {
           fnt('normal', 8.5); rgb(120, 130, 150);
           descLines.forEach((line: string, i: number) => {
-            txt(line, COL.desc + 4, y + 22 + i * 11);
+            txt(line, COL.desc + 4, y + 14 + nameHeight + (i * 12));
           });
         }
 
         fnt('normal', 9.5); rgb(15, 23, 42);
-        txt(String(item.quantity), COL.qty, y + 11);
-        txt(formatCurrencyForPDF(item.unit_price, quotation.currency), COL.unit, y + 11);
-        txt(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '-', COL.disc, y + 11);
+        txt(String(item.quantity), COL.qty, y + 14);
+        txt(formatCurrencyForPDF(item.unit_price, quotation.currency), COL.unit, y + 14);
+        txt(item.discount_percentage > 0 ? `${item.discount_percentage}%` : '-', COL.disc, y + 14);
         fnt('bold', 9.5);
-        txt(formatCurrencyForPDF(item.total, quotation.currency), COL.total, y + 11, { align: 'right' });
+        txt(formatCurrencyForPDF(item.total, quotation.currency), COL.total, y + 14, { align: 'right' });
 
         y += rowH2;
         draw(230, 235, 245); doc.line(ML, y, MR, y);
