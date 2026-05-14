@@ -376,10 +376,11 @@ Para proceder con esta cotización, por favor realice el pago a través del link
       });
 
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Error creating quotation:", error);
       toast({
         title: "Error",
-        description: "No se pudo crear la cotización",
+        description: error.message || "No se pudo crear la cotización",
         variant: "destructive",
       });
     } finally {

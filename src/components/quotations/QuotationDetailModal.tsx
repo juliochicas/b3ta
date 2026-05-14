@@ -28,6 +28,7 @@ interface Quotation {
   customers: {
     name: string;
     email: string;
+    phone: string | null;
     company: string | null;
   };
   status: string;
@@ -81,6 +82,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
   const [globalData, setGlobalData] = useState({
     customer_name: quotation.customers.name,
     customer_email: quotation.customers.email,
+    customer_phone: quotation.customers.phone || "",
     customer_company: quotation.customers.company || "",
     valid_until: quotation.valid_until || "",
     currency: quotation.currency,
@@ -903,6 +905,7 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
         .update({
           name: globalData.customer_name,
           email: globalData.customer_email,
+          phone: globalData.customer_phone || null,
           company: globalData.customer_company || null
         })
         .eq('id', quotation.customer_id);
@@ -958,8 +961,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       });
       setIsEditingGlobals(false);
       onUpdate();
-    } catch (e) {
-      toast({ title: "Error", description: "No se pudieron actualizar los datos", variant: "destructive" });
+    } catch (e: any) {
+      console.error("Error updating globals:", e);
+      toast({ title: "Error", description: e?.message || "No se pudieron actualizar los datos", variant: "destructive" });
     }
   };
 
@@ -1024,6 +1028,9 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                         <p className="text-muted-foreground">{quotation.customers.company}</p>
                       )}
                       <p className="text-muted-foreground">{quotation.customers.email}</p>
+                      {quotation.customers.phone && (
+                        <p className="text-muted-foreground">{quotation.customers.phone}</p>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -1076,6 +1083,10 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
                   <div className="space-y-2">
                     <Label className="text-xs">Email del Cliente</Label>
                     <Input value={globalData.customer_email} onChange={(e) => setGlobalData({...globalData, customer_email: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Teléfono del Cliente</Label>
+                    <Input type="tel" placeholder="+502 0000-0000" value={globalData.customer_phone} onChange={(e) => setGlobalData({...globalData, customer_phone: e.target.value})} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">Empresa (Opcional)</Label>
