@@ -1,0 +1,9 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0f766e"/>
+  <text x="100" y="200" font-family="system-ui, sans-serif" font-size="72" font-weight="bold" fill="white">B3TA</text>
+  <text x="100" y="290" font-family="system-ui, sans-serif" font-size="36" fill="#99f6e4">Paginas Web · Sistemas · Automatizacion</text>
+  <text x="100" y="370" font-family="system-ui, sans-serif" font-size="28" fill="#5eead4">Deja el Excel. Ten tu propio sistema.</text>
+  <text x="100" y="430" font-family="system-ui, sans-serif" font-size="22" fill="#99f6e4">Guatemala y LATAM · Desde $500 USD · b3ta.us</text>
+  <rect x="100" y="480" width="200" height="50" rx="25" fill="#fbbf24"/>
+  <text x="140" y="513" font-family="system-ui, sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Cotizar Gratis</text>
+</svg>
