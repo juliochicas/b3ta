@@ -584,7 +584,12 @@ export const QuotationDetailModal = ({ quotation, onClose, onUpdate, defaultEdit
       doc.line(ML, y - 6, MR, y - 6);
 
       items.forEach((item) => {
+        // Set font for name calculation
+        fnt('bold', 9.5);
         const nameLines = doc.splitTextToSize(item.item_name, COL.qty - COL.desc - 16);
+        
+        // Set font for description calculation
+        fnt('normal', 8.5);
         const descLines = item.description
           ? doc.splitTextToSize(item.description, COL.qty - COL.desc - 16)
           : [];
