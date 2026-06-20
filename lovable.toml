@@ -1,4 +1,4 @@
 [run]
 dev = "python3 scripts/static_server.py"
-build = "mkdir -p dist && rsync -a --delete --exclude dist --exclude node_modules --exclude .git --exclude supabase --exclude scripts --exclude .agents --exclude .workspace --exclude .claude ./ dist/"
-"build:dev" = "mkdir -p dist && rsync -a --delete --exclude dist --exclude node_modules --exclude .git --exclude supabase --exclude scripts --exclude .agents --exclude .workspace --exclude .claude ./ dist/"
+build = "python3 scripts/build_static.py"
+"build:dev" = "python3 scripts/build_static.py"
