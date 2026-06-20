@@ -1,4 +1,4 @@
 [run]
-dev = "npx serve -l 8080 ."
+dev = "python3 scripts/static_server.py"
 build = "echo 'Static site - no build step required'"
 "build:dev" = "echo 'Static site - no build step required'"
