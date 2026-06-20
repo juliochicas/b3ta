@@ -76,14 +76,17 @@
   function mount(){
     if(!document.body)return;
     if(document.getElementById('__b3ta_admin_link'))return;
+    var nav=document.querySelector('nav');
+    if(!nav)return;
+    var groups=nav.querySelectorAll('div[style*="display:flex"]');
+    var target=groups[groups.length-1]||nav;
     var a=document.createElement('a');
     a.id='__b3ta_admin_link';
     a.href='/admin.html';
     a.textContent='Admin';
-    a.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483647;font:600 12px/1 Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#0B0B0D;background:#C9F24D;padding:10px 16px;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:.9';
-    a.onmouseenter=function(){a.style.opacity='1'};
-    a.onmouseleave=function(){a.style.opacity='.9'};
-    document.body.appendChild(a);
+    a.setAttribute('aria-label','Abrir panel administrativo');
+    a.style.cssText='text-decoration:none;border:1px solid rgba(255,255,255,0.22);color:#F3F1EA;background:transparent;font-family:Space Grotesk,system-ui,sans-serif;font-weight:600;font-size:13px;padding:8px 13px;border-radius:100px;white-space:nowrap;letter-spacing:0.02em';
+    target.insertBefore(a,target.firstChild);
   }
   setInterval(mount,500);
 })();
