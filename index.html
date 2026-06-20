@@ -71,6 +71,24 @@
   <div id="__bundler_thumbnail"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="20" fill="#0B0B0D"></rect><text x="50" y="63" font-family="Arial, sans-serif" font-weight="700" font-size="36" letter-spacing="-2" text-anchor="middle" fill="#F3F1EA">B<tspan fill="#C9F24D">3</tspan>TA</text></svg></div>
   <div id="__bundler_loading">Unpacking...</div>
 
+<script>
+(function(){
+  function mount(){
+    if(document.getElementById('__b3ta_admin_link'))return;
+    var a=document.createElement('a');
+    a.id='__b3ta_admin_link';
+    a.href='/admin.html';
+    a.textContent='Admin';
+    a.style.cssText='position:fixed;bottom:14px;right:14px;z-index:99998;font:600 12px/1 Inter,system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#0B0B0D;background:#C9F24D;padding:10px 14px;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.15);opacity:.85';
+    a.onmouseenter=function(){a.style.opacity='1'};
+    a.onmouseleave=function(){a.style.opacity='.85'};
+    document.body.appendChild(a);
+  }
+  if(document.readyState!=='loading')setTimeout(mount,1200);
+  else document.addEventListener('DOMContentLoaded',function(){setTimeout(mount,1200);});
+})();
+</script>
+
   <script>
     
 document.addEventListener('DOMContentLoaded', async function() {
