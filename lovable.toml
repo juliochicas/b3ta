@@ -1,3 +1,4 @@
 [run]
+dev = "npx serve -l 8080 ."
 build = "echo 'Static site - no build step required'"
 "build:dev" = "echo 'Static site - no build step required'"
