@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>B3TA · Admin</title>
+<link rel="icon" href="/favicon.png">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0B0B0D;color:#F3F1EA;min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 24px}
+  header{display:flex;justify-content:space-between;align-items:center;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:32px}
+  .logo{font-weight:700;font-size:22px;letter-spacing:-.04em}
+  .logo span{-webkit-text-stroke:1.4px #C9F24D;color:transparent}
+  .btn{background:#C9F24D;color:#0B0B0D;border:0;padding:10px 18px;border-radius:100px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn.ghost{background:transparent;color:#F3F1EA;border:1px solid rgba(255,255,255,.25)}
+  .login{max-width:380px;margin:80px auto;padding:36px 32px;background:#15151A;border:1px solid rgba(255,255,255,.08);border-radius:18px}
+  .login h1{font-size:22px;margin-bottom:6px;letter-spacing:-.02em}
+  .login p{color:#8A8A8F;font-size:14px;margin-bottom:24px}
+  label{display:block;font-size:12px;color:#8A8A8F;text-transform:uppercase;letter-spacing:.14em;font-weight:600;margin:14px 0 6px}
+  input{width:100%;padding:12px 14px;background:#0B0B0D;border:1px solid rgba(255,255,255,.12);color:#F3F1EA;border-radius:10px;font-size:15px;font-family:inherit}
+  input:focus{outline:none;border-color:#C9F24D}
+  .err{color:#ff8a80;font-size:13px;margin-top:12px;min-height:18px}
+  .submit{width:100%;margin-top:18px;padding:13px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+  .stat{background:#15151A;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+  .stat .n{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .stat .l{color:#8A8A8F;font-size:12px;text-transform:uppercase;letter-spacing:.14em;margin-top:4px}
+  table{width:100%;border-collapse:collapse;background:#15151A;border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+  th,td{padding:14px 16px;text-align:left;font-size:14px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top}
+  th{font-size:11px;color:#8A8A8F;text-transform:uppercase;letter-spacing:.14em;font-weight:600;background:#0B0B0D}
+  tr:last-child td{border-bottom:0}
+  .pill{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:600;background:rgba(201,242,77,.15);color:#C9F24D}
+  .muted{color:#8A8A8F;font-size:12px}
+  .hidden{display:none}
+  a{color:#C9F24D}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="/" class="logo">B<span>3</span>TA · Admin</a>
+    <div id="hdrActions">
+      <a href="/" class="btn ghost">← Sitio</a>
+      <button id="logoutBtn" class="btn ghost hidden" type="button">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <section id="loginView" class="login">
+    <h1>Iniciar sesión</h1>
+    <p>Acceso al panel de B3TA.</p>
+    <form id="loginForm">
+      <label>Email</label>
+      <input type="email" id="email" required autocomplete="email">
+      <label>Contraseña</label>
+      <input type="password" id="password" required autocomplete="current-password">
+      <div class="err" id="loginErr"></div>
+      <button class="btn submit" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <section id="dashView" class="hidden">
+    <div class="stats" id="stats"></div>
+    <h2 style="font-size:16px;text-transform:uppercase;letter-spacing:.14em;color:#8A8A8F;margin:24px 0 12px">Leads recientes</h2>
+    <table>
+      <thead><tr><th>Fecha</th><th>Nombre</th><th>Contacto</th><th>Empresa</th><th>Interés</th><th>Mensaje</th><th>Estado</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="7" class="muted">Cargando…</td></tr></tbody>
+    </table>
+  </section>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB = createClient(
+  'https://ncmsevbojzotkkfgoabp.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jbXNldmJvanpvdGtrZmdvYWJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2NzczNjEsImV4cCI6MjA3NzI1MzM2MX0.jzh5yCz8lfO7zLGItHP0SWc8ZP9qD3z6X6I2EHMG6co'
+);
+const $ = (id) => document.getElementById(id);
+const fmt = (d) => new Date(d).toLocaleString('es-GT',{dateStyle:'medium',timeStyle:'short'});
+const esc = (s) => (s??'').toString().replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+
+async function loadDash(){
+  $('loginView').classList.add('hidden');
+  $('dashView').classList.remove('hidden');
+  $('logoutBtn').classList.remove('hidden');
+  const { data, error } = await SB.from('leads_b3ta')
+    .select('id,created_at,name,email,phone,company,service_interest,message,status')
+    .order('created_at',{ascending:false}).limit(100);
+  if(error){ $('rows').innerHTML = `<tr><td colspan="7" class="muted">Error: ${esc(error.message)}</td></tr>`; return; }
+  const total = data.length;
+  const nuevos = data.filter(d=>d.status==='new').length;
+  const hoy = data.filter(d=>new Date(d.created_at).toDateString()===new Date().toDateString()).length;
+  $('stats').innerHTML = `
+    <div class="stat"><div class="n">${total}</div><div class="l">Leads (últimos 100)</div></div>
+    <div class="stat"><div class="n" style="color:#C9F24D">${nuevos}</div><div class="l">Nuevos</div></div>
+    <div class="stat"><div class="n">${hoy}</div><div class="l">Hoy</div></div>`;
+  $('rows').innerHTML = data.length ? data.map(d=>`
+    <tr>
+      <td class="muted">${fmt(d.created_at)}</td>
+      <td><strong>${esc(d.name)}</strong></td>
+      <td>${d.email?`<div>${esc(d.email)}</div>`:''}${d.phone?`<div class="muted">${esc(d.phone)}</div>`:''}</td>
+      <td>${esc(d.company||'—')}</td>
+      <td>${esc(d.service_interest||'—')}</td>
+      <td style="max-width:340px">${esc(d.message||'').slice(0,200)}</td>
+      <td><span class="pill">${esc(d.status||'new')}</span></td>
+    </tr>`).join('') : '<tr><td colspan="7" class="muted">Sin leads todavía.</td></tr>';
+}
+
+$('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  $('loginErr').textContent='';
+  const { error } = await SB.auth.signInWithPassword({ email: $('email').value, password: $('password').value });
+  if(error){ $('loginErr').textContent = error.message; return; }
+  loadDash();
+});
+$('logoutBtn').addEventListener('click', async ()=>{ await SB.auth.signOut(); location.reload(); });
+
+const { data:{ session } } = await SB.auth.getSession();
+if(session) loadDash();
+</script>
+</body>
+</html>
