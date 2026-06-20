@@ -1,0 +1,10 @@
+{
+  "name": "static-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "python3 scripts/static_server.py",
+    "build": "python3 scripts/build_static.py",
+    "build:dev": "python3 scripts/build_static.py"
+  }
+}
