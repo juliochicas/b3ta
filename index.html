@@ -74,18 +74,18 @@
 <script>
 (function(){
   function mount(){
+    if(!document.body)return;
     if(document.getElementById('__b3ta_admin_link'))return;
     var a=document.createElement('a');
     a.id='__b3ta_admin_link';
     a.href='/admin.html';
     a.textContent='Admin';
-    a.style.cssText='position:fixed;bottom:14px;right:14px;z-index:99998;font:600 12px/1 Inter,system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#0B0B0D;background:#C9F24D;padding:10px 14px;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.15);opacity:.85';
+    a.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483647;font:600 12px/1 Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#0B0B0D;background:#C9F24D;padding:10px 16px;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:.9';
     a.onmouseenter=function(){a.style.opacity='1'};
-    a.onmouseleave=function(){a.style.opacity='.85'};
+    a.onmouseleave=function(){a.style.opacity='.9'};
     document.body.appendChild(a);
   }
-  if(document.readyState!=='loading')setTimeout(mount,1200);
-  else document.addEventListener('DOMContentLoaded',function(){setTimeout(mount,1200);});
+  setInterval(mount,500);
 })();
 </script>
 
